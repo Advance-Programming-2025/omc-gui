@@ -1,12 +1,7 @@
 use bevy::prelude::*;
-use std::{f32::consts::TAU, sync::{Arc, RwLock}};
+use std::f32::consts::TAU;
 
-use crate::assets::{PlanetAssets, SPRITE_NUM};
-
-#[derive(Resource)]
-pub(crate) struct GalaxyTopologyResource {
-    pub topology: Arc<RwLock<Vec<Vec<bool>>>>
-}
+use crate::{assets::{PlanetAssets, SPRITE_NUM}, game::GameSnapshot};
 
 #[derive(Component)]
 pub(crate) struct Planet{
@@ -18,7 +13,7 @@ const GALAXY_RADIUS: f32 = 250.;
 //const MAX_PLANET_TYPES: usize = 7;
 
 pub fn setup(
-    topology: Res<GalaxyTopologyResource>,
+    topology: Res<GameSnapshot>,
     mut commands: Commands,
     asset_loader: Res<AssetServer>,
     planet_assets: Res<PlanetAssets>,
@@ -35,15 +30,7 @@ pub fn setup(
         ..Default::default()
     });
 
-    // get the galaxy topology via the resource.
-    // here, we only need it for the amount of planets to spawn.
-    let initial_gtop = topology
-        .as_ref()
-        .topology
-        .try_read()
-        .unwrap(); //TODO do something safer than this
-
-    let planet_num = initial_gtop.len();
+    let planet_num = topology.snapshot.planet_num;
 
     for i in 0..planet_num {
         
@@ -77,48 +64,43 @@ pub fn setup(
 
 pub fn draw_topology(
     mut commands: Commands,
-    topology: Res<GalaxyTopologyResource>,
+    snapshot: Res<GameSnapshot>,
     planets: Query<(&Planet, &Transform)>
 ) {
-    let gtop = topology
-        .as_ref()
-        .topology
-        .try_read()
-        .unwrap();
+    let snap = &snapshot.snapshot;
+    if snapshot.is_changed() {
+        let gtop = &snap.edges; //TODO do something BETTER than this
 
-    for (p1,p1t) in planets {
-        for (p2, p2t) in planets{
+        for (a, b) in gtop.iter() {
+            let (_, t1) = planets.iter().find(|(p, _)| p.id as u32 == *a).unwrap();
+            let (_, t2) = planets.iter().find(|(p, _)| p.id as u32 == *b).unwrap();
 
-            // using < avoids calculating "double edges" (not a bug but unneeded work)
-            if p1.id < p2.id && gtop[p1.id][p2.id] == true {
+            let start = &t1.translation;
+                    let end = &t2.translation;
+                    let length = start.distance(*end);
 
-                let start = &p1t.translation;
-                let end = &p2t.translation;
-                let length = start.distance(*end);
+                    // diff is the same segment as start and end,
+                    // but transposed wrt the origin of the 
+                    // coordinate system
+                    let segment = start - end;
+                    
+                    // finds the rotation of the segment wrt the origin
+                    // using the arctangent function
+                    let segment_rotation = segment.y.atan2(segment.x);
+                    let midpoint = (start + end) / 2.;
 
-                // diff is the same segment as start and end,
-                // but transposed wrt the origin of the 
-                // coordinate system
-                let segment = start - end;
-                
-                // finds the rotation of the segment wrt the origin
-                // using the arctangent function
-                let segment_rotation = segment.y.atan2(segment.x);
-                let midpoint = (start + end) / 2.;
+                    //creates the transform to manipulate the line position
+                    let transform = Transform::from_xyz(
+                        midpoint.x,
+                        midpoint.y,
+                        1.
+                    ).with_rotation(Quat::from_rotation_z(segment_rotation));
 
-                //creates the transform to manipulate the line position
-                let transform = Transform::from_xyz(
-                    midpoint.x,
-                    midpoint.y,
-                    1.
-                ).with_rotation(Quat::from_rotation_z(segment_rotation));
-
-                commands.spawn((Sprite{
-                    color: Color::WHITE,
-                    custom_size: Some(Vec2::new(length, 1.)),
-                    ..default()
-                }, transform));
-            }
+                    commands.spawn((Sprite{
+                        color: Color::WHITE,
+                        custom_size: Some(Vec2::new(length, 1.)),
+                        ..default()
+                    }, transform));
         }
     }
 }
