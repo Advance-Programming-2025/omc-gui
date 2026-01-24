@@ -1,6 +1,8 @@
 use omc_galaxy::Orchestrator;
 use bevy::prelude::*;
 
+const GAME_TICK: f32 = 0.5;
+
 #[derive(Resource)]
 pub struct OrchestratorResource {
     pub orchestrator: Orchestrator,
@@ -60,6 +62,13 @@ pub fn setup_orchestrator(
     let (topology,planet_num) = 
         orchestrator.get_topology();
 
+    match orchestrator.start_all() {
+        Err(s) => {
+            error!("orchestrator failed to start. details: {}", s);
+        },
+        _ => {}
+    }
+
     commands.insert_resource(OrchestratorResource {
         orchestrator,
     });
@@ -74,7 +83,7 @@ pub fn setup_orchestrator(
                 ..default()
     }});
 
-    commands.insert_resource(GameTimer(Timer::from_seconds(1.0, TimerMode::Once)));
+    commands.insert_resource(GameTimer(Timer::from_seconds(GAME_TICK, TimerMode::Repeating)));
 }
 
 pub fn snapshot_update(
@@ -93,32 +102,43 @@ pub fn game_loop(
     mut timer: ResMut<GameTimer>,
     time: Res<Time>,
 ) {
-        timer.tick(time.delta());
+    timer.tick(time.delta());
 
-    for event in events.read() {
-        match (*game_state, event) {
-            (_, GameEvent::EndGame) => {
-                info!("Ending game");
-                let _ = orchestrator.orchestrator.stop_all();
+    if timer.is_finished(){
+
+    println!("ENTERED TIMER");
+    let events = std::mem::take(
+        &mut orchestrator.orchestrator.gui_messages
+    );
+
+    for ev in events {
+        match ev {
+            omc_galaxy::OrchestratorEvent::PlanetDestroyed { planet_id } => {
+                // handle the destruction of a planet
+                println!("planet {} has died", planet_id);
+            },
+            omc_galaxy::OrchestratorEvent::SunrayReceived { planet_id } => {
+                // handle the destruction of a planet
+                println!("planet {} got a sunray (UI update)", planet_id);
+            },
+            omc_galaxy::OrchestratorEvent::SunraySent { planet_id } => {
+                // handle the destruction of a planet
+                println!("planet {} should get a sunray", planet_id);
+            },
+            omc_galaxy::OrchestratorEvent::AsteroidSent { planet_id } => {
+                // handle the destruction of a planet
+                println!("planet {} should get an asteroid", planet_id);
+            },
+            _ => {
+                // TODO add the rest of the matches
             }
-
-            (GameState::WaitingStart, GameEvent::StartGame) => {
-                info!("Starting game");
-                *game_state = GameState::Running;
-                timer.reset();
-                let _ = orchestrator.orchestrator.start_all();
-            }
-
-            (GameState::Running, GameEvent::StopGame) => {
-                info!("Pausing game");
-                *game_state = GameState::Paused;
-            }
-
-            (_, GameEvent::ResetGame) => {
-                info!("Reset game requested");
-            }
-
-            _ => {}
         }
+    }
+
+    let _ = orchestrator.orchestrator.choose_random_action();
+    let _ = orchestrator.orchestrator.handle_game_messages();
+
+    println!("EXITING TIMER");
+    timer.reset();
     }
 }

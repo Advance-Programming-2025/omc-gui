@@ -14,7 +14,8 @@ pub fn main() -> Result<(), String>{
     app
     .add_plugins((
             // Full screen
-            DefaultPlugins.set(WindowPlugin {
+            DefaultPlugins
+            .set(WindowPlugin {
                 primary_window: Some(Window {
                     resizable: false,
                     mode: WindowMode::BorderlessFullscreen(MonitorSelection::Index(0)),
