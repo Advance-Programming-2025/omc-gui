@@ -1,6 +1,8 @@
 use omc_galaxy::Orchestrator;
 use bevy::prelude::*;
 
+use crate::galaxy::PlanetDespawn;
+
 const GAME_TICK: f32 = 0.5;
 
 #[derive(Resource)]
@@ -23,26 +25,6 @@ pub struct GameSnapshot {
 
 #[derive(Resource, Deref, DerefMut)]
 pub struct GameTimer(pub Timer);
-
-#[derive(Message, Debug)]
-pub enum GameEvent {
-    StartGame,
-    StopGame,
-    ResetGame,
-    EndGame,
-}
-
-#[derive(Resource, Debug, Clone, Copy, PartialEq, Eq)]
-pub enum GameState {
-    WaitingStart,
-    Running,
-    Paused,
-}
-
-#[derive(Component, Deref, DerefMut)]
-pub struct Game {
-    state: GameState
-}
 
 pub fn setup_orchestrator(
     mut commands: Commands,
@@ -73,8 +55,6 @@ pub fn setup_orchestrator(
         orchestrator,
     });
 
-    commands.insert_resource(GameState::WaitingStart);
-
     commands.insert_resource(GameSnapshot{
         snapshot:
             GalaxySnapshot{
@@ -86,18 +66,10 @@ pub fn setup_orchestrator(
     commands.insert_resource(GameTimer(Timer::from_seconds(GAME_TICK, TimerMode::Repeating)));
 }
 
-pub fn snapshot_update(
-    orchestrator_res: ResMut<OrchestratorResource>,
-    mut snapshot_res: ResMut<GameSnapshot>,
-) {
-    let topology = orchestrator_res.orchestrator.get_topology();
-    snapshot_res.as_mut().snapshot.edges = topology.0;
-    snapshot_res.as_mut().snapshot.planet_num = topology.1;
-}
+
 
 pub fn game_loop(
-    mut game_state: ResMut<GameState>,
-    mut events: MessageReader<GameEvent>,
+    mut commands: Commands,
     mut orchestrator: ResMut<OrchestratorResource>,
     mut timer: ResMut<GameTimer>,
     time: Res<Time>,
@@ -106,39 +78,40 @@ pub fn game_loop(
 
     if timer.is_finished(){
 
-    println!("ENTERED TIMER");
-    let events = std::mem::take(
-        &mut orchestrator.orchestrator.gui_messages
-    );
+        println!("ENTERED TIMER");
+        let events = std::mem::take(
+            &mut orchestrator.orchestrator.gui_messages
+        );
 
-    for ev in events {
-        match ev {
-            omc_galaxy::OrchestratorEvent::PlanetDestroyed { planet_id } => {
-                // handle the destruction of a planet
-                println!("planet {} has died", planet_id);
-            },
-            omc_galaxy::OrchestratorEvent::SunrayReceived { planet_id } => {
-                // handle the destruction of a planet
-                println!("planet {} got a sunray (UI update)", planet_id);
-            },
-            omc_galaxy::OrchestratorEvent::SunraySent { planet_id } => {
-                // handle the destruction of a planet
-                println!("planet {} should get a sunray", planet_id);
-            },
-            omc_galaxy::OrchestratorEvent::AsteroidSent { planet_id } => {
-                // handle the destruction of a planet
-                println!("planet {} should get an asteroid", planet_id);
-            },
-            _ => {
-                // TODO add the rest of the matches
+        for ev in events {
+            match ev {
+                omc_galaxy::OrchestratorEvent::PlanetDestroyed { planet_id } => {
+                    // handle the destruction of a planet
+                    println!("planet {} has died", planet_id);
+                    commands.trigger(PlanetDespawn{planet_id});
+                },
+                omc_galaxy::OrchestratorEvent::SunrayReceived { planet_id } => {
+                    println!("planet {} got a sunray (UI update)", planet_id);
+                    //charge up the planet!
+                },
+                omc_galaxy::OrchestratorEvent::SunraySent { planet_id } => {
+                    println!("planet {} should get a sunray", planet_id);
+                    // TODO only log to screen, nothing changes in the GUI
+                },
+                omc_galaxy::OrchestratorEvent::AsteroidSent { planet_id } => {
+                    println!("planet {} should get an asteroid", planet_id);
+                    // TODO only log to screen, nothing changes in the GUI
+                },
+                _ => {
+                    // TODO add the rest of the matches
+                }
             }
         }
-    }
 
-    let _ = orchestrator.orchestrator.choose_random_action();
-    let _ = orchestrator.orchestrator.handle_game_messages();
+        let _ = orchestrator.orchestrator.choose_random_action();
+        let _ = orchestrator.orchestrator.handle_game_messages();
 
-    println!("EXITING TIMER");
-    timer.reset();
+        println!("EXITING TIMER");
+        timer.reset();
     }
 }

@@ -8,6 +8,16 @@ pub(crate) struct Planet{
     id: usize
 }
 
+#[derive(Component)]
+pub(crate) struct Edge{
+    connects: (u32,u32)
+}
+
+#[derive(Event)]
+pub(crate) struct PlanetDespawn{
+    pub planet_id: u32
+}
+
 const PLANET_RAD: f32 = 50.;
 const GALAXY_RADIUS: f32 = 250.;
 //const MAX_PLANET_TYPES: usize = 7;
@@ -96,11 +106,38 @@ pub fn draw_topology(
                         1.
                     ).with_rotation(Quat::from_rotation_z(segment_rotation));
 
-                    commands.spawn((Sprite{
-                        color: Color::WHITE,
-                        custom_size: Some(Vec2::new(length, 1.)),
-                        ..default()
-                    }, transform));
+                    commands.spawn((
+                        Sprite{
+                            color: Color::WHITE,
+                            custom_size: Some(Vec2::new(length, 1.)),
+                            ..default()
+                        }, 
+                        transform,
+                        Edge{
+                            connects: (*a,*b)
+                        }
+                        ));
+        }
+    }
+}
+
+pub fn destroy_link(
+    event: On<PlanetDespawn>,
+    mut commands: Commands,
+    edge_query: Query<(&Edge, Entity)>,
+    planet_query: Query<(&Planet, Entity)>
+) {
+    //despawn all its links
+    for (e,s) in edge_query {
+        if e.connects.0 == event.planet_id || e.connects.1 == event.planet_id {
+            commands.entity(s).despawn();
+        }
+    }
+
+    //despawn the planet itself
+    for (p, e) in planet_query {
+        if p.id == event.planet_id as usize {
+            commands.entity(e).despawn();
         }
     }
 }
