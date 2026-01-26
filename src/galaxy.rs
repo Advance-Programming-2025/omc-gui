@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use std::f32::consts::TAU;
 
-use crate::{assets::{PlanetAssets, SPRITE_NUM}, game::GameSnapshot};
+use crate::{assets::{PlanetAssets, SPRITE_NUM}, game::GameSnapshot, events::PlanetDespawn};
 
 #[derive(Component)]
 pub(crate) struct Planet{
@@ -11,11 +11,6 @@ pub(crate) struct Planet{
 #[derive(Component)]
 pub(crate) struct Edge{
     connects: (u32,u32)
-}
-
-#[derive(Event)]
-pub(crate) struct PlanetDespawn{
-    pub planet_id: u32
 }
 
 const PLANET_RAD: f32 = 50.;

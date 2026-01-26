@@ -1,7 +1,7 @@
 use omc_galaxy::Orchestrator;
 use bevy::prelude::*;
 
-use crate::galaxy::PlanetDespawn;
+use crate::events::PlanetDespawn;
 
 const GAME_TICK: f32 = 0.5;
 
@@ -10,7 +10,7 @@ pub struct OrchestratorResource {
     pub orchestrator: Orchestrator,
 }
 
-#[derive(Resource)]
+#[derive(Resource, PartialEq, Eq)]
 pub enum GameState {
     WaitingStart,
     Playing,
@@ -84,44 +84,46 @@ pub fn game_loop(
     state: Res<GameState>,
     time: Res<Time>,
 ) {
-    timer.tick(time.delta());
+    if state.into_inner() == &GameState::Playing {
+        timer.tick(time.delta());
 
-    if timer.is_finished(){
+        if timer.is_finished(){
 
-        println!("ENTERED TIMER");
-        let events = std::mem::take(
-            &mut orchestrator.orchestrator.gui_messages
-        );
+            println!("ENTERED TIMER");
+            let events = std::mem::take(
+                &mut orchestrator.orchestrator.gui_messages
+            );
 
-        for ev in events {
-            match ev {
-                omc_galaxy::OrchestratorEvent::PlanetDestroyed { planet_id } => {
-                    // handle the destruction of a planet
-                    println!("planet {} has died", planet_id);
-                    commands.trigger(PlanetDespawn{planet_id});
-                },
-                omc_galaxy::OrchestratorEvent::SunrayReceived { planet_id } => {
-                    println!("planet {} got a sunray (UI update)", planet_id);
-                    //charge up the planet!
-                },
-                omc_galaxy::OrchestratorEvent::SunraySent { planet_id } => {
-                    println!("planet {} should get a sunray", planet_id);
-                    // TODO only log to screen, nothing changes in the GUI
-                },
-                omc_galaxy::OrchestratorEvent::AsteroidSent { planet_id } => {
-                    println!("planet {} should get an asteroid", planet_id);
-                    // TODO only log to screen, nothing changes in the GUI
-                },
-                _ => {
-                    // TODO add the rest of the matches
+            for ev in events {
+                match ev {
+                    omc_galaxy::OrchestratorEvent::PlanetDestroyed { planet_id } => {
+                        // handle the destruction of a planet
+                        println!("planet {} has died", planet_id);
+                        commands.trigger(PlanetDespawn{planet_id});
+                    },
+                    omc_galaxy::OrchestratorEvent::SunrayReceived { planet_id } => {
+                        println!("planet {} got a sunray (UI update)", planet_id);
+                        //charge up the planet!
+                    },
+                    omc_galaxy::OrchestratorEvent::SunraySent { planet_id } => {
+                        println!("planet {} should get a sunray", planet_id);
+                        // TODO only log to screen, nothing changes in the GUI
+                    },
+                    omc_galaxy::OrchestratorEvent::AsteroidSent { planet_id } => {
+                        println!("planet {} should get an asteroid", planet_id);
+                        // TODO only log to screen, nothing changes in the GUI
+                    },
+                    _ => {
+                        // TODO add the rest of the matches
+                    }
                 }
             }
+
+            let _ = orchestrator.orchestrator.choose_random_action();
+            let _ = orchestrator.orchestrator.handle_game_messages();
+
+            println!("EXITING TIMER");
+            timer.reset();
         }
-
-        let _ = orchestrator.orchestrator.choose_random_action();
-        let _ = orchestrator.orchestrator.handle_game_messages();
-
-        println!("EXITING TIMER");
-        timer.reset();
     }
 }
