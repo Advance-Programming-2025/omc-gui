@@ -3970,6 +3970,7 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "bevy_tweening",
+ "common-game",
  "dotenv",
  "omc-galaxy",
  "rand",

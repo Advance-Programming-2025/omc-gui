@@ -48,8 +48,12 @@ pub fn main() -> Result<(), String> {
             ui::button_hover,
             ui::game_menu_action,
             ui::manual_planet_action,
+            ui::manual_explorer_action,
+            ui::explorer_move_action,
             ui::send_scroll_events,
+            ui::update_explorer_buttons_visibility,
             ui::update_planet_buttons_visibility,
+            ui::populate_dropdown,
             galaxy::despawn_celestial,
             galaxy::update_selected_entity,
             game::log_text,
@@ -58,6 +62,7 @@ pub fn main() -> Result<(), String> {
     .add_systems(FixedUpdate, (game::game_loop, galaxy::draw_topology))
     .add_observer(galaxy::destroy_link)
     .add_observer(galaxy::move_celestial)
+    .add_observer(galaxy::move_explorer)
     .add_observer(ui::on_scroll_handler);
     app.run();
     Ok(())

@@ -1,20 +1,19 @@
 use bevy::prelude::*;
 use bevy_tweening::{CycleCompletedEvent, Tween, TweenAnim, lens::TransformPositionLens};
 use omc_galaxy::Status;
-use rand;
 use std::{f32::consts::TAU, time::Duration};
 
 use crate::{
     ecs::{
         components::{Edge, Explorer, Planet, UiExplorerText, UiPlanetText},
-        events::{Celestial, CelestialBody, PlanetDespawn},
+        events::{Celestial, CelestialBody, MoveExplorerEvent, PlanetDespawn},
         resources::{EntityClickRes, ExplorerInfoRes, GalaxySnapshot, PlanetInfoRes},
     },
     utils::{
         assets::{CelestialAssets, ExplorerAssets, PlanetAssets},
         constants::{
-            CELESTIAL_RAD, EXP_SPRITE_NUM, EXPLORER_SIZE, GALAXY_RADIUS, GAME_TICK, PLANET_RAD,
-            PLANET_SPRITE_NUM,
+            CELESTIAL_RAD, EXP_MATTIA_OFFSET, EXP_SPRITE_NUM, EXP_TOMMY_OFFSET, EXPLORER_SIZE,
+            GALAXY_RADIUS, GAME_TICK, PLANET_RAD, PLANET_SPRITE_NUM,
         },
     },
 };
@@ -81,23 +80,24 @@ pub fn setup(
         if i == 0 {
             for j in 0..EXP_SPRITE_NUM {
                 let explorer_image_handle = explorer_assets.handles[j].clone();
-                let (rand_x, rand_y): (f32, f32) = rand::random();
+                let (offset_x, offset_y): (f32, f32) = if j == 0 {
+                    EXP_TOMMY_OFFSET
+                } else {
+                    EXP_MATTIA_OFFSET
+                };
                 commands
                     .spawn((
                         Explorer {
                             id: j as u32,
                             current_planet: i,
+                            position_offset: (offset_x, offset_y),
                         },
                         Sprite {
                             image: explorer_image_handle,
                             custom_size: Some(Vec2::splat(EXPLORER_SIZE)),
                             ..Default::default()
                         },
-                        Transform::from_xyz(
-                            x + (rand_x * 100. % PLANET_RAD),
-                            y - (rand_y * 100. % PLANET_RAD),
-                            3.0,
-                        ),
+                        Transform::from_xyz(x + offset_x, y - offset_y, 3.0),
                         Pickable::default(),
                     ))
                     .observe(choose_on_click);
@@ -227,6 +227,49 @@ pub fn move_celestial(
     }
 }
 
+pub fn move_explorer(
+    event: On<MoveExplorerEvent>,
+    mut param_set: ParamSet<(
+        Query<(&mut Explorer, &mut Transform)>,
+        Query<(&Planet, &Transform), Without<Explorer>>,
+    )>,
+) {
+    let (explorer_id, planet_id) = (event.id, event.destination);
+
+    // First, get the target planet's transform
+    let mut target_transform = None;
+    for (planet, &transform) in param_set.p1().iter() {
+        if planet.id == planet_id {
+            target_transform = Some(transform);
+            break;
+        }
+    }
+
+    // Then, update the explorer
+    for (mut explorer, mut transform) in param_set.p0().iter_mut() {
+        if explorer.id == explorer_id {
+            match target_transform {
+                Some(target) => {
+                    // semantically move the explorer
+                    explorer.current_planet = planet_id;
+                    // graphically move the explorer
+                    *transform = Transform::from_translation(Vec3 {
+                        x: target.translation.x + explorer.position_offset.0,
+                        y: target.translation.y + explorer.position_offset.1,
+                        z: 3.,
+                    });
+                }
+                None => {
+                    warn!(
+                        "explorer tried to move to planet that doesn't exist ({})",
+                        planet_id
+                    );
+                }
+            }
+        }
+    }
+}
+
 //TODO run this function at every tick, not every frame
 pub(crate) fn despawn_celestial(
     mut commands: Commands,
@@ -346,8 +389,6 @@ pub(crate) fn update_selected_entity(
     if let Some(explorer_id) = selected_entity.explorer {
         let map = &explorer_status.map;
 
-        info!("updating explorer {}, map: {:?}", explorer_id, map.get(&explorer_id));
-
         if let Some(explorer_info) = map.get(&explorer_id) {
             for (mut text, field_type) in &mut params.p1() {
                 match field_type {
@@ -365,7 +406,10 @@ pub(crate) fn update_selected_entity(
                     UiExplorerText::Visiting => {
                         **text = format!("Visiting planet {}", explorer_info.current_planet_id);
                     }
-                    UiExplorerText::ResourceBag => {}
+                    UiExplorerText::ResourceBag => {
+                        let bag = &explorer_info.bag;
+                        **text = format!("Bag: {:?}", bag);
+                    }
                 }
             }
 

@@ -6,9 +6,10 @@ use omc_galaxy::{Orchestrator, OrchestratorEvent};
 use crate::{
     ecs::{
         components::LogText,
-        events::{Celestial, CelestialBody},
+        events::{BasicResEvent, Celestial, CelestialBody, ComplexResEvent, MoveExplorerEvent},
         resources::{
-            EntityClickRes, ExplorerInfoRes, GalaxySnapshot, GameState, GameTimer, LogTextRes, OrchestratorResource, PlanetInfoRes
+            EntityClickRes, ExplorerInfoRes, GalaxySnapshot, GameState, GameTimer, LogTextRes,
+            OrchestratorResource, PlanetInfoRes,
         },
     },
     utils::constants::GAME_TICK,
@@ -46,7 +47,7 @@ pub fn setup_orchestrator(mut commands: Commands) {
 
     commands.insert_resource(PlanetInfoRes { map: lookup });
 
-    commands.insert_resource(ExplorerInfoRes { map: exp_info} );
+    commands.insert_resource(ExplorerInfoRes { map: exp_info });
 
     commands.insert_resource(GameState::WaitingStart);
 
@@ -130,12 +131,12 @@ fn handle_tick(
 ) {
     for ev in events {
         match ev {
-            omc_galaxy::OrchestratorEvent::PlanetDestroyed { planet_id } => {
+            OrchestratorEvent::PlanetDestroyed { planet_id } => {
                 // handle the destruction of a planet
                 info!("game-loop: planet {} has died, ", planet_id);
                 update_logs(&mut log_text, format!("planet {} died!\n", planet_id));
             }
-            omc_galaxy::OrchestratorEvent::SunrayReceived { planet_id } => {
+            OrchestratorEvent::SunrayReceived { planet_id } => {
                 info!("game-loop: planet {} got a sunray (UI update), ", planet_id);
                 commands.trigger(Celestial {
                     planet_id,
@@ -146,11 +147,11 @@ fn handle_tick(
                     format!("planet {} received a sunray\n", planet_id),
                 );
             }
-            omc_galaxy::OrchestratorEvent::SunraySent { planet_id } => {
+            OrchestratorEvent::SunraySent { planet_id } => {
                 info!("game-loop: planet {} should get a sunray, ", planet_id);
                 // TODO only log to screen, nothing changes in the GUI
             }
-            omc_galaxy::OrchestratorEvent::AsteroidSent { planet_id } => {
+            OrchestratorEvent::AsteroidSent { planet_id } => {
                 info!("game-loop: planet {} should get an asteroid, ", planet_id);
                 commands.trigger(Celestial {
                     planet_id,
@@ -161,8 +162,44 @@ fn handle_tick(
                     format!("planet {} received an asteroid\n", planet_id),
                 );
             }
-            _ => {
-                // TODO add the rest of the matches
+            OrchestratorEvent::ExplorerMoved {
+                explorer_id,
+                destination,
+            } => {
+                info!(
+                    "game-loop: explorer {} has moved to planet {}",
+                    explorer_id, destination
+                );
+                commands.trigger(MoveExplorerEvent {
+                    id: explorer_id,
+                    destination,
+                });
+            }
+            OrchestratorEvent::BasicResourceGenerated {
+                explorer_id,
+                resource,
+            } => {
+                info!(
+                    "game-loop: explorer {} has generated basic resource {:?}",
+                    explorer_id, resource
+                );
+                commands.trigger(BasicResEvent {
+                    id: explorer_id,
+                    resource,
+                });
+            }
+            OrchestratorEvent::ComplexResourceGenerated {
+                explorer_id,
+                resource,
+            } => {
+                info!(
+                    "game-loop: explorer {} has generated complex resource {:?}",
+                    explorer_id, resource
+                );
+                commands.trigger(ComplexResEvent {
+                    id: explorer_id,
+                    resource,
+                });
             }
         }
     }

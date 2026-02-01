@@ -4,9 +4,15 @@ use bevy::{
     prelude::*,
 };
 
-use crate::ecs::components::{ButtonActions, LogText, PlanetOnlyButton, UiExplorerText, UiPlanetText};
 use crate::ecs::events::Scroll;
 use crate::ecs::resources::{EntityClickRes, GameState, OrchestratorResource};
+use crate::ecs::{
+    components::{
+        ButtonActions, DropdownButton, DropdownItem, DropdownLabel, DropdownList, DropdownRoot,
+        Edge, ExplorerOnlyButton, LogText, PlanetOnlyButton, UiExplorerText, UiPlanetText,
+    },
+    resources::ExplorerInfoRes,
+};
 
 pub(crate) fn draw_game_options_menu(mut commands: Commands) {
     let root = Node {
@@ -217,30 +223,190 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
             // 3b. Button Row
             parent.spawn(button_row.clone()).with_children(|parent| {
                 parent.spawn((Text::new("choose a planet!"), UiPlanetText::Name));
-                parent.spawn((Text::new(""), UiPlanetText::Id));
-                parent.spawn((Text::new(""), UiPlanetText::Status));
-                parent.spawn((Text::new(""), UiPlanetText::Energy));
-                parent.spawn((Text::new(""), UiPlanetText::Rocket));
-                parent.spawn((Text::new(""), UiExplorerText::Id));
-                parent.spawn((Text::new(""), UiExplorerText::Status));
-                parent.spawn((Text::new(""), UiExplorerText::Visiting));
+                parent.spawn((
+                    Text::new(""),
+                    Visibility::Hidden,
+                    PlanetOnlyButton,
+                    UiPlanetText::Id,
+                ));
+                parent.spawn((
+                    Text::new(""),
+                    Visibility::Hidden,
+                    PlanetOnlyButton,
+                    UiPlanetText::Status,
+                ));
+                parent.spawn((
+                    Text::new(""),
+                    Visibility::Hidden,
+                    PlanetOnlyButton,
+                    UiPlanetText::Energy,
+                ));
+                parent.spawn((
+                    Text::new(""),
+                    Visibility::Hidden,
+                    PlanetOnlyButton,
+                    UiPlanetText::Rocket,
+                ));
+                parent.spawn((
+                    Text::new(""),
+                    Visibility::Hidden,
+                    ExplorerOnlyButton,
+                    UiExplorerText::Id,
+                ));
+                parent.spawn((
+                    Text::new(""),
+                    Visibility::Hidden,
+                    ExplorerOnlyButton,
+                    UiExplorerText::Status,
+                ));
+                parent.spawn((
+                    Text::new(""),
+                    Visibility::Hidden,
+                    ExplorerOnlyButton,
+                    UiExplorerText::Visiting,
+                ));
+                parent.spawn((
+                    Text::new(""),
+                    Visibility::Hidden,
+                    ExplorerOnlyButton,
+                    UiExplorerText::ResourceBag,
+                ));
             });
+
+            parent
+                .spawn((
+                    button_row.clone(),
+                    Visibility::Hidden, //only in the beginning
+                    PlanetOnlyButton,
+                ))
+                .with_children(|parent| {
+                    parent.spawn((
+                        button_factory(Text::new("Send asteroid")),
+                        ButtonActions::ManualAsteroid,
+                    ));
+                    parent.spawn((
+                        button_factory(Text::new("Send sunray")),
+                        ButtonActions::ManualSunray,
+                    ));
+                });
 
             parent.spawn(button_row.clone()).with_children(|parent| {
                 parent.spawn((
-                    button_factory(Text::new("Send asteroid")),
-                    ButtonActions::ManualAsteroid,
-                    Visibility::Hidden, //only in the beginning 
-                    PlanetOnlyButton
+                    button_factory(Text::new("Make basic resource")),
+                    ButtonActions::CreateBasic,
+                    Visibility::Hidden, //only in the beginning
+                    ExplorerOnlyButton,
                 ));
                 parent.spawn((
-                    button_factory(Text::new("Send sunray")),
-                    ButtonActions::ManualSunray,
+                    button_factory(Text::new("Make complex resource")),
+                    ButtonActions::CreateComplex,
                     Visibility::Hidden, //only in the beginning
-                    PlanetOnlyButton
+                    ExplorerOnlyButton,
                 ));
+                parent
+                    .spawn((
+                        Node {
+                            width: Val::Px(220.0),
+                            flex_direction: FlexDirection::Column,
+                            ..default()
+                        },
+                        Visibility::Hidden,
+                        ExplorerOnlyButton,
+                        DropdownRoot,
+                    ))
+                    .with_children(|parent| {
+                        // Button
+                        parent
+                            .spawn((
+                                Button,
+                                Node {
+                                    height: Val::Px(32.0),
+                                    justify_content: JustifyContent::SpaceBetween,
+                                    align_items: AlignItems::Center,
+                                    padding: UiRect::horizontal(Val::Px(8.0)),
+                                    ..default()
+                                },
+                                DropdownButton,
+                            ))
+                            .with_children(|button| {
+                                button.spawn((
+                                    Text::new("Select destination"),
+                                    TextFont {
+                                        font_size: 16.0,
+                                        ..Default::default()
+                                    },
+                                    DropdownLabel,
+                                ));
+                            });
+
+                        parent.spawn((
+                            Node {
+                                flex_direction: FlexDirection::Column,
+                                ..default()
+                            },
+                            BackgroundColor(Color::Srgba(Srgba::new(0.15, 0.15, 0.15, 1.))),
+                            DropdownList,
+                        ));
+                    });
             });
         });
+    });
+}
+
+pub fn populate_dropdown(
+    mut commands: Commands,
+    edges: Query<&Edge>,
+    list: Single<Entity, With<DropdownList>>,
+    explorer_status: Res<ExplorerInfoRes>,
+    target_entity: Res<EntityClickRes>, // or however you store it
+) {
+    if target_entity.explorer.is_none() || !target_entity.is_changed() {
+        return;
+    }
+
+    commands.entity(*list).despawn_children();
+    let explorer_id = target_entity.explorer.unwrap();
+    let planet_id = explorer_status.map.get_current_planet(&explorer_id);
+
+    let mut neighbors = Vec::new();
+
+    for edge in edges {
+        if edge.connects.0 == planet_id {
+            neighbors.push(edge.connects.1);
+        } else if edge.connects.1 == planet_id {
+            neighbors.push(edge.connects.0);
+        }
+    }
+
+    neighbors.sort_unstable();
+    neighbors.dedup();
+
+    commands.entity(*list).with_children(|parent| {
+        for planet_id in neighbors {
+            parent
+                .spawn((
+                    Button,
+                    Node {
+                        height: Val::Px(28.0),
+                        padding: UiRect::horizontal(Val::Px(8.0)),
+                        align_items: AlignItems::Center,
+                        ..default()
+                    },
+                    DropdownItem {
+                        planet_id,
+                        explorer_id,
+                    },
+                ))
+                .with_children(|item| {
+                    item.spawn((
+                        Text::new(format!("Planet {}", planet_id)),
+                        TextFont {
+                            font_size: 14.0,
+                            ..Default::default()
+                        },
+                    ));
+                });
+        }
     });
 }
 
@@ -317,6 +483,14 @@ pub(crate) fn game_menu_action(
                         error!("{}", s);
                     }
                 }
+                ButtonActions::CreateBasic => {
+                    //TODO call the orchestrator to generate basic resources
+                    error!("function has not been implemented");
+                }
+                ButtonActions::CreateComplex => {
+                    //TODO call the orchestrator to generate complex resources
+                    error!("function has not been implemented");
+                }
                 _ => {}
             }
         }
@@ -333,6 +507,23 @@ pub fn update_planet_buttons_visibility(
 
     for mut visibility in &mut query {
         if selected.planet.is_some() {
+            *visibility = Visibility::Visible;
+        } else {
+            *visibility = Visibility::Hidden;
+        }
+    }
+}
+
+pub fn update_explorer_buttons_visibility(
+    selected: Res<EntityClickRes>,
+    mut query: Query<&mut Visibility, With<ExplorerOnlyButton>>,
+) {
+    if !selected.is_changed() {
+        return;
+    }
+
+    for mut visibility in &mut query {
+        if selected.explorer.is_some() {
             *visibility = Visibility::Visible;
         } else {
             *visibility = Visibility::Hidden;
@@ -367,6 +558,48 @@ pub(crate) fn manual_planet_action(
                 }
                 _ => {}
             }
+        }
+    }
+}
+
+pub(crate) fn manual_explorer_action(
+    mut action_query: Query<(&Interaction, &ButtonActions), (Changed<Interaction>, With<Button>)>,
+    //mut orchestrator: ResMut<OrchestratorResource>,
+    //selected_planet: Res<EntityClickRes>,
+    mut state: ResMut<GameState>,
+) {
+    for (&interaction, action) in &mut action_query {
+        if interaction == Interaction::Pressed {
+            match action {
+                ButtonActions::CreateBasic => {
+                    state.set_if_neq(GameState::Override);
+                    // TODO qui va lo spostamento dell'explorer
+                    error!("function not yet implemented");
+                }
+                ButtonActions::CreateComplex => {
+                    state.set_if_neq(GameState::Override);
+                    // TODO qui va lo spostamento dell'explorer
+                    error!("function not yet implemented");
+                }
+                _ => {}
+            }
+        }
+    }
+}
+
+pub(crate) fn explorer_move_action(
+    mut action_query: Query<(&Interaction, &DropdownItem), (Changed<Interaction>, With<Button>)>,
+    // mut orchestrator: ResMut<OrchestratorResource>,
+    mut state: ResMut<GameState>,
+) {
+    for (&interaction, _action) in &mut action_query {
+        if interaction == Interaction::Pressed {
+            state.set_if_neq(GameState::Override);
+            // TODO qui va lo spostamento dell'explorer
+            error!("function not yet implemented");
+            // if let Err(e) = orchestrator.orchestrator.send_move_to_planet(action.explorer_id, action.planet_id){
+            //     error!("error in explorer move:{}", e);
+            // }
         }
     }
 }
