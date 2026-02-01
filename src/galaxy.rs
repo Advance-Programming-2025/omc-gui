@@ -1,30 +1,23 @@
 use bevy::prelude::*;
 use bevy_tweening::{CycleCompletedEvent, Tween, TweenAnim, lens::TransformPositionLens};
 use omc_galaxy::Status;
-use std::{f32::consts::TAU, time::Duration};
+use rand;
+use std::{f32::consts::TAU, fmt::format, time::Duration};
 
 use crate::{
-    assets::{CelestialAssets, PlanetAssets, SPRITE_NUM},
-    events::{Celestial, CelestialBody, PlanetDespawn},
-    game::{
-        self, GalaxySnapshot, PlanetClickRes, PlanetInfoRes,
-    }, ui::UiPlanetText
+    ecs::{
+        components::{Edge, Explorer, Planet, UiExplorerText, UiPlanetText},
+        events::{Celestial, CelestialBody, PlanetDespawn},
+        resources::{EntityClickRes, ExplorerInfoRes, GalaxySnapshot, PlanetInfoRes},
+    },
+    utils::{
+        assets::{CelestialAssets, ExplorerAssets, PlanetAssets},
+        constants::{
+            CELESTIAL_RAD, EXP_SPRITE_NUM, EXPLORER_SIZE, GALAXY_RADIUS, GAME_TICK, PLANET_RAD,
+            PLANET_SPRITE_NUM,
+        },
+    },
 };
-
-#[derive(Component)]
-pub(crate) struct Planet {
-    id: u32,
-}
-
-#[derive(Component)]
-pub(crate) struct Edge {
-    connects: (u32, u32),
-}
-
-const PLANET_RAD: f32 = 50.;
-const SUNRAY_RAD: f32 = PLANET_RAD / 2.;
-const GALAXY_RADIUS: f32 = 250.;
-//const MAX_PLANET_TYPES: usize = 7;
 
 pub fn setup(
     galaxy: Res<GalaxySnapshot>,
@@ -32,6 +25,7 @@ pub fn setup(
     mut commands: Commands,
     asset_loader: Res<AssetServer>,
     planet_assets: Res<PlanetAssets>,
+    explorer_assets: Res<ExplorerAssets>,
 ) {
     commands.spawn(Camera2d);
 
@@ -56,24 +50,26 @@ pub fn setup(
         let y = GALAXY_RADIUS * angle.sin();
 
         let image_index = match planets.map.get_info(i).unwrap().name {
-                omc_galaxy::utils::registry::PlanetType::BlackAdidasShoe => 0,
-                omc_galaxy::utils::registry::PlanetType::Ciuc => 1,
-                omc_galaxy::utils::registry::PlanetType::HoustonWeHaveABorrow => 2,
-                omc_galaxy::utils::registry::PlanetType::ImmutableCosmicBorrow => 3,
-                omc_galaxy::utils::registry::PlanetType::OneMillionCrabs => 4,
-                omc_galaxy::utils::registry::PlanetType::Rustrelli => 5,
-                omc_galaxy::utils::registry::PlanetType::RustyCrab => 6,
-                omc_galaxy::utils::registry::PlanetType::TheCompilerStrikesBack => 7,
-            };
+            omc_galaxy::utils::registry::PlanetType::BlackAdidasShoe => 0,
+            omc_galaxy::utils::registry::PlanetType::Ciuc => 1,
+            omc_galaxy::utils::registry::PlanetType::HoustonWeHaveABorrow => 2,
+            omc_galaxy::utils::registry::PlanetType::ImmutableCosmicBorrow => 3,
+            omc_galaxy::utils::registry::PlanetType::OneMillionCrabs => 4,
+            omc_galaxy::utils::registry::PlanetType::Rustrelli => 5,
+            omc_galaxy::utils::registry::PlanetType::RustyCrab => 6,
+            omc_galaxy::utils::registry::PlanetType::TheCompilerStrikesBack => 7,
+        };
 
-        //Handle is based on Arc, so cloning is fine
-        let image_handle = planet_assets.handles[(image_index) % SPRITE_NUM].clone();
+        // Handle is based on Arc, so cloning is fine
+        // the modulo with SPRITE_NUM is used to minimize runtime crashes
+        // in case the index is out of bounds
+        let planet_image_handle = planet_assets.handles[(image_index) % PLANET_SPRITE_NUM].clone();
 
         commands
             .spawn((
                 Planet { id: i },
                 Sprite {
-                    image: image_handle,
+                    image: planet_image_handle,
                     custom_size: Some(Vec2::splat(PLANET_RAD * 2.)),
                     ..Default::default()
                 },
@@ -81,6 +77,32 @@ pub fn setup(
                 Pickable::default(),
             ))
             .observe(choose_on_click);
+
+        if i == 0 {
+            for j in 0..EXP_SPRITE_NUM {
+                let explorer_image_handle = explorer_assets.handles[j].clone();
+                let (rand_x, rand_y): (f32, f32) = rand::random();
+                commands
+                    .spawn((
+                        Explorer {
+                            id: j as u32,
+                            current_planet: i,
+                        },
+                        Sprite {
+                            image: explorer_image_handle,
+                            custom_size: Some(Vec2::splat(EXPLORER_SIZE)),
+                            ..Default::default()
+                        },
+                        Transform::from_xyz(
+                            x + (rand_x * 100. % PLANET_RAD),
+                            y - (rand_y * 100. % PLANET_RAD),
+                            3.0,
+                        ),
+                        Pickable::default(),
+                    ))
+                    .observe(choose_on_click);
+            }
+        }
     }
 }
 
@@ -132,11 +154,19 @@ pub fn destroy_link(
     mut commands: Commands,
     edge_query: Query<(&Edge, Entity)>,
     planet_query: Query<(&Planet, Entity)>,
+    explorer_query: Query<(&Explorer, Entity)>,
 ) {
     //despawn all its links
     for (e, s) in edge_query {
         if e.connects.0 == event.planet_id || e.connects.1 == event.planet_id {
             commands.entity(s).despawn();
+        }
+    }
+
+    //if there is an explorer visiting, despawn
+    for (exp, ent) in explorer_query {
+        if exp.current_planet == event.planet_id {
+            commands.entity(ent).despawn();
         }
     }
 
@@ -172,7 +202,7 @@ pub fn move_celestial(
 
             let tween = Tween::new(
                 EaseFunction::QuadraticInOut,
-                Duration::from_secs_f32(game::GAME_TICK / 2.),
+                Duration::from_secs_f32(GAME_TICK / 2.),
                 TransformPositionLens {
                     start: Vec3::new(0., 0., 2.0),
                     end: Vec3::new(t.translation.x, t.translation.y, 2.0),
@@ -187,7 +217,7 @@ pub fn move_celestial(
                 },
                 Sprite {
                     image: sunray_sprite,
-                    custom_size: Some(Vec2::splat(SUNRAY_RAD * 2.)),
+                    custom_size: Some(Vec2::splat(CELESTIAL_RAD * 2.)),
                     ..default()
                 },
                 Transform::from_xyz(0., 0., 2.0),
@@ -224,66 +254,121 @@ pub(crate) fn despawn_celestial(
 
 pub(crate) fn choose_on_click(
     click: On<Pointer<Click>>,
-    mut chosen_planet: ResMut<PlanetClickRes>,
-    mut planet_query: Query<(&mut Sprite, &Planet)>,
+    mut params: ParamSet<(
+        Query<(&mut Sprite, &Planet)>,
+        Query<(&mut Sprite, &Explorer)>,
+    )>,
+    mut chosen_entity: ResMut<EntityClickRes>,
 ) {
     info!("Picking event was triggered");
 
     //reset all sprite dimensions to normal
-    for (mut sprite, _) in &mut planet_query {
+    for (mut sprite, _) in &mut params.p0() {
         sprite.custom_size = Some(Vec2::splat(PLANET_RAD * 2.));
     }
 
-    if let Ok((mut sprite, planet)) = planet_query.get_mut(click.entity) {
+    for (mut sprite, _) in &mut params.p1() {
+        sprite.custom_size = Some(Vec2::splat(EXPLORER_SIZE));
+    }
+
+    if let Ok((mut sprite, planet)) = params.p0().get_mut(click.entity) {
         info!("picked info for planet {}", planet.id);
         // make sprite slightly bigger
         sprite.custom_size = Some(Vec2::splat(PLANET_RAD * 2.5));
 
-        chosen_planet.planet = Some(planet.id);
+        chosen_entity.planet = Some(planet.id);
+        chosen_entity.explorer = None;
+    }
+
+    if let Ok((mut sprite, explorer)) = params.p1().get_mut(click.entity) {
+        info!("picked info for explorer {}", explorer.id);
+        // make sprite slightly bigger
+        sprite.custom_size = Some(Vec2::splat(EXPLORER_SIZE * 1.5));
+
+        chosen_entity.explorer = Some(explorer.id);
+        chosen_entity.planet = None;
     }
 }
 
-pub(crate) fn update_selected_planet(
-    selected_planet: Res<PlanetClickRes>,
+pub(crate) fn update_selected_entity(
+    selected_entity: Res<EntityClickRes>,
     planet_status: Res<PlanetInfoRes>,
-    mut text_to_set: Query<(&mut Text, &UiPlanetText)>,
+    explorer_status: Res<ExplorerInfoRes>,
+    mut params: ParamSet<(
+        Query<(&mut Text, &UiPlanetText)>,
+        Query<(&mut Text, &UiExplorerText)>,
+    )>,
 ) {
-    // exit early if the state is the same to avoid extra computation 
-    if !selected_planet.is_changed() && !planet_status.is_changed() {
+    // exit early if the state is the same to avoid extra computation
+    if !selected_entity.is_changed() && !planet_status.is_changed() {
         return;
     }
 
+    info!("update_selected_entity: {:?}", selected_entity);
 
-    if let Some(planet_id) = selected_planet.planet {
-
+    if let Some(planet_id) = selected_entity.planet {
+        info!("updating planet {}", planet_id);
         let map = &planet_status.map;
 
         if let Some(planet_info) = map.get_info(planet_id) {
-            for (mut text, field_type) in &mut text_to_set {
+            for (mut text, field_type) in &mut params.p0() {
                 match field_type {
                     UiPlanetText::Name => {
                         **text = format!("Name: {:?}", planet_info.name);
-                    },
+                    }
                     UiPlanetText::Id => {
                         **text = format!("Planet ID: {:?}", planet_id);
-                    },
-                    UiPlanetText::Rocket =>{
+                    }
+                    UiPlanetText::Rocket => {
                         if planet_info.rocket {
                             **text = "Rocket: AVAILABLE".to_string();
                         } else {
                             **text = "Rocket: NOT PRESENT".to_string();
                         }
                     }
-                    UiPlanetText::Energy =>{
-
+                    UiPlanetText::Energy => {
                         let current_energy = planet_info.charged_cells_count;
                         let max_energy = planet_info.energy_cells.len();
                         **text = format!("Charged cells: {} out of {}", current_energy, max_energy);
                     }
-                    _ => {}
                 }
             }
-        }
 
+            for (mut text, _) in &mut params.p1() {
+                **text = "".to_string();
+            }
+        }
+    }
+
+    if let Some(explorer_id) = selected_entity.explorer {
+        let map = &explorer_status.map;
+
+        info!("updating explorer {}, map: {:?}", explorer_id, map.get(&explorer_id));
+
+        if let Some(explorer_info) = map.get(&explorer_id) {
+            for (mut text, field_type) in &mut params.p1() {
+                match field_type {
+                    UiExplorerText::Id => {
+                        **text = format!("Explorer {:?}", explorer_id);
+                    }
+                    UiExplorerText::Status => {
+                        let status = match explorer_info.status {
+                            Status::Dead => "dead".to_string(),
+                            Status::Paused => "paused".to_string(),
+                            Status::Running => "running".to_string(),
+                        };
+                        **text = format!("Status: {}", status);
+                    }
+                    UiExplorerText::Visiting => {
+                        **text = format!("Visiting planet {}", explorer_info.current_planet_id);
+                    }
+                    UiExplorerText::ResourceBag => {}
+                }
+            }
+
+            for (mut text, _) in &mut params.p0() {
+                **text = "".to_string();
+            }
+        }
     }
 }

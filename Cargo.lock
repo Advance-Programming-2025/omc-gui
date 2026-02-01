@@ -236,17 +236,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ara_kees"
-version = "0.1.0"
-source = "git+https://github.com/black-adidas-shoe-org/planet.git#50bb23a1f35977893f6a45c23e7ffc284b5175aa"
-dependencies = [
- "common-game",
- "crossbeam-channel",
- "env_logger",
- "once_cell",
-]
-
-[[package]]
 name = "arraydeque"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1658,6 +1647,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "black_adidas_shoe"
+version = "1.0.1"
+source = "git+https://github.com/black-adidas-shoe-org/planet.git#950d3c61a1389f372b1b077152892d065cfed214"
+dependencies = [
+ "common-game",
+ "crossbeam-channel",
+ "env_logger",
+ "once_cell",
+]
+
+[[package]]
 name = "blake3"
 version = "1.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1725,9 +1725,9 @@ checksum = "5dd9dc738b7a8311c7ade152424974d8115f2cdad61e8dab8dac9f2362298510"
 
 [[package]]
 name = "bytemuck"
-version = "1.24.0"
+version = "1.25.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1fbdf580320f38b612e485521afda1ee26d10cc9884efaaa750d383e13e3c5f4"
+checksum = "c8efb64bd706a16a1bdde310ae86b351e4d21550d98d056f22f8a7f7a2183fec"
 dependencies = [
  "bytemuck_derive",
 ]
@@ -1842,7 +1842,7 @@ dependencies = [
 [[package]]
 name = "ciuc_planet"
 version = "0.1.0"
-source = "git+https://github.com/Pietro-Calvi/ciuc_planet.git#173f766fc28db413f3b896dc45fdc6e854a8d3dc"
+source = "git+https://github.com/Pietro-Calvi/ciuc_planet.git#c8b77c9b245af31af8bf720e15ae94e7ea0a882e"
 dependencies = [
  "common-game",
  "crossbeam-channel",
@@ -2499,7 +2499,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -3381,7 +3381,7 @@ dependencies = [
 [[package]]
 name = "logging_utils"
 version = "0.1.0"
-source = "git+https://github.com/Advance-Programming-2025/omc-galaxy.git#7c08088c0b2a889c89385671ef84baca500f6493"
+source = "git+https://github.com/Advance-Programming-2025/omc-galaxy.git#5b788c5b83ae929e6345bc8db2c30393f60fa961"
 dependencies = [
  "common-game",
  "crossbeam-channel",
@@ -3610,7 +3610,7 @@ version = "0.50.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7957b9740744892f114936ab4a57b3f487491bbeafaf8083688b16841a4240e5"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -3944,7 +3944,7 @@ name = "omc-galaxy"
 version = "0.1.0"
 dependencies = [
  "Planet",
- "ara_kees",
+ "black_adidas_shoe",
  "ciuc_planet",
  "common-game",
  "crossbeam-channel",
@@ -3972,6 +3972,7 @@ dependencies = [
  "bevy_tweening",
  "dotenv",
  "omc-galaxy",
+ "rand",
 ]
 
 [[package]]
@@ -4550,7 +4551,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.11.0",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -4770,9 +4771,9 @@ dependencies = [
 
 [[package]]
 name = "slab"
-version = "0.4.11"
+version = "0.4.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a2ae44ef20feb57a68b23d846850f861394c2e02dc425a50098ae8c90267589"
+checksum = "0c790de23124f9ab44544d7ac05d60440adc586479ce501c1d6d7da3cd8c9cf5"
 
 [[package]]
 name = "slotmap"
@@ -5737,7 +5738,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -6370,6 +6371,6 @@ dependencies = [
 
 [[package]]
 name = "zmij"
-version = "1.0.17"
+version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02aae0f83f69aafc94776e879363e9771d7ecbffe2c7fbb6c14c5e00dfe88439"
+checksum = "1966f8ac2c1f76987d69a74d0e0f929241c10e78136434e3be70ff7f58f64214"

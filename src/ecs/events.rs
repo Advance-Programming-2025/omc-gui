@@ -1,4 +1,4 @@
-use bevy::{ecs::component::Component, prelude::Event};
+use bevy::prelude::*;
 
 #[derive(Event)]
 pub(crate) struct PlanetDespawn {
@@ -15,4 +15,13 @@ pub(crate) enum CelestialBody {
 pub(crate) struct Celestial {
     pub kind: CelestialBody,
     pub planet_id: u32,
+}
+
+/// UI scrolling event.
+#[derive(EntityEvent, Debug)]
+#[entity_event(propagate, auto_propagate)]
+pub(crate) struct Scroll {
+    pub entity: Entity,
+    /// Scroll delta in logical coordinates.
+    pub delta: Vec2,
 }

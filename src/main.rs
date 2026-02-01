@@ -5,11 +5,11 @@ use bevy_tweening::TweeningPlugin;
 
 use crate::game::setup_orchestrator;
 
-mod assets;
-mod events;
+mod ecs;
 mod galaxy;
 mod game;
 mod ui;
+mod utils;
 
 pub fn main() -> Result<(), String> {
     let mut app = App::new();
@@ -32,7 +32,7 @@ pub fn main() -> Result<(), String> {
             }),
     ))
     .add_plugins(TweeningPlugin)
-    .add_systems(PreStartup, assets::load_assets)
+    .add_systems(PreStartup, utils::assets::load_assets)
     .add_systems(
         Startup,
         (
@@ -42,13 +42,16 @@ pub fn main() -> Result<(), String> {
             ui::draw_game_options_menu,
         ),
     )
-    .add_systems(Update,(
-            ui::button_hover, 
-            ui::menu_action,
+    .add_systems(
+        Update,
+        (
+            ui::button_hover,
+            ui::game_menu_action,
+            ui::manual_planet_action,
             ui::send_scroll_events,
             galaxy::despawn_celestial,
-            galaxy::update_selected_planet,
-            game::log_text
+            galaxy::update_selected_entity,
+            game::log_text,
         ),
     )
     .add_systems(FixedUpdate, (game::game_loop, galaxy::draw_topology))
