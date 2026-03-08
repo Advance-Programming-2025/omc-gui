@@ -366,7 +366,10 @@ pub fn populate_dropdown(
 
     commands.entity(*list).despawn_children();
     let explorer_id = target_entity.explorer.unwrap();
-    let planet_id = explorer_status.map.get_current_planet(&explorer_id).unwrap_or(0);
+    let planet_id = explorer_status
+        .map
+        .get_current_planet(&explorer_id)
+        .unwrap_or(0);
 
     let mut neighbors = Vec::new();
 
@@ -595,7 +598,10 @@ pub(crate) fn explorer_move_action(
     for (&interaction, action) in &mut action_query {
         if interaction == Interaction::Pressed {
             state.set_if_neq(GameState::Override);
-            if let Err(e) = orchestrator.orchestrator.send_move_to_planet(action.explorer_id, action.planet_id){
+            if let Err(e) = orchestrator
+                .orchestrator
+                .send_move_to_planet(action.explorer_id, action.planet_id)
+            {
                 error!("error in explorer move:{}", e);
             }
         }

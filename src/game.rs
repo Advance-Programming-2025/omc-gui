@@ -34,7 +34,7 @@ pub fn setup_orchestrator(mut commands: Commands) {
 
     let exp_info = orchestrator.get_explorer_states();
 
-    if let Err(s) = orchestrator.start_all(&[(0u32,0u32)],&[(1u32,0u32)]) {
+    if let Err(s) = orchestrator.start_all(&[(0u32, 0u32)], &[(1u32, 0u32)]) {
         error!("{}", s);
     }
 
@@ -94,7 +94,7 @@ pub fn game_loop(
                 // launch either an asteroid or a sunray with a random choice
                 let _ = orchestrator.orchestrator.choose_random_action();
                 // handle all of the previous events
-                if let Err(s) = orchestrator.orchestrator.handle_game_messages(){
+                if let Err(s) = orchestrator.orchestrator.handle_game_messages() {
                     error!("could not handle the messages of this tick: {}", s);
                 }
 
@@ -121,7 +121,7 @@ pub fn game_loop(
                 planets.as_mut().map = orchestrator.orchestrator.get_planets_info();
                 // get the current state of the explorer bag for the next round
                 for i in 0..EXPLORER_NUM {
-                    if let Err(s) = orchestrator.orchestrator.send_bag_content_request(i){
+                    if let Err(s) = orchestrator.orchestrator.send_bag_content_request(i) {
                         error!(s);
                     }
                 }
