@@ -26,8 +26,9 @@ pub fn main() -> Result<(), String> {
             })
             .set(LogPlugin {
                 // Show INFO for the game, but only ERROR for bevy and wgpu
-                filter: "info,bevy_render=error,bevy_ecs=error,wgpu=error".into(),
-                level: Level::INFO,
+                // filter: "omc_galaxy=debug,calloop=info,cosmic_text=info,wgpu_core=error,wgpu_hal=error".into(),
+                filter: "info,wgpu_core=error,wgpu_hal=error".into(),
+                level: Level::TRACE,
                 ..default()
             }),
     ))
