@@ -21,6 +21,7 @@ use crate::{
 pub fn setup(
     galaxy: Res<GalaxySnapshot>,
     planets: Res<PlanetInfoRes>,
+    window: Single<&Window>,
     mut commands: Commands,
     asset_loader: Res<AssetServer>,
     planet_assets: Res<PlanetAssets>,
@@ -31,9 +32,11 @@ pub fn setup(
     //create and load background image through sprites
     let background: Handle<Image> = asset_loader.load("sky.png");
 
+    info!("Queried window size is {} by {}", window.width(), window.height());
+
     commands.spawn(Sprite {
         image: background,
-        custom_size: Some(Vec2::new(1920., 1080.)), // default to FHD
+        custom_size: Some(Vec2::new(window.width()*4., window.height()*4.)), 
         ..Default::default()
     });
 
