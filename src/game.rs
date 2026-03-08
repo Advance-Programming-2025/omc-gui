@@ -6,13 +6,13 @@ use omc_galaxy::{Orchestrator, OrchestratorEvent};
 use crate::{
     ecs::{
         components::LogText,
-        events::{BasicResEvent, Celestial, CelestialBody, ComplexResEvent, MoveExplorerEvent},
+        events::{Celestial, CelestialBody, MoveExplorerEvent},
         resources::{
             EntityClickRes, ExplorerInfoRes, GalaxySnapshot, GameState, GameTimer, LogTextRes,
             OrchestratorResource, PlanetInfoRes,
         },
     },
-    utils::constants::GAME_TICK,
+    utils::constants::{EXPLORER_NUM, GAME_TICK},
 };
 
 pub fn setup_orchestrator(mut commands: Commands) {
@@ -34,7 +34,7 @@ pub fn setup_orchestrator(mut commands: Commands) {
 
     let exp_info = orchestrator.get_explorer_states();
 
-    if let Err(s) = orchestrator.start_all() {
+    if let Err(s) = orchestrator.start_all(&[(0u32,0u32)],&[(1u32,0u32)]) {
         error!("{}", s);
     }
 
@@ -94,7 +94,9 @@ pub fn game_loop(
                 // launch either an asteroid or a sunray with a random choice
                 let _ = orchestrator.orchestrator.choose_random_action();
                 // handle all of the previous events
-                let _ = orchestrator.orchestrator.handle_game_messages();
+                if let Err(s) = orchestrator.orchestrator.handle_game_messages(){
+                    error!("could not handle the messages of this tick: {}", s);
+                }
 
                 println!("EXITING TIMER");
                 timer.reset();
@@ -117,6 +119,12 @@ pub fn game_loop(
                 let _ = orchestrator.orchestrator.handle_game_messages();
                 // update the planet state map after the events occurred
                 planets.as_mut().map = orchestrator.orchestrator.get_planets_info();
+                // get the current state of the explorer bag for the next round
+                for i in 0..EXPLORER_NUM {
+                    if let Err(s) = orchestrator.orchestrator.send_bag_content_request(i){
+                        error!(s);
+                    }
+                }
                 explorers.as_mut().map = orchestrator.orchestrator.get_explorer_states();
             }
         }
@@ -173,32 +181,6 @@ fn handle_tick(
                 commands.trigger(MoveExplorerEvent {
                     id: explorer_id,
                     destination,
-                });
-            }
-            OrchestratorEvent::BasicResourceGenerated {
-                explorer_id,
-                resource,
-            } => {
-                info!(
-                    "game-loop: explorer {} has generated basic resource {:?}",
-                    explorer_id, resource
-                );
-                commands.trigger(BasicResEvent {
-                    id: explorer_id,
-                    resource,
-                });
-            }
-            OrchestratorEvent::ComplexResourceGenerated {
-                explorer_id,
-                resource,
-            } => {
-                info!(
-                    "game-loop: explorer {} has generated complex resource {:?}",
-                    explorer_id, resource
-                );
-                commands.trigger(ComplexResEvent {
-                    id: explorer_id,
-                    resource,
                 });
             }
         }

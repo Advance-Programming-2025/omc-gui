@@ -358,7 +358,7 @@ pub fn populate_dropdown(
     edges: Query<&Edge>,
     list: Single<Entity, With<DropdownList>>,
     explorer_status: Res<ExplorerInfoRes>,
-    target_entity: Res<EntityClickRes>, // or however you store it
+    target_entity: Res<EntityClickRes>,
 ) {
     if target_entity.explorer.is_none() || !target_entity.is_changed() {
         return;
@@ -366,7 +366,7 @@ pub fn populate_dropdown(
 
     commands.entity(*list).despawn_children();
     let explorer_id = target_entity.explorer.unwrap();
-    let planet_id = explorer_status.map.get_current_planet(&explorer_id);
+    let planet_id = explorer_status.map.get_current_planet(&explorer_id).unwrap_or(0);
 
     let mut neighbors = Vec::new();
 
@@ -589,17 +589,15 @@ pub(crate) fn manual_explorer_action(
 
 pub(crate) fn explorer_move_action(
     mut action_query: Query<(&Interaction, &DropdownItem), (Changed<Interaction>, With<Button>)>,
-    // mut orchestrator: ResMut<OrchestratorResource>,
+    mut orchestrator: ResMut<OrchestratorResource>,
     mut state: ResMut<GameState>,
 ) {
-    for (&interaction, _action) in &mut action_query {
+    for (&interaction, action) in &mut action_query {
         if interaction == Interaction::Pressed {
             state.set_if_neq(GameState::Override);
-            // TODO qui va lo spostamento dell'explorer
-            error!("function not yet implemented");
-            // if let Err(e) = orchestrator.orchestrator.send_move_to_planet(action.explorer_id, action.planet_id){
-            //     error!("error in explorer move:{}", e);
-            // }
+            if let Err(e) = orchestrator.orchestrator.send_move_to_planet(action.explorer_id, action.planet_id){
+                error!("error in explorer move:{}", e);
+            }
         }
     }
 }
