@@ -156,8 +156,8 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
             0: Color::Srgba(Srgba {
                 red: 0.12,
                 green: 0.18,
-                blue: 0.18,
-                alpha: 0.8,
+                blue: 0.24,
+                alpha: 0.7,
             }),
         },
         Node {
