@@ -1,7 +1,11 @@
 use bevy::prelude::*;
 use bevy_tweening::{CycleCompletedEvent, Tween, TweenAnim, lens::TransformPositionLens};
 use omc_galaxy::Status;
-use std::{f32::consts::TAU, time::Duration};
+use std::{
+    collections::BTreeMap,
+    f32::consts::TAU,
+    time::Duration,
+};
 
 use crate::{
     ecs::{
@@ -415,7 +419,13 @@ pub(crate) fn update_selected_entity(
                     }
                     UiExplorerText::ResourceBag => {
                         let bag = &explorer_info.bag;
-                        **text = format!("Bag: {:?}", bag);
+                        let mut counter_map: BTreeMap<String, usize> = BTreeMap::new();
+                        for res in bag {
+                            let name = format!("{:?}", res);
+                            let current_count = counter_map.get(&name).unwrap_or(&0);
+                            counter_map.insert(name, *current_count + 1);
+                        }
+                        **text = format!("Bag: \n{:?}", counter_map);
                     }
                 }
             }

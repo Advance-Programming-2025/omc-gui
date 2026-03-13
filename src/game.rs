@@ -152,12 +152,12 @@ fn handle_tick(
                 });
                 update_logs(
                     &mut log_text,
-                    format!("planet {} received a sunray\n", planet_id),
+                    format!("planet {} got a sunray\n", planet_id),
                 );
             }
             OrchestratorEvent::SunraySent { planet_id } => {
                 info!("game-loop: planet {} should get a sunray, ", planet_id);
-                // TODO only log to screen, nothing changes in the GUI
+                // TODO This is kinda useless I should get rid of it
             }
             OrchestratorEvent::AsteroidSent { planet_id } => {
                 info!("game-loop: planet {} should get an asteroid, ", planet_id);
@@ -167,7 +167,7 @@ fn handle_tick(
                 });
                 update_logs(
                     &mut log_text,
-                    format!("planet {} received an asteroid\n", planet_id),
+                    format!("planet {} got an asteroid\n", planet_id),
                 );
             }
             OrchestratorEvent::ExplorerMoved {
@@ -182,6 +182,10 @@ fn handle_tick(
                     id: explorer_id,
                     destination,
                 });
+                update_logs(
+                    &mut log_text,
+                    format!("exp {} moved to pl {}\n", explorer_id, destination),
+                );
             }
         }
     }
