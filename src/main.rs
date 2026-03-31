@@ -57,6 +57,7 @@ pub fn main() -> Result<(), String> {
             ui::populate_dropdown,
             galaxy::despawn_celestial,
             galaxy::update_selected_entity,
+            galaxy::update_game_state_text,
             game::log_text,
         ),
     )

@@ -3,8 +3,9 @@ use bevy::{
     picking::hover::HoverMap,
     prelude::*,
 };
+use common_game::components::resource::{BasicResourceType, Carbon};
 
-use crate::ecs::events::Scroll;
+use crate::ecs::{components::GameStateText, events::Scroll};
 use crate::ecs::resources::{EntityClickRes, GameState, OrchestratorResource};
 use crate::ecs::{
     components::{
@@ -103,6 +104,10 @@ pub(crate) fn draw_game_options_menu(mut commands: Commands) {
         parent.spawn(side_menu_container).with_children(|parent| {
             // 3a. Menu title
             parent.spawn(title_text);
+            parent.spawn((
+                Text::new("Game state: Waiting start"),
+                GameStateText
+            ));
 
             // 3b. Button Row
             parent.spawn(button_row.clone()).with_children(|parent| {
@@ -360,7 +365,7 @@ pub fn populate_dropdown(
     explorer_status: Res<ExplorerInfoRes>,
     target_entity: Res<EntityClickRes>,
 ) {
-    if target_entity.explorer.is_none() || !target_entity.is_changed() {
+    if target_entity.explorer.is_none() {
         return;
     }
 
@@ -438,7 +443,7 @@ pub(crate) fn button_hover(
 pub(crate) fn game_menu_action(
     mut action_query: Query<(&Interaction, &ButtonActions), (Changed<Interaction>, With<Button>)>,
     mut orchestrator: ResMut<OrchestratorResource>,
-    mut state: ResMut<GameState>,
+    mut state: ResMut<GameState>
 ) {
     for (&interaction, action) in &mut action_query {
         if interaction == Interaction::Pressed {
@@ -455,7 +460,7 @@ pub(crate) fn game_menu_action(
                 }
                 ButtonActions::Blind => {
                     state.set_if_neq(GameState::Override);
-                    info!("entering manual override mode");
+                    debug!("entering manual override mode");
 
                     let mut targets = Vec::new();
                     for id in 0..orchestrator.orchestrator.planets_info.len() {
@@ -470,10 +475,11 @@ pub(crate) fn game_menu_action(
                         error!("{}", s);
                     }
 
-                    println!("done sending sunrays");
+                    debug!("done sending sunrays");
                 }
                 ButtonActions::Nuke => {
                     state.set_if_neq(GameState::Override);
+                    debug!("entering manual override mode");
 
                     let mut targets = Vec::new();
                     for id in 0..orchestrator.orchestrator.planets_info.len() {
@@ -485,14 +491,9 @@ pub(crate) fn game_menu_action(
                     if let Err(s) = orchestrator.orchestrator.send_asteroid_from_gui(targets) {
                         error!("{}", s);
                     }
-                }
-                ButtonActions::CreateBasic => {
-                    //TODO call the orchestrator to generate basic resources
-                    error!("function has not been implemented");
-                }
-                ButtonActions::CreateComplex => {
-                    //TODO call the orchestrator to generate complex resources
-                    error!("function has not been implemented");
+
+                    debug!("done sending asteroids");
+
                 }
                 _ => {}
             }
@@ -567,8 +568,8 @@ pub(crate) fn manual_planet_action(
 
 pub(crate) fn manual_explorer_action(
     mut action_query: Query<(&Interaction, &ButtonActions), (Changed<Interaction>, With<Button>)>,
-    //mut orchestrator: ResMut<OrchestratorResource>,
-    //selected_planet: Res<EntityClickRes>,
+    mut orchestrator: ResMut<OrchestratorResource>,
+    selected_entity: Res<EntityClickRes>,
     mut state: ResMut<GameState>,
 ) {
     for (&interaction, action) in &mut action_query {
@@ -576,8 +577,9 @@ pub(crate) fn manual_explorer_action(
             match action {
                 ButtonActions::CreateBasic => {
                     state.set_if_neq(GameState::Override);
-                    // TODO qui va lo spostamento dell'explorer
-                    error!("function not yet implemented");
+                    if let Some(id) = selected_entity.explorer {
+                        let _ = orchestrator.orchestrator.send_generate_resource_request(id, BasicResourceType::Carbon);
+                    }
                 }
                 ButtonActions::CreateComplex => {
                     state.set_if_neq(GameState::Override);
@@ -598,12 +600,15 @@ pub(crate) fn explorer_move_action(
     for (&interaction, action) in &mut action_query {
         if interaction == Interaction::Pressed {
             state.set_if_neq(GameState::Override);
+            let _ = orchestrator.orchestrator.send_stop_explorer_ai(action.explorer_id);
             if let Err(e) = orchestrator
                 .orchestrator
                 .send_move_to_planet(action.explorer_id, action.planet_id)
             {
                 error!("error in explorer move:{}", e);
             }
+            let _ = orchestrator.orchestrator.send_start_explorer_ai(action.explorer_id);
+            state.set_if_neq(GameState::Playing);
         }
     }
 }

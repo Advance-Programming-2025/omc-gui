@@ -9,9 +9,9 @@ use std::{
 
 use crate::{
     ecs::{
-        components::{Edge, Explorer, Planet, UiExplorerText, UiPlanetText},
+        components::{Edge, Explorer, GameStateText, Planet, UiExplorerText, UiPlanetText},
         events::{Celestial, CelestialBody, MoveExplorerEvent, PlanetDespawn},
-        resources::{EntityClickRes, ExplorerInfoRes, GalaxySnapshot, PlanetInfoRes},
+        resources::{EntityClickRes, ExplorerInfoRes, GalaxySnapshot, GameState, PlanetInfoRes},
     },
     utils::{
         assets::{CelestialAssets, ExplorerAssets, PlanetAssets},
@@ -341,6 +341,23 @@ pub(crate) fn choose_on_click(
 
         chosen_entity.explorer = Some(explorer.id);
         chosen_entity.planet = None;
+    }
+}
+
+pub(crate) fn update_game_state_text(
+    game_state: Res<GameState>,
+    state_text: Query<(&mut Text, &GameStateText)>
+) {
+    // avoid computation if the state hasn't changed
+    if !game_state.is_changed() {
+        return;
+    }
+
+    debug!("updating game state text to {:?}", game_state);
+    let inner_state = game_state.into_inner();
+
+    for (mut text, _) in state_text{
+        **text = format!("Game state: {:?}", inner_state);
     }
 }
 

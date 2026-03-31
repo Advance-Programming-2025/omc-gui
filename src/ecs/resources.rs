@@ -8,7 +8,7 @@ pub struct OrchestratorResource {
     pub orchestrator: Orchestrator,
 }
 
-#[derive(Resource, PartialEq, Eq)]
+#[derive(Resource, PartialEq, Eq, Debug)]
 pub enum GameState {
     WaitingStart,
     Playing,

@@ -51,6 +51,9 @@ pub struct PlanetOnlyButton;
 #[derive(Component)]
 pub struct ExplorerOnlyButton;
 
+#[derive(Component)]
+pub struct GameStateText;
+
 /// Explorer info marker component
 #[derive(Component)]
 pub enum UiExplorerText {
