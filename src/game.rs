@@ -110,22 +110,19 @@ pub fn game_loop(
                 let events = std::mem::take(&mut orchestrator.orchestrator.gui_messages);
                 handle_tick(&mut commands, events, log_text);
 
-                info!(
-                    "haiiiiii {:?} cell state",
-                    orchestrator.orchestrator.planets_info.get_info(4)
-                );
-
                 // handle all of the previous events
                 let _ = orchestrator.orchestrator.handle_game_messages();
-                // update the planet state map after the events occurred
+                // update the state maps after the events occurred
                 planets.as_mut().map = orchestrator.orchestrator.get_planets_info();
-                // get the current state of the explorer bag for the next round
+                explorers.as_mut().map = orchestrator.orchestrator.get_explorer_states();
+                // get the current state of the explorer bag for the next round (if it's alive)
                 for i in 0..EXPLORER_NUM {
-                    if let Err(s) = orchestrator.orchestrator.send_bag_content_request(i) {
-                        error!(s);
+                    if !explorers.as_mut().map.is_dead(&i){
+                        if let Err(s) = orchestrator.orchestrator.send_bag_content_request(i) {
+                            error!(s);
+                        }
                     }
                 }
-                explorers.as_mut().map = orchestrator.orchestrator.get_explorer_states();
             }
         }
         _ => {}
