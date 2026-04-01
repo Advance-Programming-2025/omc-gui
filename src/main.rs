@@ -3,9 +3,11 @@ use bevy::prelude::*;
 use bevy::window::{WindowMode, WindowPlugin};
 use bevy_tweening::TweeningPlugin;
 
-use crate::game::setup_orchestrator;
+use crate::game::orchestrator::setup_orchestrator;
 
+mod app;
 mod ecs;
+mod explorers;
 mod galaxy;
 mod game;
 mod ui;
@@ -37,35 +39,38 @@ pub fn main() -> Result<(), String> {
     .add_systems(
         Startup,
         (
-            game::setup_orchestrator,
-            galaxy::setup.after(setup_orchestrator),
-            ui::draw_entity_info_menu.after(setup_orchestrator),
-            ui::draw_game_options_menu,
+            game::orchestrator::setup_orchestrator,
+            app::setup::setup.after(setup_orchestrator),
+            ui::menu::draw_entity_info_menu.after(setup_orchestrator),
+            ui::menu::draw_game_options_menu,
         ),
     )
     .add_systems(
         Update,
         (
-            ui::button_hover,
-            ui::game_menu_action,
-            ui::manual_planet_action,
-            ui::manual_explorer_action,
-            ui::explorer_move_action,
-            ui::send_scroll_events,
-            ui::update_explorer_buttons_visibility,
-            ui::update_planet_buttons_visibility,
-            ui::populate_dropdown,
-            galaxy::despawn_celestial,
-            galaxy::update_selected_entity,
-            galaxy::update_game_state_text,
-            game::log_text,
+            ui::buttons::button_hover,
+            ui::buttons::game_menu_action,
+            ui::buttons::manual_planet_action,
+            ui::buttons::manual_explorer_action,
+            ui::buttons::explorer_move_action,
+            ui::scroll::send_scroll_events,
+            ui::visibility::update_explorer_buttons_visibility,
+            ui::visibility::update_planet_buttons_visibility,
+            ui::dropdown::populate_dropdown,
+            ui::menu::update_game_state_text,
+            galaxy::celestial::despawn_celestial,
+            galaxy::selection::update_selected_entity,
+            game::logs::log_text,
         ),
     )
-    .add_systems(FixedUpdate, (game::game_loop, galaxy::draw_topology))
-    .add_observer(galaxy::destroy_link)
-    .add_observer(galaxy::move_celestial)
-    .add_observer(galaxy::move_explorer)
-    .add_observer(ui::on_scroll_handler);
+    .add_systems(
+        FixedUpdate,
+        (game::game::game_loop, galaxy::topology::draw_topology),
+    )
+    .add_observer(galaxy::topology::destroy_link)
+    .add_observer(galaxy::celestial::move_celestial)
+    .add_observer(explorers::movement::move_explorer)
+    .add_observer(ui::scroll::on_scroll_handler);
     app.run();
     Ok(())
 }

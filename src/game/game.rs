@@ -1,70 +1,16 @@
-use std::collections::VecDeque;
-
 use bevy::prelude::*;
-use omc_galaxy::{Orchestrator, OrchestratorEvent};
+use omc_galaxy::OrchestratorEvent;
 
 use crate::{
     ecs::{
-        components::LogText,
         events::{Celestial, CelestialBody, MoveExplorerEvent},
         resources::{
-            EntityClickRes, ExplorerInfoRes, GalaxySnapshot, GameState, GameTimer, LogTextRes,
-            OrchestratorResource, PlanetInfoRes,
+            ExplorerInfoRes, GameState, GameTimer, LogTextRes, OrchestratorResource, PlanetInfoRes,
         },
     },
-    utils::constants::{EXPLORER_NUM, GAME_TICK},
+    game::logs::update_logs,
+    utils::constants::EXPLORER_NUM,
 };
-
-pub fn setup_orchestrator(mut commands: Commands) {
-    dotenv::dotenv().ok();
-
-    let mut orchestrator = Orchestrator::new().expect("Failed to create orchestrator");
-
-    let file_path = std::env::var("INPUT_FILE").expect("Set INPUT_FILE in .env or env vars");
-
-    orchestrator
-        .initialize_galaxy_by_file(file_path.as_str().trim())
-        .expect("Failed to initialize galaxy");
-
-    let (topology, planet_num) = orchestrator.get_topology();
-
-    let first_string = String::from("Orchestrator has started.\nWelcome to the game!");
-
-    let lookup = orchestrator.get_planets_info();
-
-    let exp_info = orchestrator.get_explorer_states();
-
-    if let Err(s) = orchestrator.start_all(&[(0u32, 0u32)], &[(1u32, 0u32)]) {
-        error!("{}", s);
-    }
-
-    commands.insert_resource(OrchestratorResource { orchestrator });
-
-    commands.insert_resource(GalaxySnapshot {
-        edges: topology,
-        planet_num,
-    });
-
-    commands.insert_resource(PlanetInfoRes { map: lookup });
-
-    commands.insert_resource(ExplorerInfoRes { map: exp_info });
-
-    commands.insert_resource(GameState::WaitingStart);
-
-    commands.insert_resource(LogTextRes {
-        text: VecDeque::from([first_string]),
-    });
-
-    commands.insert_resource(GameTimer(Timer::from_seconds(
-        GAME_TICK,
-        TimerMode::Repeating,
-    )));
-
-    commands.insert_resource(EntityClickRes {
-        planet: None,
-        explorer: None,
-    });
-}
 
 pub fn game_loop(
     mut commands: Commands,
@@ -117,7 +63,7 @@ pub fn game_loop(
                 explorers.as_mut().map = orchestrator.orchestrator.get_explorer_states();
                 // get the current state of the explorer bag for the next round (if it's alive)
                 for i in 0..EXPLORER_NUM {
-                    if !explorers.as_mut().map.is_dead(&i){
+                    if !explorers.as_mut().map.is_dead(&i) {
                         if let Err(s) = orchestrator.orchestrator.send_bag_content_request(i) {
                             error!(s);
                         }
@@ -186,29 +132,4 @@ fn handle_tick(
             }
         }
     }
-}
-
-fn update_logs(log_text: &mut ResMut<LogTextRes>, event_to_push: String) {
-    log_text.text.push_front(event_to_push);
-}
-
-// TODO find a more performant approach.
-// Fine now because time is of the essence
-// and the average game isn't that long, but this
-// allocates a new string everytime a log event
-// happens. That's a lot of memory gone for nothing!
-
-// alternative approach: spawn the log text
-// directly, using commands.spawn()
-pub(crate) fn log_text(logs: ResMut<LogTextRes>, mut log_node: Single<&mut Text, With<LogText>>) {
-    if !logs.is_changed() {
-        return;
-    };
-    let mut bruh = String::new();
-
-    for log_event in logs.text.iter() {
-        bruh += log_event;
-    }
-
-    log_node.0 = bruh;
 }
