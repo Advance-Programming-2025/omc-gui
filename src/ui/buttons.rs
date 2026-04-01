@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use common_game::components::resource::BasicResourceType;
 
-use crate::ecs::components::{ButtonActions, DropdownItem};
+use crate::ecs::components::{ButtonActions, DropdownItem, ExpButtonActions};
 use crate::ecs::resources::{EntityClickRes, GameState, OrchestratorResource};
 
 pub(crate) fn button_hover(
@@ -118,7 +118,10 @@ pub(crate) fn manual_planet_action(
 }
 
 pub(crate) fn manual_explorer_action(
-    mut action_query: Query<(&Interaction, &ButtonActions), (Changed<Interaction>, With<Button>)>,
+    mut action_query: Query<
+        (&Interaction, &ExpButtonActions),
+        (Changed<Interaction>, With<Button>),
+    >,
     orchestrator: ResMut<OrchestratorResource>,
     selected_entity: Res<EntityClickRes>,
     mut state: ResMut<GameState>,
@@ -126,7 +129,7 @@ pub(crate) fn manual_explorer_action(
     for (&interaction, action) in &mut action_query {
         if interaction == Interaction::Pressed {
             match action {
-                ButtonActions::CreateBasic => {
+                ExpButtonActions::CreateBasic => {
                     state.set_if_neq(GameState::Override);
                     if let Some(id) = selected_entity.explorer {
                         let _ = orchestrator
@@ -134,12 +137,15 @@ pub(crate) fn manual_explorer_action(
                             .send_generate_resource_request(id, BasicResourceType::Carbon);
                     }
                 }
-                ButtonActions::CreateComplex => {
+                ExpButtonActions::CreateComplex => {
                     state.set_if_neq(GameState::Override);
-                    // TODO qui va lo spostamento dell'explorer
-                    error!("function not yet implemented");
+                    // TODO this has to be reworked post refactoring
+                    error!("CreateComplex: function not yet implemented");
                 }
-                _ => {}
+                ExpButtonActions::ExpModeChange => {
+                    // TODO toggle manual or auto explorer mode
+                    error!("ExpModeChange: function not yet implemented");
+                }
             }
         }
     }

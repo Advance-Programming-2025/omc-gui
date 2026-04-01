@@ -1,4 +1,4 @@
-use crate::ecs::components::GameStateText;
+use crate::ecs::components::{ExpButtonActions, GameStateText};
 use crate::ecs::components::{
     ButtonActions, DropdownButton, DropdownLabel, DropdownList, DropdownRoot, ExplorerOnlyButton,
     LogText, PlanetOnlyButton, UiExplorerText, UiPlanetText,
@@ -78,14 +78,15 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
         )
     };
 
-    // 1. Root node
+    // root node
     commands.spawn(root).with_children(|parent| {
-        // 2. Side menu panel
+        // side menu panel
         parent.spawn(side_menu_container).with_children(|parent| {
-            // 3a. Menu title
+            // menu title
             parent.spawn(title_text);
 
-            // 3b. Button Row
+            // list of planet info: id, status, energy cells, rocket available
+            // list of explorer info: id, status, visited planet, bag
             parent.spawn(button_row.clone()).with_children(|parent| {
                 parent.spawn((Text::new("choose a planet!"), UiPlanetText::Name));
                 parent.spawn((
@@ -138,6 +139,8 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                 ));
             });
 
+            // planet specific buttons: send sunray and asteroids
+            // shown only if a planet has been selected
             parent
                 .spawn((
                     button_row.clone(),
@@ -155,19 +158,55 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                     ));
                 });
 
+            //explorer menu
             parent.spawn(button_row.clone()).with_children(|parent| {
                 parent.spawn((
-                    button_factory(Text::new("Make basic resource")),
-                    ButtonActions::CreateBasic,
-                    Visibility::Hidden, //only in the beginning
+                    button_factory(Text::new("Explorer mode: TBD")),
+                    ExpButtonActions::ExpModeChange,
                     ExplorerOnlyButton,
                 ));
+                // TODO show the following stuff only if the explorer is in manual mode
                 parent.spawn((
-                    button_factory(Text::new("Make complex resource")),
-                    ButtonActions::CreateComplex,
-                    Visibility::Hidden, //only in the beginning
+                    Node{
+                        width: percent(100.0),
+                        //debug
+                        flex_direction: FlexDirection::Column,
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        border: UiRect::all(Val::Px(2.)),
+                        ..default()
+                    },
+                    BorderColor::all(Color::Srgba(Srgba::RED)),
+                    Visibility::Hidden,
                     ExplorerOnlyButton,
-                ));
+                )).with_children(|parent| {
+                    parent.spawn(Node{
+                        width: percent(100.0),
+                        flex_direction: FlexDirection::Row,
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        ..default()
+                    }). with_children(|parent| {
+                        parent.spawn((Node{
+                            border: UiRect::all(Val::Px(2.)),
+                            width: Val::Percent(50.),
+                            flex_direction: FlexDirection::Column,
+                            justify_content: JustifyContent::Center,
+                            align_items: AlignItems::Center,
+                            ..default()
+                        },BorderColor::all(Color::Srgba(Srgba::BLUE))))
+                        .with_child(Text::new("this is the basic list"));
+                        parent.spawn((Node{
+                            border: UiRect::all(Val::Px(2.)),
+                            width: Val::Percent(50.),
+                            flex_direction: FlexDirection::Column,
+                            justify_content: JustifyContent::Center,
+                            align_items: AlignItems::Center,
+                            ..default()
+                        },BorderColor::all(Color::Srgba(Srgba::BLUE))))
+                        .with_child(Text::new("this is the complex list"));
+                    });
+
                 parent
                     .spawn((
                         Node {
@@ -213,6 +252,7 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                             DropdownList,
                         ));
                     });
+                });
             });
         });
     });

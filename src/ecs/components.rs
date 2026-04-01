@@ -27,6 +27,12 @@ pub enum ButtonActions {
     ManualSunray,
     Blind,
     Nuke,
+}
+
+/// Button associated actions
+#[derive(Component)]
+pub enum ExpButtonActions {
+    ExpModeChange,
     CreateBasic,
     CreateComplex,
 }

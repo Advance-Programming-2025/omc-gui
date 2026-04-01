@@ -5,18 +5,23 @@ use crate::ecs::{
 };
 use bevy::prelude::*;
 
-pub fn populate_dropdown(
+/// fill the destination menu for explorers with the neighbors of the
+/// planet that is currently being visited by the explorer
+pub fn fill_neighbors_dropdown(
     mut commands: Commands,
     edges: Query<&Edge>,
     list: Single<Entity, With<DropdownList>>,
     explorer_status: Res<ExplorerInfoRes>,
     target_entity: Res<EntityClickRes>,
 ) {
+    // don't run if the user is not looking at an explorer
     if target_entity.explorer.is_none() {
         return;
     }
 
+    // clear previous table
     commands.entity(*list).despawn_children();
+
     let explorer_id = target_entity.explorer.unwrap();
     let planet_id = explorer_status
         .map
@@ -25,6 +30,7 @@ pub fn populate_dropdown(
 
     let mut neighbors = Vec::new();
 
+    // get the neigbors of the planet
     for edge in edges {
         if edge.connects.0 == planet_id {
             neighbors.push(edge.connects.1);
@@ -36,6 +42,7 @@ pub fn populate_dropdown(
     neighbors.sort_unstable();
     neighbors.dedup();
 
+    // create the actual UI element
     commands.entity(*list).with_children(|parent| {
         for planet_id in neighbors {
             parent
