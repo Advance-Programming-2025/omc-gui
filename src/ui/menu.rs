@@ -1,8 +1,8 @@
-use crate::ecs::components::{ExpButtonActions, GameStateText};
 use crate::ecs::components::{
-    ButtonActions, DropdownButton, DropdownLabel, DropdownList, DropdownRoot, ExplorerOnlyButton,
+    ButtonActions, DropdownButton, DropdownLabel, DropdownRoot, ExplorerOnlyButton, ListType,
     LogText, PlanetOnlyButton, UiExplorerText, UiPlanetText,
 };
+use crate::ecs::components::{ExpButtonActions, GameStateText};
 use crate::ecs::resources::GameState;
 use bevy::prelude::*;
 
@@ -75,6 +75,49 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                 },
                 TextColor(Color::srgb(0.97, 0.98, 0.96))
             )],
+        )
+    };
+
+    let list_factory = |(title, dropdown_el, width): (Text, ListType, f32)| {
+        (
+            (
+                Node {
+                    width: Val::Px(width),
+                    flex_direction: FlexDirection::Column,
+                    ..default()
+                },
+                ExplorerOnlyButton,
+                DropdownRoot,
+            ),
+            children![
+                (
+                    Node {
+                        height: Val::Px(32.0),
+                        justify_content: JustifyContent::SpaceBetween,
+                        align_items: AlignItems::Center,
+                        padding: UiRect::horizontal(Val::Px(8.0)),
+                        ..default()
+                    },
+                    BackgroundColor(Color::srgb(0.07, 0.30, 0.53)),
+                    DropdownButton,
+                    children![(
+                        title,
+                        TextFont {
+                            font_size: 16.0,
+                            ..Default::default()
+                        },
+                        DropdownLabel,
+                    )]
+                ),
+                (
+                    Node {
+                        flex_direction: FlexDirection::Column,
+                        ..default()
+                    },
+                    BackgroundColor(Color::Srgba(Srgba::new(0.15, 0.15, 0.15, 1.))),
+                    dropdown_el
+                )
+            ],
         )
     };
 
@@ -166,93 +209,48 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                     ExplorerOnlyButton,
                 ));
                 // TODO show the following stuff only if the explorer is in manual mode
-                parent.spawn((
-                    Node{
-                        width: percent(100.0),
-                        //debug
-                        flex_direction: FlexDirection::Column,
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        border: UiRect::all(Val::Px(2.)),
-                        ..default()
-                    },
-                    BorderColor::all(Color::Srgba(Srgba::RED)),
-                    Visibility::Hidden,
-                    ExplorerOnlyButton,
-                )).with_children(|parent| {
-                    parent.spawn(Node{
-                        width: percent(100.0),
-                        flex_direction: FlexDirection::Row,
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        ..default()
-                    }). with_children(|parent| {
-                        parent.spawn((Node{
-                            border: UiRect::all(Val::Px(2.)),
-                            width: Val::Percent(50.),
-                            flex_direction: FlexDirection::Column,
-                            justify_content: JustifyContent::Center,
-                            align_items: AlignItems::Center,
-                            ..default()
-                        },BorderColor::all(Color::Srgba(Srgba::BLUE))))
-                        .with_child(Text::new("this is the basic list"));
-                        parent.spawn((Node{
-                            border: UiRect::all(Val::Px(2.)),
-                            width: Val::Percent(50.),
-                            flex_direction: FlexDirection::Column,
-                            justify_content: JustifyContent::Center,
-                            align_items: AlignItems::Center,
-                            ..default()
-                        },BorderColor::all(Color::Srgba(Srgba::BLUE))))
-                        .with_child(Text::new("this is the complex list"));
-                    });
-
                 parent
                     .spawn((
                         Node {
-                            width: Val::Px(220.0),
+                            width: percent(100.0),
+                            //debug
                             flex_direction: FlexDirection::Column,
+                            justify_content: JustifyContent::Center,
+                            align_items: AlignItems::Center,
                             ..default()
                         },
                         Visibility::Hidden,
                         ExplorerOnlyButton,
-                        DropdownRoot,
                     ))
                     .with_children(|parent| {
-                        // Button
                         parent
-                            .spawn((
-                                Button,
-                                Node {
-                                    height: Val::Px(32.0),
-                                    justify_content: JustifyContent::SpaceBetween,
-                                    align_items: AlignItems::Center,
-                                    padding: UiRect::horizontal(Val::Px(8.0)),
-                                    ..default()
-                                },
-                                DropdownButton,
-                            ))
-                            .with_children(|button| {
-                                button.spawn((
-                                    Text::new("Select destination"),
-                                    TextFont {
-                                        font_size: 16.0,
-                                        ..Default::default()
-                                    },
-                                    DropdownLabel,
-                                ));
+                            .spawn(Node {
+                                width: percent(100.0),
+                                flex_direction: FlexDirection::Row,
+                                justify_content: JustifyContent::Center,
+                                align_items: AlignItems::Center,
+                                margin: UiRect::all(Val::Px(10.0)),
+                                ..default()
+                            })
+                            .with_children(|parent| {
+                                parent.spawn(list_factory((
+                                    Text::new("create:"),
+                                    ListType::BasicList,
+                                    110.,
+                                )));
+                                parent.spawn(list_factory((
+                                    Text::new("make:"),
+                                    ListType::ComplexList,
+                                    110.,
+                                )));
                             });
 
-                        parent.spawn((
-                            Node {
-                                flex_direction: FlexDirection::Column,
-                                ..default()
-                            },
-                            BackgroundColor(Color::Srgba(Srgba::new(0.15, 0.15, 0.15, 1.))),
-                            DropdownList,
-                        ));
+                        parent.spawn(list_factory((
+                            Text::new("select destination"),
+                            ListType::MoveList,
+                            220.,
+                        )));
                     });
-                });
             });
         });
     });

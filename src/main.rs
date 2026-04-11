@@ -57,6 +57,7 @@ pub fn main() -> Result<(), String> {
             ui::visibility::update_explorer_buttons_visibility,
             ui::visibility::update_planet_buttons_visibility,
             ui::dropdown::fill_neighbors_dropdown,
+            ui::dropdown::fill_basic_dropdown,
             ui::menu::update_game_state_text,
             galaxy::celestial::despawn_celestial,
             galaxy::selection::update_selected_entity,

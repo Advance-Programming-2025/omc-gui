@@ -83,7 +83,11 @@ pub struct DropdownButton;
 pub struct DropdownLabel;
 
 #[derive(Component)]
-pub struct DropdownList;
+pub enum ListType {
+    MoveList,
+    BasicList,
+    ComplexList,
+}
 
 #[derive(Component)]
 pub struct DropdownItem {
