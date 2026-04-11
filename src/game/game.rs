@@ -38,7 +38,8 @@ pub fn game_loop(
                 // yeah
                 explorers.as_mut().map = orchestrator.orchestrator.get_explorer_states();
                 // launch either an asteroid or a sunray with a random choice
-                let _ = orchestrator.orchestrator.choose_random_action();
+                // TODO make it so the user can choose the amount of asteroids (slider perhaps)
+                let _ = orchestrator.orchestrator.choose_random_action(0.8,0.1);
                 // handle all of the previous events
                 if let Err(s) = orchestrator.orchestrator.handle_game_messages() {
                     error!("could not handle the messages of this tick: {}", s);

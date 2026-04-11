@@ -57,7 +57,7 @@ pub(crate) fn game_menu_action(
 
                     println!("targets: {:?}", targets);
 
-                    if let Err(s) = orchestrator.orchestrator.send_sunray_from_gui(targets) {
+                    if let Err(s) = orchestrator.orchestrator.send_celestial_from_gui(targets, false) {
                         error!("{}", s);
                     }
 
@@ -74,7 +74,7 @@ pub(crate) fn game_menu_action(
                         }
                     }
 
-                    if let Err(s) = orchestrator.orchestrator.send_asteroid_from_gui(targets) {
+                    if let Err(s) = orchestrator.orchestrator.send_celestial_from_gui(targets, true) {
                         error!("{}", s);
                     }
 
@@ -98,7 +98,7 @@ pub(crate) fn manual_planet_action(
                 ButtonActions::ManualAsteroid => {
                     state.set_if_neq(GameState::Override);
                     if let Some(id) = selected_planet.planet {
-                        if let Err(e) = orchestrator.orchestrator.send_asteroid_from_gui(vec![id]) {
+                        if let Err(e) = orchestrator.orchestrator.send_celestial_from_gui(vec![id], true) {
                             error!(e)
                         }
                     }
@@ -106,7 +106,7 @@ pub(crate) fn manual_planet_action(
                 ButtonActions::ManualSunray => {
                     state.set_if_neq(GameState::Override);
                     if let Some(id) = selected_planet.planet {
-                        if let Err(e) = orchestrator.orchestrator.send_sunray_from_gui(vec![id]) {
+                        if let Err(e) = orchestrator.orchestrator.send_celestial_from_gui(vec![id], false) {
                             error!(e)
                         }
                     }
