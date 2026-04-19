@@ -1,6 +1,5 @@
 use crate::ecs::components::{
-    ButtonActions, DropdownButton, DropdownLabel, DropdownRoot, ExplorerOnlyButton, ListType,
-    LogText, PlanetOnlyButton, UiExplorerText, UiPlanetText,
+    ButtonActions, DropdownButton, DropdownLabel, DropdownRoot, ExplorerOnlyButton, ListType, LogText, ManualExplorer, PlanetOnlyButton, UiExplorerText, UiPlanetText
 };
 use crate::ecs::components::{ExpButtonActions, GameStateText};
 use crate::ecs::resources::GameState;
@@ -86,7 +85,7 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                     flex_direction: FlexDirection::Column,
                     ..default()
                 },
-                ExplorerOnlyButton,
+                // ExplorerOnlyButton,
                 DropdownRoot,
             ),
             children![
@@ -202,13 +201,16 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                 });
 
             //explorer menu
-            parent.spawn(button_row.clone()).with_children(|parent| {
+            parent.spawn((
+                button_row.clone(),
+                ExplorerOnlyButton,
+                Visibility::Hidden,
+            )).with_children(|parent| {
                 parent.spawn((
                     button_factory(Text::new("Explorer mode: TBD")),
                     ExpButtonActions::ExpModeChange,
-                    ExplorerOnlyButton,
                 ));
-                // TODO show the following stuff only if the explorer is in manual mode
+                // show the following stuff only if the explorer is in manual mode
                 parent
                     .spawn((
                         Node {
@@ -219,8 +221,8 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                             align_items: AlignItems::Center,
                             ..default()
                         },
+                        ManualExplorer,
                         Visibility::Hidden,
-                        ExplorerOnlyButton,
                     ))
                     .with_children(|parent| {
                         parent

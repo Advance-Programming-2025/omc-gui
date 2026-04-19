@@ -1,8 +1,8 @@
 use bevy::prelude::*;
-use common_game::components::resource::BasicResourceType;
 
 use crate::ecs::components::{ButtonActions, DropdownItem, ExpButtonActions};
-use crate::ecs::resources::{EntityClickRes, GameState, OrchestratorResource};
+use crate::ecs::resources::{EntityClickRes, GameState, LogTextRes, OrchestratorResource};
+use crate::game::logs::update_logs;
 
 pub(crate) fn button_hover(
     mut interaction_query: Query<
@@ -124,23 +124,36 @@ pub(crate) fn manual_explorer_action(
     >,
     orchestrator: ResMut<OrchestratorResource>,
     selected_entity: Res<EntityClickRes>,
-    mut state: ResMut<GameState>,
+    mut log_text: ResMut<LogTextRes> 
 ) {
     for (&interaction, action) in &mut action_query {
         if interaction == Interaction::Pressed {
             match action {
-                ExpButtonActions::CreateBasic => {
-                    state.set_if_neq(GameState::Override);
+                ExpButtonActions::CreateBasic(basic) => {
+                    info!("creating basic resource manually...");
                     if let Some(id) = selected_entity.explorer {
-                        let _ = orchestrator
+                        let res = orchestrator
                             .orchestrator
-                            .send_generate_resource_request(id, BasicResourceType::Carbon);
+                            .send_generate_resource_request(id, *basic);
+                        if let Err(_) = res {
+                            update_logs(&mut log_text, "Basic resource generation failed!".to_string());
+                        } else {
+                            info!("basic resource was generated");
+                        }
                     }
                 }
-                ExpButtonActions::CreateComplex => {
-                    state.set_if_neq(GameState::Override);
-                    // TODO this has to be reworked post refactoring
-                    error!("CreateComplex: function not yet implemented");
+                ExpButtonActions::CreateComplex(complex) => {
+                    if let Some(id) = selected_entity.explorer {
+                        info!("creating complex resource manually...");
+                        let res = orchestrator
+                            .orchestrator
+                            .send_combine_resource_request(id, *complex);
+                        if let Err(_) = res {
+                            update_logs(&mut log_text, "Complex resource generation failed!".to_string());
+                        } else {
+                            info!("complex resource was generated");
+                        }
+                    }
                 }
                 ExpButtonActions::ExpModeChange => {
                     // TODO toggle manual or auto explorer mode

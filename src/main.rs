@@ -56,6 +56,7 @@ pub fn main() -> Result<(), String> {
             ui::scroll::send_scroll_events,
             ui::visibility::update_explorer_buttons_visibility,
             ui::visibility::update_planet_buttons_visibility,
+            ui::visibility::update_manual_explorer_visibility,
             ui::dropdown::fill_neighbors_dropdown,
             ui::dropdown::fill_basic_dropdown,
             ui::dropdown::fill_complex_dropdown,

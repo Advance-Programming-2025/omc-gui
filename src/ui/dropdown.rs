@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 
+use crate::ecs::components::ExpButtonActions;
 use crate::ecs::resources::{EntityClickRes, OrchestratorResource};
 use crate::ecs::{
     components::{DropdownItem, Edge, ListType},
@@ -16,14 +17,18 @@ pub fn fill_basic_dropdown(
 ) {
     for (list, dropd) in lists {
         // don't run if the user is not looking at an explorer
-        if target_entity.explorer.is_none() || !matches!(dropd, ListType::BasicList) {
+        if target_entity.explorer.is_none() 
+            || !matches!(dropd, ListType::BasicList) {
             continue;
         }
+
+        //don't fill the tables if the explorer isn't in manual mode
+        // TODO remove this unwrap!
+        let explorer_id = target_entity.explorer.unwrap();
 
         // clear previous table
         commands.entity(list).despawn_children();
 
-        let explorer_id = target_entity.explorer.unwrap();
         let planet_id = explorer_status
             .map
             .get_current_planet(&explorer_id)
@@ -32,7 +37,6 @@ pub fn fill_basic_dropdown(
         //get the planet's available resources
         let planets_info = orchestrator.orchestrator.get_planets_info();
         let single_info = planets_info.get_info(planet_id);
-        info!("got info of planet {}: {:?}", planet_id, single_info);
 
         let resources = match single_info {
             Some(safe_planets) => {
@@ -45,8 +49,6 @@ pub fn fill_basic_dropdown(
             None => &HashSet::new(),
         };
 
-        info!("RESOURCE MENU: resource hash this turn was: {:?}", resources);
-
         // create the actual UI element
         commands.entity(list).with_children(|parent| {
             if !resources.is_empty() {
@@ -54,6 +56,7 @@ pub fn fill_basic_dropdown(
                     parent
                         .spawn((
                             Button,
+                            ExpButtonActions::CreateBasic(*basic),
                             Node {
                                 height: Val::Px(28.0),
                                 padding: UiRect::horizontal(Val::Px(8.0)),
@@ -144,10 +147,11 @@ pub fn fill_complex_dropdown(
         // create the actual UI element
         commands.entity(list).with_children(|parent| {
             if !resources.is_empty() {
-                for basic in resources {
+                for complex in resources {
                     parent
                         .spawn((
                             Button,
+                            ExpButtonActions::CreateComplex(*complex),
                             Node {
                                 height: Val::Px(28.0),
                                 padding: UiRect::horizontal(Val::Px(8.0)),
@@ -161,7 +165,7 @@ pub fn fill_complex_dropdown(
                         ))
                         .with_children(|item| {
                             item.spawn((
-                                Text::new(format!("{:?}", basic)),
+                                Text::new(format!("{:?}", complex)),
                                 TextFont {
                                     font_size: 14.0,
                                     ..Default::default()

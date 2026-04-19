@@ -4,7 +4,7 @@ use std::f32::consts::TAU;
 use crate::{
     ecs::{
         components::{Explorer, Planet},
-        resources::{GalaxySnapshot, PlanetInfoRes},
+        resources::{ExpState, GalaxySnapshot, PlanetInfoRes},
     },
     galaxy::selection::choose_on_click,
     utils::{
@@ -94,6 +94,7 @@ pub fn setup(
                     .spawn((
                         Explorer {
                             id: j as u32,
+                            state: ExpState::Auto,
                             current_planet: i,
                             position_offset: (offset_x, offset_y),
                         },

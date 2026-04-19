@@ -1,4 +1,7 @@
 use bevy::ecs::component::Component;
+use common_game::components::resource::{BasicResourceType, ComplexResourceType};
+
+use crate::ecs::resources::ExpState;
 
 // Galaxy-centric components
 #[derive(Component)]
@@ -9,6 +12,7 @@ pub(crate) struct Planet {
 #[derive(Component)]
 pub(crate) struct Explorer {
     pub id: u32,
+    pub state: ExpState,
     pub current_planet: u32,
     pub position_offset: (f32, f32),
 }
@@ -33,8 +37,8 @@ pub enum ButtonActions {
 #[derive(Component)]
 pub enum ExpButtonActions {
     ExpModeChange,
-    CreateBasic,
-    CreateComplex,
+    CreateBasic(BasicResourceType),
+    CreateComplex(ComplexResourceType),
 }
 
 /// Planet info marker component
@@ -56,6 +60,9 @@ pub struct PlanetOnlyButton;
 
 #[derive(Component)]
 pub struct ExplorerOnlyButton;
+
+#[derive(Component)]
+pub struct ManualExplorer;
 
 #[derive(Component)]
 pub struct GameStateText;
