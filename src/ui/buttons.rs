@@ -1,7 +1,8 @@
 use bevy::prelude::*;
 
-use crate::ecs::components::{ButtonActions, DropdownItem, ExpButtonActions};
-use crate::ecs::resources::{EntityClickRes, GameState, LogTextRes, OrchestratorResource};
+use crate::ecs::components::{ButtonActions, DropdownItem, ExpButtonActions, Explorer};
+use crate::ecs::resources::{EntityClickRes, ExpState, GameState, LogTextRes, OrchestratorResource};
+use crate::explorers;
 use crate::game::logs::update_logs;
 
 pub(crate) fn button_hover(
@@ -122,8 +123,9 @@ pub(crate) fn manual_explorer_action(
         (&Interaction, &ExpButtonActions),
         (Changed<Interaction>, With<Button>),
     >,
-    orchestrator: ResMut<OrchestratorResource>,
+    mut orchestrator: ResMut<OrchestratorResource>,
     selected_entity: Res<EntityClickRes>,
+    mut explorers: Query<&mut Explorer>,
     mut log_text: ResMut<LogTextRes> 
 ) {
     for (&interaction, action) in &mut action_query {
@@ -156,8 +158,36 @@ pub(crate) fn manual_explorer_action(
                     }
                 }
                 ExpButtonActions::ExpModeChange => {
-                    // TODO toggle manual or auto explorer mode
-                    error!("ExpModeChange: function not yet implemented");
+                    if let Some(id) = selected_entity.explorer {
+                        if let Some(mut target) = explorers.iter_mut().find(|exp| exp.id == id) {
+                            match target.state {
+                                ExpState::Auto => {
+                                    let res = orchestrator.orchestrator.send_stop_explorer_ai(id);
+
+                                    if let Err(e) = res {
+                                        update_logs(&mut log_text, format!("explorer {} error: no manual mode\n", id));
+                                        error!("error in expmodechange: {}", e.to_string());
+                                    } else {
+                                        target.state = ExpState::Manual;
+                                        update_logs(&mut log_text, format!("exp {} is in manual mode\n", id));
+                                    }
+
+                                },
+                                ExpState::Manual => {
+                                    let res = orchestrator.orchestrator.send_start_explorer_ai(id);
+
+                                    if let Err(err_msg) = res {
+                                        update_logs(&mut log_text, format!("explorer {} error: no auto mode\n", id));
+                                        error!("error in expmodechange: {}", err_msg);
+                                    } else {
+                                        target.state = ExpState::Auto;
+                                        update_logs(&mut log_text, format!("exp {} is in auto mode\n", id));
+                                    }
+                                },
+                                ExpState::Dead => todo!(),
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -172,18 +202,12 @@ pub(crate) fn explorer_move_action(
     for (&interaction, action) in &mut action_query {
         if interaction == Interaction::Pressed {
             state.set_if_neq(GameState::Override);
-            let _ = orchestrator
-                .orchestrator
-                .send_stop_explorer_ai(action.explorer_id);
             if let Err(e) = orchestrator
                 .orchestrator
                 .send_move_to_planet(action.explorer_id, action.planet_id)
             {
                 error!("error in explorer move:{}", e);
             }
-            let _ = orchestrator
-                .orchestrator
-                .send_start_explorer_ai(action.explorer_id);
             state.set_if_neq(GameState::Playing);
         }
     }
