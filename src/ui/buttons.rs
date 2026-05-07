@@ -2,7 +2,6 @@ use bevy::prelude::*;
 
 use crate::ecs::components::{ButtonActions, DropdownItem, ExpButtonActions, Explorer};
 use crate::ecs::resources::{EntityClickRes, ExpState, GameState, LogTextRes, OrchestratorResource};
-use crate::explorers;
 use crate::game::logs::update_logs;
 
 pub(crate) fn button_hover(

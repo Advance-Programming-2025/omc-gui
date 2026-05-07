@@ -305,7 +305,7 @@ pub(crate) fn draw_game_options_menu(mut commands: Commands) {
         Node {
             flex_direction: FlexDirection::Column,
             align_self: AlignSelf::Stretch,
-            height: Val::Percent(50.),
+            height: Val::Percent(75.),
             overflow: Overflow::scroll_y(),
             ..default()
         },
@@ -359,26 +359,20 @@ pub(crate) fn draw_game_options_menu(mut commands: Commands) {
             });
 
             parent.spawn(button_row.clone()).with_children(|parent| {
+                // TODO decide whether this is worth implementing
+                
                 //4a. button 1
-                parent.spawn((
-                    button_factory(Text::new("Restart")),
-                    ButtonActions::StartGame,
-                ));
+                // parent.spawn((
+                //     button_factory(Text::new("Restart")),
+                //     ButtonActions::StartGame,
+                // ));
+
+                parent.spawn((button_factory(Text::new("Nuke")), ButtonActions::Nuke));
 
                 //4b. button 2
                 parent.spawn((button_factory(Text::new("Blind")), ButtonActions::Blind));
             });
 
-            parent.spawn(button_row.clone()).with_children(|parent| {
-                //4a. button 1
-                parent.spawn((button_factory(Text::new("Nuke")), ButtonActions::Nuke));
-
-                //4b. button 2
-                parent.spawn((
-                    button_factory(Text::new("Explorer Messages")),
-                    ButtonActions::StopGame,
-                ));
-            });
             parent.spawn(log_square).with_children(|parent| {
                 parent.spawn((Text::new(""), LogText));
             });
