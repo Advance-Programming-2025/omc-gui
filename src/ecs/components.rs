@@ -101,3 +101,6 @@ pub struct DropdownItem {
     pub explorer_id: u32,
     pub planet_id: u32,
 }
+
+#[derive(Component)]
+pub struct Background;

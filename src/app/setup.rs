@@ -3,7 +3,7 @@ use std::f32::consts::TAU;
 
 use crate::{
     ecs::{
-        components::{Explorer, Planet},
+        components::{Background, Explorer, Planet},
         resources::{ExpState, GalaxySnapshot, PlanetInfoRes},
     },
     galaxy::selection::choose_on_click,
@@ -36,11 +36,7 @@ pub fn setup(
         window.height()
     );
 
-    commands.spawn(Sprite {
-        image: background,
-        custom_size: Some(Vec2::new(window.width() * 4., window.height() * 4.)),
-        ..Default::default()
-    });
+    commands.spawn((Sprite::from_image(background), Background));
 
     let planet_num = galaxy.planet_num;
 

@@ -64,6 +64,7 @@ pub fn main() -> Result<(), String> {
             galaxy::celestial::despawn_celestial,
             galaxy::selection::update_selected_entity,
             game::logs::log_text,
+            app::scaling::scale_background,
         ),
     )
     .add_systems(
