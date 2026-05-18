@@ -103,8 +103,7 @@ fn fill_dropdown<T, FAction, FText>(
     make_action: FAction,
     empty_text: &str,
     make_text: FText,
-)
-where
+) where
     T: Copy,
     FAction: Fn(T) -> ExpButtonActions,
     FText: Fn(T) -> String,

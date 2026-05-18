@@ -42,18 +42,20 @@ pub fn update_manual_explorer_visibility(
     explorers: Query<&Explorer>,
     mut query: Query<&mut Visibility, With<ManualExplorer>>,
 ) {
-
     // gets from all explorers the one with the right ID, then
     // checks if the state is manual, otherwise its menu will get hidden
     let visible = if let Some(id) = selected.explorer {
-        explorers.iter()
+        explorers
+            .iter()
             .find(|exp| exp.id == id)
             .map(|valid| matches!(valid.state, ExpState::Manual))
             .unwrap_or(false)
-    } else { false };
+    } else {
+        false
+    };
 
     for mut visibility in &mut query {
-        if visible{
+        if visible {
             *visibility = Visibility::Inherited;
         } else {
             *visibility = Visibility::Hidden;

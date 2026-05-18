@@ -3,10 +3,9 @@ use omc_galaxy::OrchestratorEvent;
 
 use crate::{
     ecs::{
-        events::{Celestial, CelestialBody, MoveExplorerEvent},
-        resources::{
-            ExplorerInfoRes, GameState, GameTimer, LogTextRes, OrchestratorResource, PlanetInfoRes,
-        },
+        components::Explorer, events::{Celestial, CelestialBody, MoveExplorerEvent, Notification}, resources::{
+            EntityClickRes, ExpState, ExplorerInfoRes, GameState, GameTimer, LogTextRes, OrchestratorResource, PlanetInfoRes
+        }
     },
     game::logs::update_logs,
     utils::constants::EXPLORER_NUM,
@@ -21,6 +20,8 @@ pub fn game_loop(
     log_text: ResMut<LogTextRes>,
     state: Res<GameState>,
     time: Res<Time>,
+    game_explorers: Query<&Explorer>,
+    sel: Res<EntityClickRes>
 ) {
     match *state {
         GameState::Playing => {
@@ -31,7 +32,7 @@ pub fn game_loop(
 
                 let events = std::mem::take(&mut orchestrator.orchestrator.gui_messages);
 
-                handle_tick(&mut commands, events, log_text);
+                handle_tick(&mut commands, events, log_text, game_explorers, sel);
 
                 // update the planet state map after the events occurrederr
                 planets.as_mut().map = orchestrator.orchestrator.get_planets_info();
@@ -39,7 +40,7 @@ pub fn game_loop(
                 explorers.as_mut().map = orchestrator.orchestrator.get_explorer_states();
                 // launch either an asteroid or a sunray with a random choice
                 // TODO make it so the user can choose the amount of asteroids (slider perhaps)
-                let _ = orchestrator.orchestrator.choose_random_action(0.5,0.01);
+                let _ = orchestrator.orchestrator.choose_random_action(0.5, 0.01);
                 // handle all of the previous events
                 if let Err(s) = orchestrator.orchestrator.handle_game_messages() {
                     error!("could not handle the messages of this tick: {}", s);
@@ -55,7 +56,7 @@ pub fn game_loop(
 
             if orchestrator.orchestrator.gui_messages.len() > 0 {
                 let events = std::mem::take(&mut orchestrator.orchestrator.gui_messages);
-                handle_tick(&mut commands, events, log_text);
+                handle_tick(&mut commands, events, log_text, game_explorers, sel);
 
                 // handle all of the previous events
                 let _ = orchestrator.orchestrator.handle_game_messages();
@@ -80,6 +81,8 @@ fn handle_tick(
     commands: &mut Commands,
     events: Vec<OrchestratorEvent>,
     mut log_text: ResMut<LogTextRes>,
+    explorers: Query<&Explorer>,
+    sel: Res<EntityClickRes>
 ) {
     for ev in events {
         match ev {
@@ -126,6 +129,17 @@ fn handle_tick(
                     id: explorer_id,
                     destination,
                 });
+
+                // if the explorer is in manual mode, send the notification
+                if let Some(selected) = sel.explorer{
+                    if let Some(expl) = explorers.iter().find(|exp| exp.id == selected && exp.id == explorer_id) {
+                        if matches!(expl.state, ExpState::Manual){
+                            commands.trigger(Notification {
+                                message: format!("Explorer {} moved to planet {}", explorer_id, destination)
+                            });
+                        }
+                    }
+                }
                 update_logs(
                     &mut log_text,
                     format!("exp {} moved to pl {}\n", explorer_id, destination),

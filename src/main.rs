@@ -43,6 +43,7 @@ pub fn main() -> Result<(), String> {
             app::setup::setup.after(setup_orchestrator),
             ui::menu::draw_entity_info_menu.after(setup_orchestrator),
             ui::menu::draw_game_options_menu,
+            ui::notification::draw_notifications
         ),
     )
     .add_systems(
@@ -61,6 +62,7 @@ pub fn main() -> Result<(), String> {
             ui::dropdown::fill_basic_dropdown,
             ui::dropdown::fill_complex_dropdown,
             ui::menu::update_game_state_text,
+            ui::notification::update_notification,
             galaxy::celestial::despawn_celestial,
             galaxy::selection::update_selected_entity,
             game::logs::log_text,
@@ -74,7 +76,8 @@ pub fn main() -> Result<(), String> {
     .add_observer(galaxy::topology::destroy_link)
     .add_observer(galaxy::celestial::move_celestial)
     .add_observer(explorers::movement::move_explorer)
-    .add_observer(ui::scroll::on_scroll_handler);
+    .add_observer(ui::scroll::on_scroll_handler)
+    .add_observer(ui::notification::set_notification);
     app.run();
     Ok(())
 }

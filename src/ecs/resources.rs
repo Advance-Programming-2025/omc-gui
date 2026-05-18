@@ -12,7 +12,7 @@ pub struct OrchestratorResource {
 pub enum ExpState {
     Auto,
     Manual,
-    Dead
+    Dead,
 }
 
 #[derive(Resource, PartialEq, Eq, Debug)]
@@ -52,3 +52,9 @@ pub struct LogTextRes {
 
 #[derive(Resource, Deref, DerefMut)]
 pub struct GameTimer(pub Timer);
+
+#[derive(Resource)]
+pub struct ActiveNotification {
+    pub message: Option<String>,
+    pub active_time: Timer
+}

@@ -104,3 +104,9 @@ pub struct DropdownItem {
 
 #[derive(Component)]
 pub struct Background;
+
+#[derive(Component)]
+pub struct NotificationContainer;
+
+#[derive(Component)]
+pub struct NotificationText;

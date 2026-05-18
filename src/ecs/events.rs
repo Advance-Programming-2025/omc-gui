@@ -30,3 +30,8 @@ pub(crate) struct Scroll {
     /// Scroll delta in logical coordinates.
     pub delta: Vec2,
 }
+
+#[derive(Event)]
+pub struct Notification{
+    pub message: String
+}

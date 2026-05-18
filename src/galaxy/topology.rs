@@ -39,8 +39,12 @@ pub fn draw_topology(
     mut commands: Commands,
     snapshot: Res<GalaxySnapshot>,
     planets: Query<(&Planet, &Transform)>,
+    old_links: Query<(&Edge, Entity)>,
 ) {
     if snapshot.is_changed() {
+        for (_, en) in old_links {
+            commands.entity(en).despawn();
+        }
         let gtop = &snapshot.edges; //TODO do something BETTER than this
 
         for (a, b) in gtop.iter() {

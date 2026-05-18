@@ -5,7 +5,8 @@ use omc_galaxy::Orchestrator;
 
 use crate::{
     ecs::resources::{
-        EntityClickRes, ExplorerInfoRes, GalaxySnapshot, GameState, GameTimer, LogTextRes, OrchestratorResource, PlanetInfoRes
+        EntityClickRes, ExplorerInfoRes, GalaxySnapshot, GameState, GameTimer, LogTextRes,
+        OrchestratorResource, PlanetInfoRes,
     },
     utils::constants::GAME_TICK,
 };

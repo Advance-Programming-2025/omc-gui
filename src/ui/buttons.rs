@@ -1,7 +1,9 @@
 use bevy::prelude::*;
 
 use crate::ecs::components::{ButtonActions, DropdownItem, ExpButtonActions, Explorer};
-use crate::ecs::resources::{EntityClickRes, ExpState, GameState, LogTextRes, OrchestratorResource};
+use crate::ecs::resources::{
+    EntityClickRes, ExpState, GameState, LogTextRes, OrchestratorResource,
+};
 use crate::game::logs::update_logs;
 
 pub(crate) fn button_hover(
@@ -57,7 +59,10 @@ pub(crate) fn game_menu_action(
 
                     println!("targets: {:?}", targets);
 
-                    if let Err(s) = orchestrator.orchestrator.send_celestial_from_gui(targets, false) {
+                    if let Err(s) = orchestrator
+                        .orchestrator
+                        .send_celestial_from_gui(targets, false)
+                    {
                         error!("{}", s);
                     }
 
@@ -74,7 +79,10 @@ pub(crate) fn game_menu_action(
                         }
                     }
 
-                    if let Err(s) = orchestrator.orchestrator.send_celestial_from_gui(targets, true) {
+                    if let Err(s) = orchestrator
+                        .orchestrator
+                        .send_celestial_from_gui(targets, true)
+                    {
                         error!("{}", s);
                     }
 
@@ -98,7 +106,10 @@ pub(crate) fn manual_planet_action(
                 ButtonActions::ManualAsteroid => {
                     state.set_if_neq(GameState::Override);
                     if let Some(id) = selected_planet.planet {
-                        if let Err(e) = orchestrator.orchestrator.send_celestial_from_gui(vec![id], true) {
+                        if let Err(e) = orchestrator
+                            .orchestrator
+                            .send_celestial_from_gui(vec![id], true)
+                        {
                             error!(e)
                         }
                     }
@@ -106,7 +117,10 @@ pub(crate) fn manual_planet_action(
                 ButtonActions::ManualSunray => {
                     state.set_if_neq(GameState::Override);
                     if let Some(id) = selected_planet.planet {
-                        if let Err(e) = orchestrator.orchestrator.send_celestial_from_gui(vec![id], false) {
+                        if let Err(e) = orchestrator
+                            .orchestrator
+                            .send_celestial_from_gui(vec![id], false)
+                        {
                             error!(e)
                         }
                     }
@@ -125,7 +139,7 @@ pub(crate) fn manual_explorer_action(
     mut orchestrator: ResMut<OrchestratorResource>,
     selected_entity: Res<EntityClickRes>,
     mut explorers: Query<&mut Explorer>,
-    mut log_text: ResMut<LogTextRes> 
+    mut log_text: ResMut<LogTextRes>,
 ) {
     for (&interaction, action) in &mut action_query {
         if interaction == Interaction::Pressed {
@@ -137,7 +151,10 @@ pub(crate) fn manual_explorer_action(
                             .orchestrator
                             .send_generate_resource_request(id, *basic);
                         if let Err(_) = res {
-                            update_logs(&mut log_text, "Basic resource generation failed!".to_string());
+                            update_logs(
+                                &mut log_text,
+                                "Basic resource generation failed!".to_string(),
+                            );
                         } else {
                             info!("basic resource was generated");
                         }
@@ -150,7 +167,10 @@ pub(crate) fn manual_explorer_action(
                             .orchestrator
                             .send_combine_resource_request(id, *complex);
                         if let Err(_) = res {
-                            update_logs(&mut log_text, "Complex resource generation failed!".to_string());
+                            update_logs(
+                                &mut log_text,
+                                "Complex resource generation failed!".to_string(),
+                            );
                         } else {
                             info!("complex resource was generated");
                         }
@@ -164,25 +184,36 @@ pub(crate) fn manual_explorer_action(
                                     let res = orchestrator.orchestrator.send_stop_explorer_ai(id);
 
                                     if let Err(e) = res {
-                                        update_logs(&mut log_text, format!("explorer {} error: no manual mode\n", id));
+                                        update_logs(
+                                            &mut log_text,
+                                            format!("explorer {} error: no manual mode\n", id),
+                                        );
                                         error!("error in expmodechange: {}", e.to_string());
                                     } else {
                                         target.state = ExpState::Manual;
-                                        update_logs(&mut log_text, format!("exp {} is in manual mode\n", id));
+                                        update_logs(
+                                            &mut log_text,
+                                            format!("exp {} is in manual mode\n", id),
+                                        );
                                     }
-
-                                },
+                                }
                                 ExpState::Manual => {
                                     let res = orchestrator.orchestrator.send_start_explorer_ai(id);
 
                                     if let Err(err_msg) = res {
-                                        update_logs(&mut log_text, format!("explorer {} error: no auto mode\n", id));
+                                        update_logs(
+                                            &mut log_text,
+                                            format!("explorer {} error: no auto mode\n", id),
+                                        );
                                         error!("error in expmodechange: {}", err_msg);
                                     } else {
                                         target.state = ExpState::Auto;
-                                        update_logs(&mut log_text, format!("exp {} is in auto mode\n", id));
+                                        update_logs(
+                                            &mut log_text,
+                                            format!("exp {} is in auto mode\n", id),
+                                        );
                                     }
-                                },
+                                }
                                 ExpState::Dead => todo!(),
                             }
                         }

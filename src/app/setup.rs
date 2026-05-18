@@ -4,7 +4,7 @@ use std::f32::consts::TAU;
 use crate::{
     ecs::{
         components::{Background, Explorer, Planet},
-        resources::{ExpState, GalaxySnapshot, PlanetInfoRes},
+        resources::{ActiveNotification, ExpState, GalaxySnapshot, PlanetInfoRes},
     },
     galaxy::selection::choose_on_click,
     utils::{
@@ -106,4 +106,10 @@ pub fn setup(
             }
         }
     }
+
+    // adds the struct to hold info about the current notification
+    commands.insert_resource(ActiveNotification{
+        message: None,
+        active_time: Timer::from_seconds(1.0, TimerMode::Once)
+    });
 }
