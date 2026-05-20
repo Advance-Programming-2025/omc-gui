@@ -1,5 +1,5 @@
 use crate::ecs::components::{
-    ButtonActions, DropdownButton, DropdownLabel, DropdownRoot, ExplorerOnlyButton, ListType, LogText, ManualExplorer, PlanetOnlyButton, UiExplorerText, UiPlanetText
+    ButtonActions, DropdownButton, DropdownLabel, DropdownRoot, ExplorerOnlyButton, ListType, LogText, ManualExplorer, PlanetOnlyButton, RatioButton, RatioText, UiExplorerText, UiPlanetText
 };
 use crate::ecs::components::{ExpButtonActions, GameStateText};
 use crate::ecs::resources::GameState;
@@ -371,6 +371,16 @@ pub(crate) fn draw_game_options_menu(mut commands: Commands) {
 
                 //4b. button 2
                 parent.spawn((button_factory(Text::new("Blind")), ButtonActions::Blind));
+            });
+
+            parent.spawn((Text::new("Sunray to asteroid ratio: 80%"), RatioText));
+
+            parent.spawn(button_row.clone()).with_children(|parent| {
+                //4a. button 1
+                parent.spawn((button_factory(Text::new("Less")), RatioButton::Decrease));
+
+                //4b. button 2
+                parent.spawn((button_factory(Text::new("More")), RatioButton::Increase));
             });
 
             parent.spawn(log_square).with_children(|parent| {

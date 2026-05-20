@@ -50,6 +50,7 @@ pub fn main() -> Result<(), String> {
         Update,
         (
             ui::buttons::button_hover,
+            ui::buttons::ratio_action,
             ui::buttons::game_menu_action,
             ui::buttons::manual_planet_action,
             ui::buttons::manual_explorer_action,

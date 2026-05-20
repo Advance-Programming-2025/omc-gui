@@ -4,7 +4,7 @@ use omc_galaxy::OrchestratorEvent;
 use crate::{
     ecs::{
         components::Explorer, events::{Celestial, CelestialBody, MoveExplorerEvent, Notification}, resources::{
-            EntityClickRes, ExpState, ExplorerInfoRes, GameState, GameTimer, LogTextRes, OrchestratorResource, PlanetInfoRes
+            EntityClickRes, ExpState, ExplorerInfoRes, GameState, GameTimer, LogTextRes, OrchestratorResource, PlanetInfoRes, SunrayAsteroidRatio
         }
     },
     game::logs::update_logs,
@@ -21,7 +21,8 @@ pub fn game_loop(
     state: Res<GameState>,
     time: Res<Time>,
     game_explorers: Query<&Explorer>,
-    sel: Res<EntityClickRes>
+    sel: Res<EntityClickRes>,
+    ratio: Res<SunrayAsteroidRatio>
 ) {
     match *state {
         GameState::Playing => {
@@ -40,7 +41,8 @@ pub fn game_loop(
                 explorers.as_mut().map = orchestrator.orchestrator.get_explorer_states();
                 // launch either an asteroid or a sunray with a random choice
                 // TODO make it so the user can choose the amount of asteroids (slider perhaps)
-                let _ = orchestrator.orchestrator.choose_random_action(0.5, 0.01);
+                let _ = orchestrator.orchestrator.
+                    choose_random_action(0.5, 1. - ((ratio.0 as f64) / 100.));
                 // handle all of the previous events
                 if let Err(s) = orchestrator.orchestrator.handle_game_messages() {
                     error!("could not handle the messages of this tick: {}", s);
@@ -104,7 +106,6 @@ fn handle_tick(
             }
             OrchestratorEvent::SunraySent { planet_id } => {
                 info!("game-loop: planet {} should get a sunray, ", planet_id);
-                // TODO This is kinda useless I should get rid of it
             }
             OrchestratorEvent::AsteroidSent { planet_id } => {
                 info!("game-loop: planet {} should get an asteroid, ", planet_id);

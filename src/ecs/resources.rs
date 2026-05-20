@@ -3,6 +3,8 @@ use std::collections::VecDeque;
 use bevy::prelude::*;
 use omc_galaxy::{Orchestrator, PlanetInfoMap, utils::ExplorerInfoMap};
 
+use crate::utils::constants::DEFAULT_SUNRAY_RATIO;
+
 #[derive(Resource)]
 pub struct OrchestratorResource {
     pub orchestrator: Orchestrator,
@@ -57,4 +59,13 @@ pub struct GameTimer(pub Timer);
 pub struct ActiveNotification {
     pub message: Option<String>,
     pub active_time: Timer
+}
+
+#[derive(Resource)]
+pub struct SunrayAsteroidRatio(pub i32);
+
+impl Default for SunrayAsteroidRatio {
+    fn default() -> Self {
+        Self(DEFAULT_SUNRAY_RATIO)
+    }
 }

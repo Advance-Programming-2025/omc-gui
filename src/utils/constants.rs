@@ -8,3 +8,4 @@ pub(crate) const EXPLORER_NUM: u32 = 2;
 pub(crate) const EXPLORER_SIZE: f32 = 40.;
 pub(crate) const EXP_TOMMY_OFFSET: (f32, f32) = (25., 25.);
 pub(crate) const EXP_MATTIA_OFFSET: (f32, f32) = (-25., -25.);
+pub(crate) const DEFAULT_SUNRAY_RATIO: i32 = 80;

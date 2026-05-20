@@ -110,3 +110,12 @@ pub struct NotificationContainer;
 
 #[derive(Component)]
 pub struct NotificationText;
+
+#[derive(Component)]
+pub enum RatioButton {
+    Increase,
+    Decrease
+}
+
+#[derive(Component)]
+pub struct RatioText;
