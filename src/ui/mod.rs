@@ -4,3 +4,4 @@ pub mod menu;
 pub mod scroll;
 pub mod visibility;
 pub mod notification;
+pub mod start;

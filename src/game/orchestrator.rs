@@ -5,7 +5,7 @@ use omc_galaxy::Orchestrator;
 
 use crate::{
     ecs::resources::{
-        EntityClickRes, ExplorerInfoRes, GalaxySnapshot, GameState, GameTimer, LogTextRes,
+        EntityClickRes, ExplorerInfoRes, GalaxySnapshot, GameTimer, LogTextRes,
         OrchestratorResource, PlanetInfoRes,
     },
     utils::constants::GAME_TICK,
@@ -44,8 +44,6 @@ pub fn setup_orchestrator(mut commands: Commands) {
     commands.insert_resource(PlanetInfoRes { map: lookup });
 
     commands.insert_resource(ExplorerInfoRes { map: exp_info });
-
-    commands.insert_resource(GameState::WaitingStart);
 
     commands.insert_resource(LogTextRes {
         text: VecDeque::from([first_string]),

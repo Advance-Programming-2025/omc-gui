@@ -54,23 +54,21 @@ pub(crate) fn ratio_action(
 pub(crate) fn game_menu_action(
     mut action_query: Query<(&Interaction, &ButtonActions), (Changed<Interaction>, With<Button>)>,
     mut orchestrator: ResMut<OrchestratorResource>,
-    mut state: ResMut<GameState>,
+    mut state: ResMut<NextState<GameState>>,
 ) {
     for (&interaction, action) in &mut action_query {
         if interaction == Interaction::Pressed {
             match action {
                 ButtonActions::StartGame => {
-                    if state.set_if_neq(GameState::Playing) {
-                        info!("game started");
-                    }
+                    state.set(GameState::Playing);
+                    info!("game started");
                 }
                 ButtonActions::StopGame => {
-                    if state.set_if_neq(GameState::Paused) {
-                        println!("game should pause now...");
-                    }
+                    state.set(GameState::Paused);
+                    println!("game should pause now...");
                 }
                 ButtonActions::Blind => {
-                    state.set_if_neq(GameState::Override);
+                    state.set(GameState::Override);
                     debug!("entering manual override mode");
 
                     let mut targets = Vec::new();
@@ -92,7 +90,7 @@ pub(crate) fn game_menu_action(
                     debug!("done sending sunrays");
                 }
                 ButtonActions::Nuke => {
-                    state.set_if_neq(GameState::Override);
+                    state.set(GameState::Override);
                     debug!("entering manual override mode");
 
                     let mut targets = Vec::new();
@@ -121,13 +119,13 @@ pub(crate) fn manual_planet_action(
     mut action_query: Query<(&Interaction, &ButtonActions), (Changed<Interaction>, With<Button>)>,
     mut orchestrator: ResMut<OrchestratorResource>,
     selected_planet: Res<EntityClickRes>,
-    mut state: ResMut<GameState>,
+    mut state: ResMut<NextState<GameState>>,
 ) {
     for (&interaction, action) in &mut action_query {
         if interaction == Interaction::Pressed {
             match action {
                 ButtonActions::ManualAsteroid => {
-                    state.set_if_neq(GameState::Override);
+                    state.set(GameState::Override);
                     if let Some(id) = selected_planet.planet {
                         if let Err(e) = orchestrator
                             .orchestrator
@@ -138,7 +136,7 @@ pub(crate) fn manual_planet_action(
                     }
                 }
                 ButtonActions::ManualSunray => {
-                    state.set_if_neq(GameState::Override);
+                    state.set(GameState::Override);
                     if let Some(id) = selected_planet.planet {
                         if let Err(e) = orchestrator
                             .orchestrator
@@ -250,18 +248,18 @@ pub(crate) fn manual_explorer_action(
 pub(crate) fn explorer_move_action(
     mut action_query: Query<(&Interaction, &DropdownItem), (Changed<Interaction>, With<Button>)>,
     mut orchestrator: ResMut<OrchestratorResource>,
-    mut state: ResMut<GameState>,
+    mut state: ResMut<NextState<GameState>>,
 ) {
     for (&interaction, action) in &mut action_query {
         if interaction == Interaction::Pressed {
-            state.set_if_neq(GameState::Override);
+            state.set(GameState::Override);
             if let Err(e) = orchestrator
                 .orchestrator
                 .send_move_to_planet(action.explorer_id, action.planet_id)
             {
                 error!("error in explorer move:{}", e);
             }
-            state.set_if_neq(GameState::Playing);
+            state.set(GameState::Playing);
         }
     }
 }

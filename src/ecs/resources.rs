@@ -17,8 +17,9 @@ pub enum ExpState {
     Dead,
 }
 
-#[derive(Resource, PartialEq, Eq, Debug)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Hash, States)]
 pub enum GameState {
+    #[default]
     WaitingStart,
     Playing,
     Paused,
@@ -67,5 +68,22 @@ pub struct SunrayAsteroidRatio(pub i32);
 impl Default for SunrayAsteroidRatio {
     fn default() -> Self {
         Self(DEFAULT_SUNRAY_RATIO)
+    }
+}
+
+// TODO add this to the start menu and setup
+
+#[derive(Resource, Clone)]
+pub struct StartupConfig {
+    pub topology_path: String,
+    pub ratio: i32,
+}
+
+impl Default for StartupConfig {
+    fn default() -> Self {
+        Self {
+            topology_path: "assets/default.txt".into(),
+            ratio: 80
+        }
     }
 }

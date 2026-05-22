@@ -391,7 +391,7 @@ pub(crate) fn draw_game_options_menu(mut commands: Commands) {
 }
 
 pub(crate) fn update_game_state_text(
-    game_state: Res<GameState>,
+    game_state: Res<State<GameState>>,
     state_text: Query<(&mut Text, &GameStateText)>,
 ) {
     // avoid computation if the state hasn't changed

@@ -16,6 +16,10 @@ use crate::{
     },
 };
 
+pub fn setup_camera(mut commands: Commands){
+    commands.spawn(Camera2d);
+}
+
 pub fn setup(
     galaxy: Res<GalaxySnapshot>,
     planets: Res<PlanetInfoRes>,
@@ -25,7 +29,6 @@ pub fn setup(
     planet_assets: Res<PlanetAssets>,
     explorer_assets: Res<ExplorerAssets>,
 ) {
-    commands.spawn(Camera2d);
 
     //create and load background image through sprites
     let background: Handle<Image> = asset_loader.load("sky.png");

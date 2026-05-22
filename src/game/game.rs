@@ -18,13 +18,13 @@ pub fn game_loop(
     mut explorers: ResMut<ExplorerInfoRes>,
     mut timer: ResMut<GameTimer>,
     log_text: ResMut<LogTextRes>,
-    state: Res<GameState>,
+    state: Res<State<GameState>>,
     time: Res<Time>,
     game_explorers: Query<&Explorer>,
     sel: Res<EntityClickRes>,
     ratio: Res<SunrayAsteroidRatio>
 ) {
-    match *state {
+    match **state {
         GameState::Playing => {
             timer.tick(time.delta());
 
