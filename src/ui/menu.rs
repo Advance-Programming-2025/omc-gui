@@ -403,6 +403,6 @@ pub(crate) fn update_game_state_text(
     let inner_state = game_state.into_inner();
 
     for (mut text, _) in state_text {
-        **text = format!("Game state: {:?}", inner_state);
+        **text = format!("Game state: {}", inner_state.get());
     }
 }

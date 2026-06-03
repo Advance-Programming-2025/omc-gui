@@ -22,7 +22,7 @@ pub fn main() -> Result<(), String> {
             .set(WindowPlugin {
                 primary_window: Some(Window {
                     resizable: false,
-                    mode: WindowMode::BorderlessFullscreen(MonitorSelection::Index(0)),
+                    mode: WindowMode::Windowed,
                     ..Default::default()
                 }),
                 ..Default::default()

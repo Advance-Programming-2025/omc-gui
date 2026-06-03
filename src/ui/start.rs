@@ -1,8 +1,12 @@
 use bevy::prelude::*;
 
-use crate::ecs::{components::{StartMenuButton, StartMenuUI}, resources::GameState};
+use crate::ecs::{components::{CurrentPathText, StartMenuButton, StartMenuUI}, resources::{GameState, StartupConfig}};
 
 pub(crate) fn start_splash (mut commands: Commands) {
+
+    let config_file = StartupConfig::default();
+    let starter_file = config_file.topology_path.clone();
+    commands.insert_resource(config_file);
 
     // TODO should probably just turn this into a function instead of copy pasting a closure...
     let button_factory = |text: Text| {
@@ -34,27 +38,57 @@ pub(crate) fn start_splash (mut commands: Commands) {
     };
 
     commands.spawn((Node {
-        width: Val::Percent(50.),
-        height: Val::Percent(50.),
+        width: Val::Percent(100.),
+        height: Val::Percent(100.),
         display: Display::Flex,
         flex_direction: FlexDirection::Column,
+        align_items: AlignItems::Center,
+        justify_content: JustifyContent::Center,
         ..Default::default()
     }, StartMenuUI)).with_children(|container| {
-        container.spawn(Text::new("Start menu: work in progress"));
+        container.spawn(Text::new("One Million Crabs: Galaxy Visualizer"));
+        container.spawn((
+            button_factory(Text::new("Choose file")),
+            StartMenuButton::ChooseFile
+        ));
+        container.spawn((
+            Text::new(format!("Current path: {}", starter_file.display())),
+            CurrentPathText
+        ));
+
         container.spawn((
             button_factory(Text::new("Start game")),
-            StartMenuButton
+            StartMenuButton::StartGame
         ));
     });
 }
 
 pub(crate) fn start_menu_actions (
     mut action_query: Query<(&Interaction, &StartMenuButton), (Changed<Interaction>, With<Button>)>,
-    mut state: ResMut<NextState<GameState>>
+    mut state: ResMut<NextState<GameState>>,
+    mut config_res: ResMut<StartupConfig>,
+    mut text_query: Query<(&mut Text, &CurrentPathText)>,
 ) {
-    for (&interaction, _) in &mut action_query {
+    for (&interaction, action_type) in &mut action_query {
         if interaction == Interaction::Pressed {
-            state.set(GameState::Playing);
+            match action_type {
+                StartMenuButton::ChooseFile => {
+                    if let Some(path) = rfd::FileDialog::new()
+                        .add_filter("Galaxy", &["txt"])
+                        .pick_file() {
+                        config_res.topology_path = path;
+                        for (mut text, _) in &mut text_query {
+                            **text = format!(
+                                "Current path: {}",
+                                config_res.topology_path.display()
+                            );
+                        }
+                    };
+                },
+                StartMenuButton::StartGame => {
+                    state.set(GameState::Playing);
+                },
+            }
         }
     }
 }

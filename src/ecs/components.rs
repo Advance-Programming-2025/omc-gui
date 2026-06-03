@@ -121,7 +121,13 @@ pub enum RatioButton {
 pub struct RatioText;
 
 #[derive(Component)]
-pub struct StartMenuButton;
+pub enum StartMenuButton {
+    ChooseFile,
+    StartGame
+}
 
 #[derive(Component)]
 pub struct StartMenuUI;
+
+#[derive(Component)]
+pub struct CurrentPathText;

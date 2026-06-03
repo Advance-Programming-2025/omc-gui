@@ -6,20 +6,21 @@ use omc_galaxy::Orchestrator;
 use crate::{
     ecs::resources::{
         EntityClickRes, ExplorerInfoRes, GalaxySnapshot, GameTimer, LogTextRes,
-        OrchestratorResource, PlanetInfoRes,
+        OrchestratorResource, PlanetInfoRes, StartupConfig,
     },
     utils::constants::GAME_TICK,
 };
 
-pub fn setup_orchestrator(mut commands: Commands) {
+pub fn setup_orchestrator(
+    mut commands: Commands,
+    start_config: Res<StartupConfig>
+) {
     dotenv::dotenv().ok();
 
     let mut orchestrator = Orchestrator::new().expect("Failed to create orchestrator");
 
-    let file_path = std::env::var("INPUT_FILE").expect("Set INPUT_FILE in .env or env vars");
-
     orchestrator
-        .initialize_galaxy_by_file(file_path.as_str().trim())
+        .initialize_galaxy_by_file(start_config.topology_path.to_str().expect("failed to load path from file. try changing the galaxy file."))
         .expect("Failed to initialize galaxy");
 
     let (topology, planet_num) = orchestrator.get_topology();

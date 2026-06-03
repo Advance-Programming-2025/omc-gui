@@ -1,4 +1,4 @@
-use std::collections::VecDeque;
+use std::{collections::VecDeque, path::PathBuf, fmt::Display};
 
 use bevy::prelude::*;
 use omc_galaxy::{Orchestrator, PlanetInfoMap, utils::ExplorerInfoMap};
@@ -24,6 +24,18 @@ pub enum GameState {
     Playing,
     Paused,
     Override,
+}
+
+impl Display for GameState {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let out_str = match self {
+            GameState::WaitingStart => String::from("Waiting to start"),
+            GameState::Playing => String::from("Playing"),
+            GameState::Paused => String::from("Paused"),
+            GameState::Override => String::from("OVERRIDE"),
+        };
+        write!(f, "{}", out_str)
+    }
 }
 
 #[derive(Resource, Clone)]
@@ -75,7 +87,7 @@ impl Default for SunrayAsteroidRatio {
 
 #[derive(Resource, Clone)]
 pub struct StartupConfig {
-    pub topology_path: String,
+    pub topology_path: PathBuf,
     pub ratio: i32,
 }
 
