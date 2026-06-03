@@ -11,7 +11,7 @@ pub fn destroy_link(
     mut commands: Commands,
     edge_query: Query<(&Edge, Entity)>,
     planet_query: Query<(&Planet, Entity)>,
-    mut explorer_query: Query<(&mut Explorer, Entity)>,
+    explorer_query: Query<(&mut Explorer, Entity)>,
 ) {
     //despawn all its links
     for (e, s) in edge_query {
@@ -20,12 +20,13 @@ pub fn destroy_link(
         }
     }
 
-    if let Some((mut exp,ent)) = explorer_query
-        .iter_mut()
-        .find(|(expl,_)| expl.current_planet == event.planet_id) {
+    // despawn any explorer on the planet
+    for (mut exp,ent) in explorer_query {
+        if exp.current_planet == event.planet_id {
             commands.entity(ent).despawn();
             exp.state = ExpState::Dead;
         }
+    }
 
 
     //despawn the planet itself
