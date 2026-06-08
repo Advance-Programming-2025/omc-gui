@@ -1,9 +1,9 @@
+use crate::ecs::components::ExpButtonActions;
 use crate::ecs::components::{ButtonActions, ListType, RatioButton, UiExplorerText, UiPlanetText};
 use crate::ecs::markers::{
-    GameStateText, DropdownButton, DropdownLabel, DropdownRoot, ExplorerOnlyButton, LogText, ManualExplorer,
-    PlanetOnlyButton, RatioText
+    DropdownButton, DropdownLabel, DropdownRoot, ExplorerOnlyButton, GameStateText, LogText,
+    ManualExplorer, PlanetOnlyButton, RatioText,
 };
-use crate::ecs::components::ExpButtonActions;
 use crate::ecs::resources::{GameState, StartupConfig};
 use crate::ui::button_bundle;
 use bevy::prelude::*;
@@ -105,7 +105,10 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
             // list of planet info: id, status, energy cells, rocket available
             // list of explorer info: id, status, visited planet, bag
             parent.spawn(button_row.clone()).with_children(|parent| {
-                parent.spawn((Text::new("choose an entity to display its characteristics!"), UiPlanetText::Name));
+                parent.spawn((
+                    Text::new("choose an entity to display its characteristics!"),
+                    UiPlanetText::Name,
+                ));
                 parent.spawn((
                     Text::new(""),
                     Visibility::Hidden,
@@ -170,73 +173,68 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                         ButtonActions::ManualAsteroid,
                     ));
                     parent.spawn((
-                        button_bundle(Text::new("Send sunray"),50.),
+                        button_bundle(Text::new("Send sunray"), 50.),
                         ButtonActions::ManualSunray,
                     ));
                 });
 
             //explorer menu
-            parent.spawn((
-                button_row.clone(),
-                ExplorerOnlyButton,
-                Visibility::Hidden,
-            )).with_children(|parent| {
-                parent.spawn((
-                    button_bundle(Text::new("Explorer mode: TBD"), 50.),
-                    ExpButtonActions::ExpModeChange,
-                ));
-                // show the following stuff only if the explorer is in manual mode
-                parent
-                    .spawn((
-                        Node {
-                            width: percent(100.0),
-                            //debug
-                            flex_direction: FlexDirection::Column,
-                            justify_content: JustifyContent::Center,
-                            align_items: AlignItems::Center,
-                            ..default()
-                        },
-                        ManualExplorer,
-                        Visibility::Hidden,
-                    ))
-                    .with_children(|parent| {
-                        parent
-                            .spawn(Node {
+            parent
+                .spawn((button_row.clone(), ExplorerOnlyButton, Visibility::Hidden))
+                .with_children(|parent| {
+                    parent.spawn((
+                        button_bundle(Text::new("Explorer mode: TBD"), 50.),
+                        ExpButtonActions::ExpModeChange,
+                    ));
+                    // show the following stuff only if the explorer is in manual mode
+                    parent
+                        .spawn((
+                            Node {
                                 width: percent(100.0),
-                                flex_direction: FlexDirection::Row,
+                                //debug
+                                flex_direction: FlexDirection::Column,
                                 justify_content: JustifyContent::Center,
                                 align_items: AlignItems::Center,
-                                margin: UiRect::all(Val::Px(10.0)),
                                 ..default()
-                            })
-                            .with_children(|parent| {
-                                parent.spawn(list_factory((
-                                    Text::new("create:"),
-                                    ListType::BasicList,
-                                    110.,
-                                )));
-                                parent.spawn(list_factory((
-                                    Text::new("make:"),
-                                    ListType::ComplexList,
-                                    110.,
-                                )));
-                            });
+                            },
+                            ManualExplorer,
+                            Visibility::Hidden,
+                        ))
+                        .with_children(|parent| {
+                            parent
+                                .spawn(Node {
+                                    width: percent(100.0),
+                                    flex_direction: FlexDirection::Row,
+                                    justify_content: JustifyContent::Center,
+                                    align_items: AlignItems::Center,
+                                    margin: UiRect::all(Val::Px(10.0)),
+                                    ..default()
+                                })
+                                .with_children(|parent| {
+                                    parent.spawn(list_factory((
+                                        Text::new("create:"),
+                                        ListType::BasicList,
+                                        110.,
+                                    )));
+                                    parent.spawn(list_factory((
+                                        Text::new("make:"),
+                                        ListType::ComplexList,
+                                        110.,
+                                    )));
+                                });
 
-                        parent.spawn(list_factory((
-                            Text::new("select destination"),
-                            ListType::MoveList,
-                            220.,
-                        )));
-                    });
-            });
+                            parent.spawn(list_factory((
+                                Text::new("select destination"),
+                                ListType::MoveList,
+                                220.,
+                            )));
+                        });
+                });
         });
     });
 }
 
-pub(crate) fn draw_game_options_menu(
-    mut commands: Commands,
-    ratio: Res<StartupConfig>
-) {
+pub(crate) fn draw_game_options_menu(mut commands: Commands, ratio: Res<StartupConfig>) {
     let root = Node {
         width: Val::Px(350.),
         height: Val::Percent(100.0),
@@ -302,28 +300,39 @@ pub(crate) fn draw_game_options_menu(
             // 3b. Button Row
             parent.spawn(button_row.clone()).with_children(|parent| {
                 //4a. button 1
-                parent.spawn((button_bundle(Text::new("Start"),50.), ButtonActions::StartGame));
+                parent.spawn((
+                    button_bundle(Text::new("Start"), 50.),
+                    ButtonActions::StartGame,
+                ));
 
                 //4b. button 2
-                parent.spawn((button_bundle(Text::new("Pause"),50.), ButtonActions::StopGame));
+                parent.spawn((
+                    button_bundle(Text::new("Pause"), 50.),
+                    ButtonActions::StopGame,
+                ));
             });
 
             parent.spawn(button_row.clone()).with_children(|parent| {
-
-                parent.spawn((button_bundle(Text::new("Nuke"),50.), ButtonActions::Nuke));
+                parent.spawn((button_bundle(Text::new("Nuke"), 50.), ButtonActions::Nuke));
 
                 //4b. button 2
-                parent.spawn((button_bundle(Text::new("Blind"),50.), ButtonActions::Blind));
+                parent.spawn((button_bundle(Text::new("Blind"), 50.), ButtonActions::Blind));
             });
 
-            parent.spawn((Text::new(format!("Sunray to asteroid ratio: {}%", ratio.into_inner().ratio)), RatioText));
+            parent.spawn((
+                Text::new(format!(
+                    "Sunray to asteroid ratio: {}%",
+                    ratio.into_inner().ratio
+                )),
+                RatioText,
+            ));
 
             parent.spawn(button_row.clone()).with_children(|parent| {
                 //4a. button 1
-                parent.spawn((button_bundle(Text::new("Less"),50.), RatioButton::Decrease));
+                parent.spawn((button_bundle(Text::new("Less"), 50.), RatioButton::Decrease));
 
                 //4b. button 2
-                parent.spawn((button_bundle(Text::new("More"),50.), RatioButton::Increase));
+                parent.spawn((button_bundle(Text::new("More"), 50.), RatioButton::Increase));
             });
 
             parent.spawn(log_square).with_children(|parent| {

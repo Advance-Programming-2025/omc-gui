@@ -3,10 +3,12 @@ use omc_galaxy::OrchestratorEvent;
 
 use crate::{
     ecs::{
-        components::Explorer, events::{Celestial, CelestialBody, MoveExplorerEvent, Notification}, resources::{
-            EntityClickRes, ExpState, ExplorerInfoRes, GameState, GameTimer, LogTextRes, OrchestratorResource,
-            PlanetInfoRes, StartupConfig
-        }
+        components::Explorer,
+        events::{Celestial, CelestialBody, MoveExplorerEvent, Notification},
+        resources::{
+            EntityClickRes, ExpState, ExplorerInfoRes, GameState, GameTimer, LogTextRes,
+            OrchestratorResource, PlanetInfoRes, StartupConfig,
+        },
     },
     game::logs::update_logs,
     utils::constants::EXPLORER_NUM,
@@ -23,7 +25,7 @@ pub fn game_loop(
     time: Res<Time>,
     game_explorers: Query<&Explorer>,
     sel: Res<EntityClickRes>,
-    ratio: Res<StartupConfig>
+    ratio: Res<StartupConfig>,
 ) {
     match **state {
         GameState::Playing => {
@@ -41,8 +43,9 @@ pub fn game_loop(
                 // yeah
                 explorers.as_mut().map = orchestrator.orchestrator.get_explorer_states();
                 // launch either an asteroid or a sunray with a random choice
-                let _ = orchestrator.orchestrator.
-                    choose_random_action(0.5, 1. - ((ratio.ratio as f64) / 100.));
+                let _ = orchestrator
+                    .orchestrator
+                    .choose_random_action(0.5, 1. - ((ratio.ratio as f64) / 100.));
                 // handle all of the previous events
                 if let Err(s) = orchestrator.orchestrator.handle_game_messages() {
                     error!("could not handle the messages of this tick: {}", s);
@@ -84,7 +87,7 @@ fn handle_tick(
     events: Vec<OrchestratorEvent>,
     mut log_text: ResMut<LogTextRes>,
     explorers: Query<&Explorer>,
-    sel: Res<EntityClickRes>
+    sel: Res<EntityClickRes>,
 ) {
     for ev in events {
         match ev {
@@ -132,11 +135,17 @@ fn handle_tick(
                 });
 
                 // if the explorer is in manual mode, send the notification
-                if let Some(selected) = sel.explorer{
-                    if let Some(expl) = explorers.iter().find(|exp| exp.id == selected && exp.id == explorer_id) {
-                        if matches!(expl.state, ExpState::Manual){
+                if let Some(selected) = sel.explorer {
+                    if let Some(expl) = explorers
+                        .iter()
+                        .find(|exp| exp.id == selected && exp.id == explorer_id)
+                    {
+                        if matches!(expl.state, ExpState::Manual) {
                             commands.trigger(Notification {
-                                message: format!("Explorer {} moved to planet {}", explorer_id, destination)
+                                message: format!(
+                                    "Explorer {} moved to planet {}",
+                                    explorer_id, destination
+                                ),
                             });
                         }
                     }

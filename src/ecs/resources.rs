@@ -1,4 +1,4 @@
-use std::{collections::VecDeque, path::PathBuf, fmt::Display};
+use std::{collections::VecDeque, fmt::Display, path::PathBuf};
 
 use bevy::prelude::*;
 use omc_galaxy::{Orchestrator, PlanetInfoMap, utils::ExplorerInfoMap};
@@ -71,7 +71,7 @@ pub struct GameTimer(pub Timer);
 #[derive(Resource)]
 pub struct ActiveNotification {
     pub message: Option<String>,
-    pub active_time: Timer
+    pub active_time: Timer,
 }
 
 #[derive(Resource, Clone)]
@@ -84,7 +84,7 @@ impl Default for StartupConfig {
     fn default() -> Self {
         Self {
             topology_path: "assets/default.txt".into(),
-            ratio: DEFAULT_SUNRAY_RATIO
+            ratio: DEFAULT_SUNRAY_RATIO,
         }
     }
 }

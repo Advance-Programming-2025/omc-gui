@@ -60,7 +60,6 @@ pub enum UiExplorerText {
     ResourceBag,
 }
 
-
 #[derive(Component)]
 pub enum ListType {
     MoveList,
@@ -77,7 +76,7 @@ pub struct DropdownItem {
 #[derive(Component)]
 pub enum RatioButton {
     Increase,
-    Decrease
+    Decrease,
 }
 
 #[derive(Component)]
@@ -85,5 +84,5 @@ pub enum StartMenuButton {
     ChooseFile,
     StartGame,
     StartRatioLess,
-    StartRatioMore
+    StartRatioMore,
 }

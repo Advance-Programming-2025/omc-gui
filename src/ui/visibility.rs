@@ -8,8 +8,8 @@ use crate::utils::traits::Visible;
 pub fn update_button_visibility<T>(
     selected: Res<EntityClickRes>,
     mut query: Query<&mut Visibility, With<T>>,
-) where 
-    T: Component + Visible
+) where
+    T: Component + Visible,
 {
     if !selected.is_changed() {
         return;

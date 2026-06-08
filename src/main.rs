@@ -39,16 +39,8 @@ pub fn main() -> Result<(), String> {
     .add_plugins(TweeningPlugin)
     .init_state::<GameState>()
     .add_systems(PreStartup, utils::assets::load_assets)
-    .add_systems(
-        Startup,
-        (
-            app::setup::setup_camera,
-        ),
-    )
-    .add_systems(
-        OnEnter(GameState::WaitingStart),
-        ui::start::start_splash
-    )
+    .add_systems(Startup, (app::setup::setup_camera,))
+    .add_systems(OnEnter(GameState::WaitingStart), ui::start::start_splash)
     .add_systems(
         Update,
         ui::start::start_menu_actions.run_if(in_state(GameState::WaitingStart)),
@@ -61,8 +53,8 @@ pub fn main() -> Result<(), String> {
             app::setup::setup.after(setup_orchestrator),
             ui::menu::draw_entity_info_menu.after(setup_orchestrator),
             ui::menu::draw_game_options_menu,
-            ui::notification::draw_notifications
-        )
+            ui::notification::draw_notifications,
+        ),
     )
     .add_systems(
         Update,
@@ -86,12 +78,13 @@ pub fn main() -> Result<(), String> {
             galaxy::selection::update_selected_entity,
             game::logs::log_text,
             app::scaling::scale_background,
-        ).run_if(not(in_state(GameState::WaitingStart))),
+        )
+            .run_if(not(in_state(GameState::WaitingStart))),
     )
     .add_systems(
         FixedUpdate,
         (game::game::game_loop, galaxy::topology::draw_topology)
-        .run_if(not(in_state(GameState::WaitingStart))),
+            .run_if(not(in_state(GameState::WaitingStart))),
     )
     .add_observer(galaxy::topology::destroy_link)
     .add_observer(galaxy::celestial::move_celestial)

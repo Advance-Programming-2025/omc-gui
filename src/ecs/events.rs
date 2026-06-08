@@ -32,6 +32,6 @@ pub(crate) struct Scroll {
 }
 
 #[derive(Event)]
-pub struct Notification{
-    pub message: String
+pub struct Notification {
+    pub message: String,
 }

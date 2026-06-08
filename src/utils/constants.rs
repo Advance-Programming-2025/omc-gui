@@ -35,6 +35,6 @@ pub(crate) const EXP_TOMMY_OFFSET: (f32, f32) = (25., 25.);
 /// where to place the mattia explorer graphically on the planet, wrt to the planet sprite
 pub(crate) const EXP_MATTIA_OFFSET: (f32, f32) = (-25., -25.);
 
-/// the standard sunray to asteroid ratio at the beginning of the game. 
+/// the standard sunray to asteroid ratio at the beginning of the game.
 /// higher number = more sunrays.
 pub(crate) const DEFAULT_SUNRAY_RATIO: i32 = 80;

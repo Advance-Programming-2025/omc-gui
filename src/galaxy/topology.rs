@@ -1,10 +1,13 @@
 use bevy::prelude::*;
 
-use crate::{ecs::{
-    components::{Edge, Explorer, Planet},
-    events::PlanetDespawn,
-    resources::{ExpState, GalaxySnapshot},
-}, utils::assets::SFXAssets};
+use crate::{
+    ecs::{
+        components::{Edge, Explorer, Planet},
+        events::PlanetDespawn,
+        resources::{ExpState, GalaxySnapshot},
+    },
+    utils::assets::SFXAssets,
+};
 
 pub fn destroy_link(
     event: On<PlanetDespawn>,
@@ -12,7 +15,7 @@ pub fn destroy_link(
     edge_query: Query<(&Edge, Entity)>,
     planet_query: Query<(&Planet, Entity)>,
     explorer_query: Query<(&mut Explorer, Entity)>,
-    sfx: Res<SFXAssets>
+    sfx: Res<SFXAssets>,
 ) {
     //despawn all its links
     for (e, s) in edge_query {
@@ -22,13 +25,12 @@ pub fn destroy_link(
     }
 
     // despawn any explorer on the planet
-    for (mut exp,ent) in explorer_query {
+    for (mut exp, ent) in explorer_query {
         if exp.current_planet == event.planet_id {
             commands.entity(ent).despawn();
             exp.state = ExpState::Dead;
         }
     }
-
 
     //despawn the planet itself
     for (p, e) in planet_query {
@@ -38,12 +40,11 @@ pub fn destroy_link(
     }
 
     // play sfx
-    if let Some(source) = sfx.handles.get(&String::from("planet_death")){
+    if let Some(source) = sfx.handles.get(&String::from("planet_death")) {
         commands.spawn(
-            AudioPlayer::new(source.clone()) // cloning handles is a shallow copy
+            AudioPlayer::new(source.clone()), // cloning handles is a shallow copy
         );
     }
-
 }
 
 pub fn draw_topology(

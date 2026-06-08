@@ -3,8 +3,8 @@ use std::f32::consts::TAU;
 
 use crate::{
     ecs::{
-        markers::Background,
         components::{Explorer, Planet},
+        markers::Background,
         resources::{ActiveNotification, ExpState, GalaxySnapshot, PlanetInfoRes},
     },
     galaxy::selection::choose_on_click,
@@ -17,7 +17,7 @@ use crate::{
     },
 };
 
-pub fn setup_camera(mut commands: Commands){
+pub fn setup_camera(mut commands: Commands) {
     commands.spawn(Camera2d);
 }
 
@@ -30,7 +30,6 @@ pub fn setup(
     planet_assets: Res<PlanetAssets>,
     explorer_assets: Res<ExplorerAssets>,
 ) {
-
     //create and load background image through sprites
     let background: Handle<Image> = asset_loader.load("sky.png");
 
@@ -112,8 +111,8 @@ pub fn setup(
     }
 
     // adds the struct to hold info about the current notification
-    commands.insert_resource(ActiveNotification{
+    commands.insert_resource(ActiveNotification {
         message: None,
-        active_time: Timer::from_seconds(1.0, TimerMode::Once)
+        active_time: Timer::from_seconds(1.0, TimerMode::Once),
     });
 }

@@ -1,9 +1,11 @@
 use bevy::prelude::*;
 
-use crate::ecs::components::{ButtonActions, DropdownItem, ExpButtonActions, Explorer, RatioButton}; 
+use crate::ecs::components::{
+    ButtonActions, DropdownItem, ExpButtonActions, Explorer, RatioButton,
+};
 use crate::ecs::markers::RatioText;
 use crate::ecs::resources::{
-    EntityClickRes, ExpState, GameState, LogTextRes, OrchestratorResource, StartupConfig
+    EntityClickRes, ExpState, GameState, LogTextRes, OrchestratorResource, StartupConfig,
 };
 use crate::game::logs::update_logs;
 
@@ -32,9 +34,8 @@ pub(crate) fn button_hover(
 pub(crate) fn ratio_action(
     mut action_query: Query<(&Interaction, &RatioButton), (Changed<Interaction>, With<Button>)>,
     mut ratio: ResMut<StartupConfig>,
-    mut text: Single<(&mut Text, &RatioText)>
+    mut text: Single<(&mut Text, &RatioText)>,
 ) {
-
     let current = ratio.ratio;
 
     for (&interaction, action) in &mut action_query {
@@ -42,10 +43,10 @@ pub(crate) fn ratio_action(
             match action {
                 RatioButton::Increase => {
                     ratio.ratio = i32::min(current + 5, 100);
-                },
+                }
                 RatioButton::Decrease => {
                     ratio.ratio = i32::max(current - 5, 0);
-                },
+                }
             }
             text.0.0 = format!("Sunray to asteroid ratio: {}%", ratio.ratio)
         }
@@ -237,11 +238,8 @@ pub(crate) fn manual_explorer_action(
                                     }
                                 }
                                 ExpState::Dead => {
-                                    update_logs(
-                                        &mut log_text,
-                                        format!("exp {} has died!\n", id)
-                                    );
-                                },
+                                    update_logs(&mut log_text, format!("exp {} has died!\n", id));
+                                }
                             }
                         }
                     }

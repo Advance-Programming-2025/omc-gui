@@ -1,37 +1,40 @@
+use crate::ecs::{
+    events::Notification,
+    markers::{NotificationContainer, NotificationText},
+    resources::ActiveNotification,
+};
 use bevy::prelude::*;
-use crate::ecs::{markers::{NotificationContainer, NotificationText}, events::Notification, resources::ActiveNotification};
 
-pub fn draw_notifications(
-    mut commands: Commands
-) {
-    commands.spawn((
-        Node {
-            position_type: PositionType::Absolute, // must get displayed above everything else
-            left: Val::Percent(50.0),
-            margin: UiRect {
-                left: Val::Px(-150.0),
+pub fn draw_notifications(mut commands: Commands) {
+    commands
+        .spawn((
+            Node {
+                position_type: PositionType::Absolute, // must get displayed above everything else
+                left: Val::Percent(50.0),
+                margin: UiRect {
+                    left: Val::Px(-150.0),
+                    ..default()
+                },
+                bottom: Val::Px(20.0),
+                padding: UiRect::all(Val::Px(12.0)),
+                display: Display::None, // hidden at startup
                 ..default()
             },
-            bottom: Val::Px(20.0),
-            padding: UiRect::all(Val::Px(12.0)),
-            display: Display::None, // hidden at startup
-            ..default()
-        },
-        BackgroundColor(Color::srgba(0.1, 0.1, 0.1, 0.9)),
-        BorderRadius::all(Val::Px(8.0)),
-        NotificationContainer,
-    ))
-    .with_children(|parent| {
-        parent.spawn((
-            Text::new(""),
-            TextFont {
-                font_size: 14.0,
-                ..default()
-            },
-            TextColor(Color::WHITE),
-            NotificationText,
-        ));
-    });
+            BackgroundColor(Color::srgba(0.1, 0.1, 0.1, 0.9)),
+            BorderRadius::all(Val::Px(8.0)),
+            NotificationContainer,
+        ))
+        .with_children(|parent| {
+            parent.spawn((
+                Text::new(""),
+                TextFont {
+                    font_size: 14.0,
+                    ..default()
+                },
+                TextColor(Color::WHITE),
+                NotificationText,
+            ));
+        });
 }
 
 pub fn set_notification(event: On<Notification>, mut active_msg: ResMut<ActiveNotification>) {
