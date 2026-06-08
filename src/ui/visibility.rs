@@ -1,35 +1,23 @@
 use bevy::prelude::*;
 
-use crate::ecs::components::{Explorer, ExplorerOnlyButton, ManualExplorer, PlanetOnlyButton};
+use crate::ecs::components::{Explorer, ManualExplorer};
 use crate::ecs::resources::{EntityClickRes, ExpState};
+use crate::utils::traits::Visible;
 
-pub fn update_planet_buttons_visibility(
+pub fn update_button_visibility<T>(
     selected: Res<EntityClickRes>,
-    mut query: Query<&mut Visibility, With<PlanetOnlyButton>>,
-) {
+    mut query: Query<&mut Visibility, With<T>>,
+) where 
+    T: Component + Visible
+{
     if !selected.is_changed() {
         return;
     }
 
-    for mut visibility in &mut query {
-        if selected.planet.is_some() {
-            *visibility = Visibility::Inherited;
-        } else {
-            *visibility = Visibility::Hidden;
-        }
-    }
-}
-
-pub fn update_explorer_buttons_visibility(
-    selected: Res<EntityClickRes>,
-    mut query: Query<&mut Visibility, With<ExplorerOnlyButton>>,
-) {
-    if !selected.is_changed() {
-        return;
-    }
+    let select_in = selected.into_inner();
 
     for mut visibility in &mut query {
-        if selected.explorer.is_some() {
+        if T::is_selected(select_in) {
             *visibility = Visibility::Inherited;
         } else {
             *visibility = Visibility::Hidden;

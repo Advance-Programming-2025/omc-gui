@@ -130,7 +130,7 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
             // list of planet info: id, status, energy cells, rocket available
             // list of explorer info: id, status, visited planet, bag
             parent.spawn(button_row.clone()).with_children(|parent| {
-                parent.spawn((Text::new("choose a planet!"), UiPlanetText::Name));
+                parent.spawn((Text::new("choose an entity to display its characteristics!"), UiPlanetText::Name));
                 parent.spawn((
                     Text::new(""),
                     Visibility::Hidden,

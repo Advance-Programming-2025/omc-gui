@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use bevy::window::{WindowMode, WindowPlugin};
 use bevy_tweening::TweeningPlugin;
 
+use crate::ecs::components::{ExplorerOnlyButton, PlanetOnlyButton};
 use crate::ecs::resources::GameState;
 use crate::game::orchestrator::setup_orchestrator;
 
@@ -73,8 +74,8 @@ pub fn main() -> Result<(), String> {
             ui::buttons::manual_explorer_action,
             ui::buttons::explorer_move_action,
             ui::scroll::send_scroll_events,
-            ui::visibility::update_explorer_buttons_visibility,
-            ui::visibility::update_planet_buttons_visibility,
+            ui::visibility::update_button_visibility::<ExplorerOnlyButton>,
+            ui::visibility::update_button_visibility::<PlanetOnlyButton>,
             ui::visibility::update_manual_explorer_visibility,
             ui::dropdown::fill_neighbors_dropdown,
             ui::dropdown::fill_basic_dropdown,

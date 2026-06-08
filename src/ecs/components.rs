@@ -1,7 +1,7 @@
 use bevy::ecs::component::Component;
 use common_game::components::resource::{BasicResourceType, ComplexResourceType};
 
-use crate::ecs::resources::ExpState;
+use crate::{ecs::resources::ExpState, utils::traits::Visible};
 
 // Galaxy-centric components
 #[derive(Component)]
@@ -58,8 +58,20 @@ pub enum UiPlanetText {
 #[derive(Component)]
 pub struct PlanetOnlyButton;
 
+impl Visible for PlanetOnlyButton {
+    fn is_selected(entity: &super::resources::EntityClickRes) -> bool {
+        entity.planet.is_some()
+    }
+}
+
 #[derive(Component)]
 pub struct ExplorerOnlyButton;
+
+impl Visible for ExplorerOnlyButton {
+    fn is_selected(entity: &super::resources::EntityClickRes) -> bool {
+        entity.explorer.is_some()
+    }
+}
 
 #[derive(Component)]
 pub struct ManualExplorer;
