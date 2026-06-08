@@ -1,6 +1,10 @@
 use bevy::prelude::*;
 
-use crate::ecs::{components::{CurrentPathText, StartMenuButton, StartMenuUI}, resources::{GameState, StartupConfig}};
+use crate::ecs::{
+    markers::{CurrentPathText, StartMenuUI}, 
+    resources::{GameState, StartupConfig},
+    components::StartMenuButton
+};
 
 pub(crate) fn start_splash (mut commands: Commands) {
 

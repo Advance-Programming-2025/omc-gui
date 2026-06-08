@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use bevy::window::{WindowMode, WindowPlugin};
 use bevy_tweening::TweeningPlugin;
 
-use crate::ecs::components::{ExplorerOnlyButton, PlanetOnlyButton};
+use crate::ecs::markers::{ExplorerOnlyButton, PlanetOnlyButton};
 use crate::ecs::resources::GameState;
 use crate::game::orchestrator::setup_orchestrator;
 

@@ -1,7 +1,9 @@
-use crate::ecs::components::{
-    ButtonActions, DropdownButton, DropdownLabel, DropdownRoot, ExplorerOnlyButton, ListType, LogText, ManualExplorer, PlanetOnlyButton, RatioButton, RatioText, UiExplorerText, UiPlanetText
+use crate::ecs::components::{ButtonActions, ListType, RatioButton, UiExplorerText, UiPlanetText};
+use crate::ecs::markers::{
+    GameStateText, DropdownButton, DropdownLabel, DropdownRoot, ExplorerOnlyButton, LogText, ManualExplorer,
+    PlanetOnlyButton, RatioText
 };
-use crate::ecs::components::{ExpButtonActions, GameStateText};
+use crate::ecs::components::ExpButtonActions;
 use crate::ecs::resources::GameState;
 use bevy::prelude::*;
 

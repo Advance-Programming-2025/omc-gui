@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 
-use crate::ecs::components::{ButtonActions, DropdownItem, ExpButtonActions, Explorer, RatioButton, RatioText};
+use crate::ecs::components::{ButtonActions, DropdownItem, ExpButtonActions, Explorer, RatioButton}; 
+use crate::ecs::markers::RatioText;
 use crate::ecs::resources::{
     EntityClickRes, ExpState, GameState, LogTextRes, OrchestratorResource, SunrayAsteroidRatio,
 };

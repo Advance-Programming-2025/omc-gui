@@ -1,4 +1,4 @@
-use crate::ecs::components::Background;
+use crate::ecs::markers::Background;
 use bevy::prelude::*;
 
 pub fn scale_background(

@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 
-use crate::ecs::components::{Explorer, ManualExplorer};
+use crate::ecs::components::Explorer;
+use crate::ecs::markers::ManualExplorer;
 use crate::ecs::resources::{EntityClickRes, ExpState};
 use crate::utils::traits::Visible;
 

@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crate::ecs::{components::{NotificationContainer, NotificationText}, events::Notification, resources::ActiveNotification};
+use crate::ecs::{markers::{NotificationContainer, NotificationText}, events::Notification, resources::ActiveNotification};
 
 pub fn draw_notifications(
     mut commands: Commands

@@ -1,7 +1,7 @@
 use bevy::ecs::component::Component;
 use common_game::components::resource::{BasicResourceType, ComplexResourceType};
 
-use crate::{ecs::resources::ExpState, utils::traits::Visible};
+use crate::ecs::resources::ExpState;
 
 // Galaxy-centric components
 #[derive(Component)]
@@ -51,34 +51,6 @@ pub enum UiPlanetText {
     Rocket,
 }
 
-/// Button visibility marker component;
-/// makes it so that the buttons tagged
-/// with this component are rendered only
-/// when a planet is selected.
-#[derive(Component)]
-pub struct PlanetOnlyButton;
-
-impl Visible for PlanetOnlyButton {
-    fn is_selected(entity: &super::resources::EntityClickRes) -> bool {
-        entity.planet.is_some()
-    }
-}
-
-#[derive(Component)]
-pub struct ExplorerOnlyButton;
-
-impl Visible for ExplorerOnlyButton {
-    fn is_selected(entity: &super::resources::EntityClickRes) -> bool {
-        entity.explorer.is_some()
-    }
-}
-
-#[derive(Component)]
-pub struct ManualExplorer;
-
-#[derive(Component)]
-pub struct GameStateText;
-
 /// Explorer info marker component
 #[derive(Component)]
 pub enum UiExplorerText {
@@ -88,18 +60,6 @@ pub enum UiExplorerText {
     ResourceBag,
 }
 
-/// Marker component for any loggable action
-#[derive(Component)]
-pub struct LogText;
-
-#[derive(Component)]
-pub struct DropdownRoot;
-
-#[derive(Component)]
-pub struct DropdownButton;
-
-#[derive(Component)]
-pub struct DropdownLabel;
 
 #[derive(Component)]
 pub enum ListType {
@@ -115,31 +75,13 @@ pub struct DropdownItem {
 }
 
 #[derive(Component)]
-pub struct Background;
-
-#[derive(Component)]
-pub struct NotificationContainer;
-
-#[derive(Component)]
-pub struct NotificationText;
-
-#[derive(Component)]
 pub enum RatioButton {
     Increase,
     Decrease
 }
 
 #[derive(Component)]
-pub struct RatioText;
-
-#[derive(Component)]
 pub enum StartMenuButton {
     ChooseFile,
     StartGame
 }
-
-#[derive(Component)]
-pub struct StartMenuUI;
-
-#[derive(Component)]
-pub struct CurrentPathText;

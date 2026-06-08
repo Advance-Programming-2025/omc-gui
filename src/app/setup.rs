@@ -3,7 +3,8 @@ use std::f32::consts::TAU;
 
 use crate::{
     ecs::{
-        components::{Background, Explorer, Planet},
+        markers::Background,
+        components::{Explorer, Planet},
         resources::{ActiveNotification, ExpState, GalaxySnapshot, PlanetInfoRes, SunrayAsteroidRatio},
     },
     galaxy::selection::choose_on_click,

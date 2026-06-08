@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::ecs::{components::LogText, resources::LogTextRes};
+use crate::ecs::{markers::LogText, resources::LogTextRes};
 
 pub(crate) fn update_logs(log_text: &mut ResMut<LogTextRes>, event_to_push: String) {
     log_text.text.push_front(event_to_push);
