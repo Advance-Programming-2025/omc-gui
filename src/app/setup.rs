@@ -5,7 +5,7 @@ use crate::{
     ecs::{
         markers::Background,
         components::{Explorer, Planet},
-        resources::{ActiveNotification, ExpState, GalaxySnapshot, PlanetInfoRes, SunrayAsteroidRatio},
+        resources::{ActiveNotification, ExpState, GalaxySnapshot, PlanetInfoRes},
     },
     galaxy::selection::choose_on_click,
     utils::{
@@ -116,7 +116,4 @@ pub fn setup(
         message: None,
         active_time: Timer::from_seconds(1.0, TimerMode::Once)
     });
-
-    // adds the resource that keeps track of slider values
-    commands.insert_resource(SunrayAsteroidRatio::default());
 }

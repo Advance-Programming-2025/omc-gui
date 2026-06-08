@@ -74,17 +74,6 @@ pub struct ActiveNotification {
     pub active_time: Timer
 }
 
-#[derive(Resource)]
-pub struct SunrayAsteroidRatio(pub i32);
-
-impl Default for SunrayAsteroidRatio {
-    fn default() -> Self {
-        Self(DEFAULT_SUNRAY_RATIO)
-    }
-}
-
-// TODO add this to the start menu and setup
-
 #[derive(Resource, Clone)]
 pub struct StartupConfig {
     pub topology_path: PathBuf,
@@ -95,7 +84,7 @@ impl Default for StartupConfig {
     fn default() -> Self {
         Self {
             topology_path: "assets/default.txt".into(),
-            ratio: 80
+            ratio: DEFAULT_SUNRAY_RATIO
         }
     }
 }

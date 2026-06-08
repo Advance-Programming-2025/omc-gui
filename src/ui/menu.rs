@@ -4,7 +4,7 @@ use crate::ecs::markers::{
     PlanetOnlyButton, RatioText
 };
 use crate::ecs::components::ExpButtonActions;
-use crate::ecs::resources::GameState;
+use crate::ecs::resources::{GameState, StartupConfig};
 use bevy::prelude::*;
 
 ///Draws the menu that holds the list of all explorers and planets
@@ -260,7 +260,10 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
     });
 }
 
-pub(crate) fn draw_game_options_menu(mut commands: Commands) {
+pub(crate) fn draw_game_options_menu(
+    mut commands: Commands,
+    ratio: Res<StartupConfig>
+) {
     let root = Node {
         width: Val::Px(350.),
         height: Val::Percent(100.0),
@@ -361,13 +364,6 @@ pub(crate) fn draw_game_options_menu(mut commands: Commands) {
             });
 
             parent.spawn(button_row.clone()).with_children(|parent| {
-                // TODO decide whether this is worth implementing
-                
-                //4a. button 1
-                // parent.spawn((
-                //     button_factory(Text::new("Restart")),
-                //     ButtonActions::StartGame,
-                // ));
 
                 parent.spawn((button_factory(Text::new("Nuke")), ButtonActions::Nuke));
 
@@ -375,7 +371,7 @@ pub(crate) fn draw_game_options_menu(mut commands: Commands) {
                 parent.spawn((button_factory(Text::new("Blind")), ButtonActions::Blind));
             });
 
-            parent.spawn((Text::new("Sunray to asteroid ratio: 80%"), RatioText));
+            parent.spawn((Text::new(format!("Sunray to asteroid ratio: {}%", ratio.into_inner().ratio)), RatioText));
 
             parent.spawn(button_row.clone()).with_children(|parent| {
                 //4a. button 1

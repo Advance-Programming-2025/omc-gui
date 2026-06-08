@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::ecs::components::{ButtonActions, DropdownItem, ExpButtonActions, Explorer, RatioButton}; 
 use crate::ecs::markers::RatioText;
 use crate::ecs::resources::{
-    EntityClickRes, ExpState, GameState, LogTextRes, OrchestratorResource, SunrayAsteroidRatio,
+    EntityClickRes, ExpState, GameState, LogTextRes, OrchestratorResource, StartupConfig
 };
 use crate::game::logs::update_logs;
 
@@ -17,7 +17,7 @@ pub(crate) fn button_hover(
         match interaction {
             Interaction::Pressed => {
                 *color = Color::srgb(0.35, 0.75, 0.35).into();
-                println!("Button Pressed!");
+                debug!("Button Pressed!");
             }
             Interaction::Hovered => {
                 *color = Color::srgb(0.25, 0.25, 0.25).into();
@@ -31,23 +31,23 @@ pub(crate) fn button_hover(
 
 pub(crate) fn ratio_action(
     mut action_query: Query<(&Interaction, &RatioButton), (Changed<Interaction>, With<Button>)>,
-    mut ratio: ResMut<SunrayAsteroidRatio>,
+    mut ratio: ResMut<StartupConfig>,
     mut text: Single<(&mut Text, &RatioText)>
 ) {
 
-    let current = ratio.0;
+    let current = ratio.ratio;
 
     for (&interaction, action) in &mut action_query {
         if interaction == Interaction::Pressed {
             match action {
                 RatioButton::Increase => {
-                    ratio.0 = i32::min(current + 5, 100);
+                    ratio.ratio = i32::min(current + 5, 100);
                 },
                 RatioButton::Decrease => {
-                    ratio.0 = i32::max(current - 5, 0);
+                    ratio.ratio = i32::max(current - 5, 0);
                 },
             }
-            text.0.0 = format!("Sunray to asteroid ratio: {}%", ratio.0)
+            text.0.0 = format!("Sunray to asteroid ratio: {}%", ratio.ratio)
         }
     }
 }
@@ -66,7 +66,7 @@ pub(crate) fn game_menu_action(
                 }
                 ButtonActions::StopGame => {
                     state.set(GameState::Paused);
-                    println!("game should pause now...");
+                    debug!("game should pause now...");
                 }
                 ButtonActions::Blind => {
                     state.set(GameState::Override);
@@ -79,7 +79,7 @@ pub(crate) fn game_menu_action(
                         }
                     }
 
-                    println!("targets: {:?}", targets);
+                    debug!("targets: {:?}", targets);
 
                     if let Err(s) = orchestrator
                         .orchestrator
@@ -236,7 +236,12 @@ pub(crate) fn manual_explorer_action(
                                         );
                                     }
                                 }
-                                ExpState::Dead => todo!(),
+                                ExpState::Dead => {
+                                    update_logs(
+                                        &mut log_text,
+                                        format!("exp {} has died!\n", id)
+                                    );
+                                },
                             }
                         }
                     }

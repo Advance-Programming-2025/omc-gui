@@ -4,7 +4,8 @@ use omc_galaxy::OrchestratorEvent;
 use crate::{
     ecs::{
         components::Explorer, events::{Celestial, CelestialBody, MoveExplorerEvent, Notification}, resources::{
-            EntityClickRes, ExpState, ExplorerInfoRes, GameState, GameTimer, LogTextRes, OrchestratorResource, PlanetInfoRes, SunrayAsteroidRatio
+            EntityClickRes, ExpState, ExplorerInfoRes, GameState, GameTimer, LogTextRes, OrchestratorResource,
+            PlanetInfoRes, StartupConfig
         }
     },
     game::logs::update_logs,
@@ -22,14 +23,14 @@ pub fn game_loop(
     time: Res<Time>,
     game_explorers: Query<&Explorer>,
     sel: Res<EntityClickRes>,
-    ratio: Res<SunrayAsteroidRatio>
+    ratio: Res<StartupConfig>
 ) {
     match **state {
         GameState::Playing => {
             timer.tick(time.delta());
 
             if timer.is_finished() {
-                println!("ENTERED TIMER");
+                debug!("ENTERED TIMER");
 
                 let events = std::mem::take(&mut orchestrator.orchestrator.gui_messages);
 
@@ -40,15 +41,14 @@ pub fn game_loop(
                 // yeah
                 explorers.as_mut().map = orchestrator.orchestrator.get_explorer_states();
                 // launch either an asteroid or a sunray with a random choice
-                // TODO make it so the user can choose the amount of asteroids (slider perhaps)
                 let _ = orchestrator.orchestrator.
-                    choose_random_action(0.5, 1. - ((ratio.0 as f64) / 100.));
+                    choose_random_action(0.5, 1. - ((ratio.ratio as f64) / 100.));
                 // handle all of the previous events
                 if let Err(s) = orchestrator.orchestrator.handle_game_messages() {
                     error!("could not handle the messages of this tick: {}", s);
                 }
 
-                println!("EXITING TIMER");
+                debug!("EXITING TIMER");
                 timer.reset();
             }
         }
