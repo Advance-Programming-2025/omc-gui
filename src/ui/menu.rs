@@ -5,6 +5,7 @@ use crate::ecs::markers::{
 };
 use crate::ecs::components::ExpButtonActions;
 use crate::ecs::resources::{GameState, StartupConfig};
+use crate::ui::button_bundle;
 use bevy::prelude::*;
 
 ///Draws the menu that holds the list of all explorers and planets
@@ -50,34 +51,6 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
             ..default()
         },
     );
-
-    let button_factory = |text: Text| {
-        (
-            Button,
-            BackgroundColor(Color::srgb(0.67, 0.30, 0.53)),
-            Node {
-                width: Val::Percent(50.),
-                height: Val::Px(40.0),
-                margin: UiRect::all(Val::Px(20.0)),
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
-                ..default()
-            },
-            BorderRadius::all(Val::Px(15.)),
-            children![(
-                text,
-                TextFont {
-                    font_size: 12.,
-                    ..default()
-                },
-                TextLayout {
-                    justify: Justify::Center,
-                    ..default()
-                },
-                TextColor(Color::srgb(0.97, 0.98, 0.96))
-            )],
-        )
-    };
 
     let list_factory = |(title, dropdown_el, width): (Text, ListType, f32)| {
         (
@@ -193,11 +166,11 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                 ))
                 .with_children(|parent| {
                     parent.spawn((
-                        button_factory(Text::new("Send asteroid")),
+                        button_bundle(Text::new("Send asteroid"), 50.),
                         ButtonActions::ManualAsteroid,
                     ));
                     parent.spawn((
-                        button_factory(Text::new("Send sunray")),
+                        button_bundle(Text::new("Send sunray"),50.),
                         ButtonActions::ManualSunray,
                     ));
                 });
@@ -209,7 +182,7 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                 Visibility::Hidden,
             )).with_children(|parent| {
                 parent.spawn((
-                    button_factory(Text::new("Explorer mode: TBD")),
+                    button_bundle(Text::new("Explorer mode: TBD"), 50.),
                     ExpButtonActions::ExpModeChange,
                 ));
                 // show the following stuff only if the explorer is in manual mode
@@ -318,34 +291,6 @@ pub(crate) fn draw_game_options_menu(
 
     let title_text = Text::new("Galaxy Menu");
 
-    let button_factory = |text: Text| {
-        (
-            Button,
-            BackgroundColor(Color::srgb(0.67, 0.30, 0.53)),
-            Node {
-                width: Val::Percent(50.),
-                height: Val::Px(40.0),
-                margin: UiRect::all(Val::Px(20.0)),
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
-                ..default()
-            },
-            BorderRadius::all(Val::Px(15.)),
-            children![(
-                text,
-                TextFont {
-                    font_size: 12.,
-                    ..default()
-                },
-                TextLayout {
-                    justify: Justify::Center,
-                    ..default()
-                },
-                TextColor(Color::srgb(0.97, 0.98, 0.96))
-            )],
-        )
-    };
-
     // 1. Root node
     commands.spawn(root).with_children(|parent| {
         // 2. Side menu panel
@@ -357,28 +302,28 @@ pub(crate) fn draw_game_options_menu(
             // 3b. Button Row
             parent.spawn(button_row.clone()).with_children(|parent| {
                 //4a. button 1
-                parent.spawn((button_factory(Text::new("Start")), ButtonActions::StartGame));
+                parent.spawn((button_bundle(Text::new("Start"),50.), ButtonActions::StartGame));
 
                 //4b. button 2
-                parent.spawn((button_factory(Text::new("Pause")), ButtonActions::StopGame));
+                parent.spawn((button_bundle(Text::new("Pause"),50.), ButtonActions::StopGame));
             });
 
             parent.spawn(button_row.clone()).with_children(|parent| {
 
-                parent.spawn((button_factory(Text::new("Nuke")), ButtonActions::Nuke));
+                parent.spawn((button_bundle(Text::new("Nuke"),50.), ButtonActions::Nuke));
 
                 //4b. button 2
-                parent.spawn((button_factory(Text::new("Blind")), ButtonActions::Blind));
+                parent.spawn((button_bundle(Text::new("Blind"),50.), ButtonActions::Blind));
             });
 
             parent.spawn((Text::new(format!("Sunray to asteroid ratio: {}%", ratio.into_inner().ratio)), RatioText));
 
             parent.spawn(button_row.clone()).with_children(|parent| {
                 //4a. button 1
-                parent.spawn((button_factory(Text::new("Less")), RatioButton::Decrease));
+                parent.spawn((button_bundle(Text::new("Less"),50.), RatioButton::Decrease));
 
                 //4b. button 2
-                parent.spawn((button_factory(Text::new("More")), RatioButton::Increase));
+                parent.spawn((button_bundle(Text::new("More"),50.), RatioButton::Increase));
             });
 
             parent.spawn(log_square).with_children(|parent| {

@@ -1,45 +1,15 @@
 use bevy::prelude::*;
 
-use crate::ecs::{
-    markers::{CurrentPathText, StartMenuUI}, 
-    resources::{GameState, StartupConfig},
-    components::StartMenuButton
-};
+use crate::{ecs::{
+    components::StartMenuButton, markers::{CurrentPathText, StartMenuUI, StartRatioText}, resources::{GameState, StartupConfig}
+}, ui::button_bundle};
 
 pub(crate) fn start_splash (mut commands: Commands) {
 
     let config_file = StartupConfig::default();
     let starter_file = config_file.topology_path.clone();
+    let starter_ratio = config_file.ratio;
     commands.insert_resource(config_file);
-
-    // TODO should probably just turn this into a function instead of copy pasting a closure...
-    let button_factory = |text: Text| {
-        (
-            Button,
-            BackgroundColor(Color::srgb(0.67, 0.30, 0.53)),
-            Node {
-                width: Val::Percent(50.),
-                height: Val::Px(40.0),
-                margin: UiRect::all(Val::Px(20.0)),
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
-                ..default()
-            },
-            BorderRadius::all(Val::Px(15.)),
-            children![(
-                text,
-                TextFont {
-                    font_size: 12.,
-                    ..default()
-                },
-                TextLayout {
-                    justify: Justify::Center,
-                    ..default()
-                },
-                TextColor(Color::srgb(0.97, 0.98, 0.96))
-            )],
-        )
-    };
 
     commands.spawn((Node {
         width: Val::Percent(100.),
@@ -50,18 +20,51 @@ pub(crate) fn start_splash (mut commands: Commands) {
         justify_content: JustifyContent::Center,
         ..Default::default()
     }, StartMenuUI)).with_children(|container| {
-        container.spawn(Text::new("One Million Crabs: Galaxy Visualizer"));
+        container.spawn((Text::new("One Million Crabs: Galaxy Visualizer"),
+        TextFont {
+            font_size: 36.,
+            ..Default::default()
+        }
+    ));
         container.spawn((
-            button_factory(Text::new("Choose file")),
+            button_bundle(Text::new("Choose file"),50.),
             StartMenuButton::ChooseFile
         ));
+
         container.spawn((
             Text::new(format!("Current path: {}", starter_file.display())),
             CurrentPathText
         ));
 
+        container.spawn(
+            Node {
+                width: Val::Percent(100.),
+                display: Display::Flex,
+                flex_direction: FlexDirection::Row,
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                ..Default::default()
+            }
+        ).with_children(|ratio_container| {
+            
+            ratio_container.spawn((
+                button_bundle(Text::new("-"),10.),
+                StartMenuButton::StartRatioLess
+            ));
+
+            ratio_container.spawn((
+                Text::new(format!("Asteroid/sunray ratio: {}%", starter_ratio)),
+                StartRatioText
+            ));
+
+            ratio_container.spawn((
+                button_bundle(Text::new("+"),10.),
+                StartMenuButton::StartRatioMore
+            ));
+        });
+
         container.spawn((
-            button_factory(Text::new("Start game")),
+            button_bundle(Text::new("Start game"), 50.),
             StartMenuButton::StartGame
         ));
     });
@@ -72,6 +75,7 @@ pub(crate) fn start_menu_actions (
     mut state: ResMut<NextState<GameState>>,
     mut config_res: ResMut<StartupConfig>,
     mut text_query: Query<(&mut Text, &CurrentPathText)>,
+    mut ratio_query: Query<(&mut Text, &StartRatioText), Without<CurrentPathText>>,
 ) {
     for (&interaction, action_type) in &mut action_query {
         if interaction == Interaction::Pressed {
@@ -91,6 +95,22 @@ pub(crate) fn start_menu_actions (
                 },
                 StartMenuButton::StartGame => {
                     state.set(GameState::Playing);
+                },
+                StartMenuButton::StartRatioLess => {
+                    config_res.ratio = i32::max(0, config_res.ratio - 5);
+                    for (mut text, _) in &mut ratio_query {
+                            **text = format!(
+                                "Asteroid/sunray ratio: {}%", config_res.ratio
+                            );
+                        }
+                },
+                StartMenuButton::StartRatioMore => {
+                    config_res.ratio = i32::min(100, config_res.ratio + 5);
+                    for (mut text, _) in &mut ratio_query {
+                            **text = format!(
+                                "Asteroid/sunray ratio: {}%", config_res.ratio
+                            );
+                        }
                 },
             }
         }
