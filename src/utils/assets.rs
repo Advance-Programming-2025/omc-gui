@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{platform::collections::HashMap, prelude::*};
 
 use crate::utils::constants::{EXP_SPRITE_NUM, PLANET_SPRITE_NUM};
 
@@ -15,6 +15,11 @@ pub(crate) struct ExplorerAssets {
 #[derive(Resource)]
 pub(crate) struct CelestialAssets {
     pub handles: (Handle<Image>, Handle<Image>),
+}
+
+#[derive(Resource)]
+pub(crate) struct SFXAssets {
+    pub handles: HashMap<String, Handle<AudioSource>>
 }
 
 pub fn load_assets(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -41,5 +46,13 @@ pub fn load_assets(mut commands: Commands, asset_server: Res<AssetServer>) {
     }
     commands.insert_resource(ExplorerAssets {
         handles: exp_handles,
+    });
+
+    let mut sfx = HashMap::new();
+    sfx.insert("explorer_pop".to_string(), asset_server.load("explorer_pop.ogg"));
+    sfx.insert("planet_death".to_string(), asset_server.load("planet_death.ogg"));
+
+    commands.insert_resource(SFXAssets{
+        handles: sfx
     });
 }

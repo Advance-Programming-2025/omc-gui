@@ -83,5 +83,7 @@ pub enum RatioButton {
 #[derive(Component)]
 pub enum StartMenuButton {
     ChooseFile,
-    StartGame
+    StartGame,
+    StartRatioLess,
+    StartRatioMore
 }

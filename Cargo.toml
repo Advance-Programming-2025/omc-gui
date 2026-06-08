@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-bevy = { version = "0.17.0", features = ["dynamic_linking"] }
+bevy = { version = "0.17.0", features = ["dynamic_linking", "bevy_audio"] }
 bevy_tweening = "0.14.0"
 dotenv = "0.15.0"
 # omc-galaxy = { git = "https://github.com/Advance-Programming-2025/omc-galaxy.git" }

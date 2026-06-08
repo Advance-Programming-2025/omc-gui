@@ -71,3 +71,7 @@ pub struct StartMenuUI;
 /// Marker for the galaxy configuration path that is currently selected
 #[derive(Component)]
 pub struct CurrentPathText;
+
+/// Marker for the text for the initial sunray to asteroid ratio
+#[derive(Component)]
+pub struct StartRatioText;

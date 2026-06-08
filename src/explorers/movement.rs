@@ -1,12 +1,14 @@
 use bevy::prelude::*;
 
-use crate::ecs::{
+use crate::{ecs::{
     components::{Explorer, Planet},
     events::MoveExplorerEvent,
-};
+}, utils::assets::SFXAssets};
 
 pub fn move_explorer(
     event: On<MoveExplorerEvent>,
+    mut commands: Commands,
+    sfx: Res<SFXAssets>,
     mut param_set: ParamSet<(
         Query<(&mut Explorer, &mut Transform)>,
         Query<(&Planet, &Transform), Without<Explorer>>,
@@ -36,6 +38,13 @@ pub fn move_explorer(
                         y: target.translation.y + explorer.position_offset.1,
                         z: 3.,
                     });
+
+                    // play sfx
+                    if let Some(source) = sfx.handles.get("explorer_pop"){
+                        commands.spawn(
+                            AudioPlayer::new(source.clone()) // cloning handles is a shallow copy
+                        );
+                    }
                 }
                 None => {
                     warn!(

@@ -1,10 +1,10 @@
 use bevy::prelude::*;
 
-use crate::ecs::{
+use crate::{ecs::{
     components::{Edge, Explorer, Planet},
     events::PlanetDespawn,
     resources::{ExpState, GalaxySnapshot},
-};
+}, utils::assets::SFXAssets};
 
 pub fn destroy_link(
     event: On<PlanetDespawn>,
@@ -12,6 +12,7 @@ pub fn destroy_link(
     edge_query: Query<(&Edge, Entity)>,
     planet_query: Query<(&Planet, Entity)>,
     explorer_query: Query<(&mut Explorer, Entity)>,
+    sfx: Res<SFXAssets>
 ) {
     //despawn all its links
     for (e, s) in edge_query {
@@ -35,6 +36,14 @@ pub fn destroy_link(
             commands.entity(e).despawn();
         }
     }
+
+    // play sfx
+    if let Some(source) = sfx.handles.get(&String::from("planet_death")){
+        commands.spawn(
+            AudioPlayer::new(source.clone()) // cloning handles is a shallow copy
+        );
+    }
+
 }
 
 pub fn draw_topology(
@@ -47,7 +56,7 @@ pub fn draw_topology(
         for (_, en) in old_links {
             commands.entity(en).despawn();
         }
-        let gtop = &snapshot.edges; //TODO do something BETTER than this
+        let gtop = &snapshot.edges;
 
         for (a, b) in gtop.iter() {
             let (_, t1) = planets.iter().find(|(p, _)| p.id as u32 == *a).unwrap();
