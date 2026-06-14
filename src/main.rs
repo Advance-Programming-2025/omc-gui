@@ -1,7 +1,10 @@
 use bevy::log::{Level, LogPlugin};
 use bevy::prelude::*;
 use bevy::window::{WindowMode, WindowPlugin};
+
 use bevy_tweening::TweeningPlugin;
+
+use bevy_embedded_assets::EmbeddedAssetPlugin;
 
 use crate::ecs::markers::{ExplorerOnlyButton, PlanetOnlyButton};
 use crate::ecs::resources::GameState;
@@ -17,13 +20,14 @@ mod utils;
 
 pub fn main() -> Result<(), String> {
     let mut app = App::new();
-    app.add_plugins((
+    app.add_plugins(EmbeddedAssetPlugin::default())
+    .add_plugins((
         // Full screen
         DefaultPlugins
             .set(WindowPlugin {
                 primary_window: Some(Window {
                     resizable: false,
-                    mode: WindowMode::Windowed,
+                    mode: WindowMode::BorderlessFullscreen(MonitorSelection::Primary),
                     ..Default::default()
                 }),
                 ..Default::default()
