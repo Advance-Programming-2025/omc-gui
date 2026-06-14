@@ -1,0 +1,39 @@
+name: Cargo Build & Test
+
+on:
+  push:
+    tags:
+      - 'release*'
+
+
+env: 
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build_and_test:
+    name: omc-gui - latest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install wayland dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config libwayland-dev libxkbcommon-dev alsa
+
+      - run: cargo build --release
+      - run: cargo test
+
+      - name: Upload binary to releases
+        uses: svenstaro/upload-release-action@v2
+        with: 
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: target/release/omc-gui
+          asset_name: omc-gui
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "Latest release of the OMC galaxy visualizer"
+
