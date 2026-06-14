@@ -257,9 +257,17 @@ pub(crate) fn explorer_move_action(
     for (&interaction, action) in &mut action_query {
         if interaction == Interaction::Pressed {
             state.set(GameState::Override);
+            //updating move_to_planet_id
+            match orchestrator.orchestrator.explorers_info.get_mut(&action.explorer_id) {
+                Some(explorer_info) => {
+                    explorer_info.move_to_planet_id = action.planet_id as i32;
+                }
+                None => {
+                }
+            }
             if let Err(e) = orchestrator
                 .orchestrator
-                .send_move_to_planet(action.explorer_id, action.planet_id)
+                .send_incoming_explorer_request(action.planet_id, action.explorer_id)
             {
                 error!("error in explorer move:{}", e);
             }
