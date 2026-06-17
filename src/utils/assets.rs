@@ -25,15 +25,15 @@ pub(crate) struct SFXAssets {
 pub fn load_assets(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut planet_handles = Vec::new();
     for i in 0..PLANET_SPRITE_NUM {
-        let path = format!("embedded://planet{}.png", i);
+        let path = format!("embedded://images/planet{}.png", i);
         planet_handles.push(asset_server.load(path));
     }
     commands.insert_resource(PlanetAssets {
         handles: planet_handles,
     });
 
-    let asteroid_handle = asset_server.load("embedded://asteroid.png");
-    let sunray_handle = asset_server.load("embedded://sunray.png");
+    let asteroid_handle = asset_server.load("embedded://images/asteroid.png");
+    let sunray_handle = asset_server.load("embedded://images/sunray.png");
 
     commands.insert_resource(CelestialAssets {
         handles: (sunray_handle, asteroid_handle),
@@ -41,7 +41,7 @@ pub fn load_assets(mut commands: Commands, asset_server: Res<AssetServer>) {
 
     let mut exp_handles = Vec::new();
     for i in 0..EXP_SPRITE_NUM {
-        let path = format!("embedded://explorer{}.png", i);
+        let path = format!("embedded://images/explorer{}.png", i);
         exp_handles.push(asset_server.load(path));
     }
     commands.insert_resource(ExplorerAssets {
@@ -51,11 +51,11 @@ pub fn load_assets(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut sfx = HashMap::new();
     sfx.insert(
         "explorer_pop".to_string(),
-        asset_server.load("embedded://explorer_pop.ogg"),
+        asset_server.load("embedded://sfx/explorer_pop.ogg"),
     );
     sfx.insert(
         "planet_death".to_string(),
-        asset_server.load("embedded://planet_death.ogg"),
+        asset_server.load("embedded://sfx/planet_death.ogg"),
     );
 
     commands.insert_resource(SFXAssets { handles: sfx });

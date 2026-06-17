@@ -89,7 +89,7 @@ pub struct StartupConfig {
 impl Default for StartupConfig {
     fn default() -> Self {
         Self {
-            topology_path: "assets/default.txt".into(),
+            topology_path: "assets/topologies/default.txt".into(),
             ratio: DEFAULT_SUNRAY_RATIO,
         }
     }

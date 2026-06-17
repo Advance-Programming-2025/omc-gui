@@ -29,7 +29,7 @@ pub fn setup(
     explorer_assets: Res<ExplorerAssets>,
 ) {
     //create and load background image through sprites
-    let background: Handle<Image> = asset_loader.load("embedded://sky.png");
+    let background: Handle<Image> = asset_loader.load("embedded://images/sky.png");
 
     info!(
         "Queried window size is {} by {}",
