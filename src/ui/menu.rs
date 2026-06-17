@@ -111,49 +111,73 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                 ));
                 parent.spawn((
                     Text::new(""),
-                    Visibility::Hidden,
+                    Node {
+                        display: Display::None,
+                        ..default()
+                    },
                     PlanetOnlyButton,
                     UiPlanetText::Id,
                 ));
                 parent.spawn((
                     Text::new(""),
-                    Visibility::Hidden,
+                    Node {
+                        display: Display::None,
+                        ..default()
+                    },
                     PlanetOnlyButton,
                     UiPlanetText::Status,
                 ));
                 parent.spawn((
                     Text::new(""),
-                    Visibility::Hidden,
+                    Node {
+                        display: Display::None,
+                        ..default()
+                    },
                     PlanetOnlyButton,
                     UiPlanetText::Energy,
                 ));
                 parent.spawn((
                     Text::new(""),
-                    Visibility::Hidden,
+                    Node {
+                        display: Display::None,
+                        ..default()
+                    },
                     PlanetOnlyButton,
                     UiPlanetText::Rocket,
                 ));
                 parent.spawn((
                     Text::new(""),
-                    Visibility::Hidden,
+                    Node {
+                        display: Display::None,
+                        ..default()
+                    },
                     ExplorerOnlyButton,
                     UiExplorerText::Id,
                 ));
                 parent.spawn((
                     Text::new(""),
-                    Visibility::Hidden,
+                    Node {
+                        display: Display::None,
+                        ..default()
+                    },
                     ExplorerOnlyButton,
                     UiExplorerText::Status,
                 ));
                 parent.spawn((
                     Text::new(""),
-                    Visibility::Hidden,
+                    Node {
+                        display: Display::None,
+                        ..default()
+                    },
                     ExplorerOnlyButton,
                     UiExplorerText::Visiting,
                 ));
                 parent.spawn((
                     Text::new(""),
-                    Visibility::Hidden,
+                    Node {
+                        display: Display::None,
+                        ..default()
+                    },
                     ExplorerOnlyButton,
                     UiExplorerText::ResourceBag,
                 ));
@@ -163,8 +187,10 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
             // shown only if a planet has been selected
             parent
                 .spawn((
-                    button_row.clone(),
-                    Visibility::Hidden, //only in the beginning
+                    Node {
+                        display: Display::None,
+                        ..button_row.clone()
+                    },
                     PlanetOnlyButton,
                 ))
                 .with_children(|parent| {
@@ -180,7 +206,13 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
 
             //explorer menu
             parent
-                .spawn((button_row.clone(), ExplorerOnlyButton, Visibility::Hidden))
+                .spawn((
+                    Node {
+                        display: Display::None,
+                        ..button_row.clone()
+                    },
+                    ExplorerOnlyButton,
+                ))
                 .with_children(|parent| {
                     parent.spawn((
                         button_bundle(Text::new("Explorer mode: TBD"), 50.),
@@ -195,10 +227,10 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                                 flex_direction: FlexDirection::Column,
                                 justify_content: JustifyContent::Center,
                                 align_items: AlignItems::Center,
+                                display: Display::None,
                                 ..default()
                             },
                             ManualExplorer,
-                            Visibility::Hidden,
                         ))
                         .with_children(|parent| {
                             parent

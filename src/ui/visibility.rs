@@ -7,7 +7,7 @@ use crate::utils::traits::Visible;
 
 pub fn update_button_visibility<T>(
     selected: Res<EntityClickRes>,
-    mut query: Query<&mut Visibility, With<T>>,
+    mut query: Query<&mut Node, With<T>>,
 ) where
     T: Component + Visible,
 {
@@ -17,11 +17,11 @@ pub fn update_button_visibility<T>(
 
     let select_in = selected.into_inner();
 
-    for mut visibility in &mut query {
+    for mut node in &mut query {
         if T::is_selected(select_in) {
-            *visibility = Visibility::Inherited;
+            node.display = Display::Flex;
         } else {
-            *visibility = Visibility::Hidden;
+            node.display = Display::None;
         }
     }
 }
@@ -29,7 +29,7 @@ pub fn update_button_visibility<T>(
 pub fn update_manual_explorer_visibility(
     selected: Res<EntityClickRes>,
     explorers: Query<&Explorer>,
-    mut query: Query<&mut Visibility, With<ManualExplorer>>,
+    mut query: Query<&mut Node, With<ManualExplorer>>,
 ) {
     // gets from all explorers the one with the right ID, then
     // checks if the state is manual, otherwise its menu will get hidden
@@ -43,11 +43,11 @@ pub fn update_manual_explorer_visibility(
         false
     };
 
-    for mut visibility in &mut query {
+    for mut node in &mut query {
         if visible {
-            *visibility = Visibility::Inherited;
+            node.display = Display::Flex;
         } else {
-            *visibility = Visibility::Hidden;
+            node.display = Display::None;
         }
     }
 }
