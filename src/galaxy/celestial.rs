@@ -24,7 +24,6 @@ pub fn move_celestial(
     info!("MOVE_CELESTIAL: EVENT FROM ID {} ", event.planet_id);
 
     for (p, t) in planet_query {
-        print!("{}, ", p.id);
         if p.id == event.planet_id {
             let sunray_sprite = match event.kind {
                 CelestialBody::Sunray => {
