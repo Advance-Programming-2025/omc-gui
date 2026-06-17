@@ -38,9 +38,18 @@ pub fn game_loop(
 
                 handle_tick(&mut commands, events, log_text, game_explorers, sel);
 
-                // update the planet state map after the events occurrederr
+                // get the bag of the explorers to update
+                for exp_id in 0..EXPLORER_NUM{
+                    let res = orchestrator
+                        .orchestrator
+                        .send_bag_content_request(exp_id);
+                    if let Err(e) = res {
+                        error!("Could not update the explorer's bag. {}", e);
+                    }
+                }
+                // update the planet state map after the events occurred
                 planets.as_mut().map = orchestrator.orchestrator.get_planets_info();
-                // yeah
+                // same thing but explorers
                 explorers.as_mut().map = orchestrator.orchestrator.get_explorer_states();
                 // launch either an asteroid or a sunray with a random choice
                 let _ = orchestrator
