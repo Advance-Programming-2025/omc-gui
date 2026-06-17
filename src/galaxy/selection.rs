@@ -7,7 +7,7 @@ use crate::{
         components::{Explorer, Planet, UiExplorerText, UiPlanetText},
         resources::{EntityClickRes, ExplorerInfoRes, PlanetInfoRes},
     },
-    utils::constants::{EXPLORER_SIZE, PLANET_RAD},
+    utils::{constants::{EXPLORER_SIZE, PLANET_RAD}, traits::Printable},
 };
 
 pub(crate) fn choose_on_click(
@@ -125,7 +125,7 @@ pub(crate) fn update_selected_entity(
                         let bag = &explorer_info.bag;
                         let mut counter_map: BTreeMap<String, usize> = BTreeMap::new();
                         for res in bag {
-                            let name = format!("{:?}", res);
+                            let name = format!("{}", res.to_print());
                             let current_count = counter_map.get(&name).unwrap_or(&0);
                             counter_map.insert(name, *current_count + 1);
                         }

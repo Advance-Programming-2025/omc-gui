@@ -6,6 +6,7 @@ use crate::ecs::{
     components::{DropdownItem, Edge, ListType},
     resources::ExplorerInfoRes,
 };
+use crate::utils::traits::Printable;
 use bevy::prelude::*;
 
 pub fn fill_basic_dropdown(
@@ -89,7 +90,7 @@ pub fn fill_complex_dropdown(
             resources,
             ExpButtonActions::CreateComplex,
             "No combinations.",
-            |r| format!("{r:?}"),
+            |r| format!("{}",r.to_print()),
         );
     }
 }
