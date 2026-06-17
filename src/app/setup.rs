@@ -2,19 +2,17 @@ use bevy::prelude::*;
 use std::f32::consts::TAU;
 
 use crate::{
-    ecs::{
+    app::scaling::{scale_offset_size, scale_planet_size}, ecs::{
         components::{Explorer, Planet},
         markers::Background,
-        resources::{ActiveNotification, ExpState, GalaxySnapshot, PlanetInfoRes},
-    },
-    galaxy::selection::choose_on_click,
-    utils::{
+        resources::{ActiveNotification, ExpState, GalaxySnapshot, PlanetInfoRes, PlanetSizeRes},
+    }, galaxy::selection::choose_on_click, utils::{
         assets::{ExplorerAssets, PlanetAssets},
         constants::{
-            EXP_MATTIA_OFFSET, EXP_SPRITE_NUM, EXP_TOMMY_OFFSET, EXPLORER_SIZE, GALAXY_RADIUS,
-            PLANET_RAD, PLANET_SPRITE_NUM,
+            EXP_SPRITE_NUM, GALAXY_RADIUS,
+            PLANET_SPRITE_NUM,
         },
-    },
+    }
 };
 
 pub fn setup_camera(mut commands: Commands) {
@@ -42,6 +40,13 @@ pub fn setup(
     commands.spawn((Sprite::from_image(background), Background));
 
     let planet_num = galaxy.planet_num;
+
+    let planet_radius = scale_planet_size(planet_num);
+
+    commands.insert_resource(PlanetSizeRes{
+        planet_rad: planet_radius,
+        exp_rad: planet_radius * 0.8
+    });
 
     for (&i, _info) in planets.map.iter() {
         // spawn all the planets in a circle, with even spacing
@@ -73,7 +78,7 @@ pub fn setup(
                 Planet { id: i },
                 Sprite {
                     image: planet_image_handle,
-                    custom_size: Some(Vec2::splat(PLANET_RAD * 2.)),
+                    custom_size: Some(Vec2::splat(planet_radius * 2.)),
                     ..Default::default()
                 },
                 Transform::from_xyz(x, y, 2.0),
@@ -85,9 +90,9 @@ pub fn setup(
             for j in 0..EXP_SPRITE_NUM {
                 let explorer_image_handle = explorer_assets.handles[j].clone();
                 let (offset_x, offset_y): (f32, f32) = if j == 0 {
-                    EXP_TOMMY_OFFSET
+                    scale_offset_size(planet_radius, true)
                 } else {
-                    EXP_MATTIA_OFFSET
+                    scale_offset_size(planet_radius, false)
                 };
                 commands
                     .spawn((
@@ -99,7 +104,9 @@ pub fn setup(
                         },
                         Sprite {
                             image: explorer_image_handle,
-                            custom_size: Some(Vec2::splat(EXPLORER_SIZE)),
+                            custom_size: Some(Vec2::splat(
+                                planet_radius * 0.8
+                            )),
                             ..Default::default()
                         },
                         Transform::from_xyz(x + offset_x, y - offset_y, 3.0),

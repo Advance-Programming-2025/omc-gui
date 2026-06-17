@@ -5,9 +5,9 @@ use std::collections::BTreeMap;
 use crate::{
     ecs::{
         components::{Explorer, Planet, UiExplorerText, UiPlanetText},
-        resources::{EntityClickRes, ExplorerInfoRes, PlanetInfoRes},
+        resources::{EntityClickRes, ExplorerInfoRes, PlanetInfoRes, PlanetSizeRes},
     },
-    utils::{constants::{EXPLORER_SIZE, PLANET_RAD}, traits::Printable},
+    utils::traits::Printable,
 };
 
 pub(crate) fn choose_on_click(
@@ -17,22 +17,23 @@ pub(crate) fn choose_on_click(
         Query<(&mut Sprite, &Explorer)>,
     )>,
     mut chosen_entity: ResMut<EntityClickRes>,
+    size: Res<PlanetSizeRes>
 ) {
     info!("Picking event was triggered");
 
     //reset all sprite dimensions to normal
     for (mut sprite, _) in &mut params.p0() {
-        sprite.custom_size = Some(Vec2::splat(PLANET_RAD * 2.));
+        sprite.custom_size = Some(Vec2::splat(size.planet_rad * 2.));
     }
 
     for (mut sprite, _) in &mut params.p1() {
-        sprite.custom_size = Some(Vec2::splat(EXPLORER_SIZE));
+        sprite.custom_size = Some(Vec2::splat(size.exp_rad));
     }
 
     if let Ok((mut sprite, planet)) = params.p0().get_mut(click.entity) {
         info!("picked info for planet {}", planet.id);
         // make sprite slightly bigger
-        sprite.custom_size = Some(Vec2::splat(PLANET_RAD * 2.5));
+        sprite.custom_size = Some(Vec2::splat(size.planet_rad * 2.5));
 
         chosen_entity.planet = Some(planet.id);
         chosen_entity.explorer = None;
@@ -41,7 +42,7 @@ pub(crate) fn choose_on_click(
     if let Ok((mut sprite, explorer)) = params.p1().get_mut(click.entity) {
         info!("picked info for explorer {}", explorer.id);
         // make sprite slightly bigger
-        sprite.custom_size = Some(Vec2::splat(EXPLORER_SIZE * 1.5));
+        sprite.custom_size = Some(Vec2::splat(size.exp_rad * 1.5));
 
         chosen_entity.explorer = Some(explorer.id);
         chosen_entity.planet = None;

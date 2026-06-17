@@ -7,12 +7,11 @@ use crate::{
     ecs::{
         components::Planet,
         events::{Celestial, CelestialBody, PlanetDespawn},
-        resources::PlanetInfoRes,
-    },
-    utils::{
+        resources::{PlanetInfoRes, PlanetSizeRes},
+    }, utils::{
         assets::CelestialAssets,
-        constants::{CELESTIAL_RAD, GAME_TICK},
-    },
+        constants::GAME_TICK,
+    }
 };
 
 pub fn move_celestial(
@@ -20,6 +19,7 @@ pub fn move_celestial(
     mut commands: Commands,
     sprites: Res<CelestialAssets>,
     planet_query: Query<(&Planet, &Transform)>,
+    size: Res<PlanetSizeRes>
 ) {
     info!("MOVE_CELESTIAL: EVENT FROM ID {} ", event.planet_id);
 
@@ -53,7 +53,7 @@ pub fn move_celestial(
                 },
                 Sprite {
                     image: sunray_sprite,
-                    custom_size: Some(Vec2::splat(CELESTIAL_RAD * 2.)),
+                    custom_size: Some(Vec2::splat(size.planet_rad)),
                     ..default()
                 },
                 Transform::from_xyz(0., 0., 2.0),

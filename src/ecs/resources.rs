@@ -44,6 +44,12 @@ pub struct GalaxySnapshot {
     pub planet_num: usize,
 }
 
+#[derive(Resource)]
+pub struct PlanetSizeRes{
+    pub planet_rad: f32,
+    pub exp_rad: f32
+}
+
 #[derive(Resource, Debug)]
 pub struct EntityClickRes {
     pub planet: Option<u32>,
