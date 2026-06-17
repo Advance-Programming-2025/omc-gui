@@ -52,7 +52,7 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
         },
     );
 
-    let list_factory = |(title, dropdown_el, width): (Text, ListType, f32)| {
+    let list_factory = |(title, dropdown_el, width, max_h): (Text, ListType, f32, Option<Val>)| {
         (
             (
                 Node {
@@ -86,6 +86,8 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                 (
                     Node {
                         flex_direction: FlexDirection::Column,
+                        overflow: Overflow::scroll_y(),
+                        max_height: max_h.unwrap_or(Val::Auto),
                         ..default()
                     },
                     BackgroundColor(Color::Srgba(Srgba::new(0.15, 0.15, 0.15, 1.))),
@@ -247,11 +249,13 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                                         Text::new("create:"),
                                         ListType::BasicList,
                                         110.,
+                                        None,
                                     )));
                                     parent.spawn(list_factory((
                                         Text::new("make:"),
                                         ListType::ComplexList,
                                         110.,
+                                        None,
                                     )));
                                 });
 
@@ -259,6 +263,7 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                                 Text::new("select destination"),
                                 ListType::MoveList,
                                 220.,
+                                Some(Val::Px(300.))
                             )));
                         });
                 });
