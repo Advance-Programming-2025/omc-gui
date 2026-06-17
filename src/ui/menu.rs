@@ -263,7 +263,7 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                                 Text::new("select destination"),
                                 ListType::MoveList,
                                 220.,
-                                Some(Val::Px(300.))
+                                Some(Val::Px(300.)),
                             )));
                         });
                 });

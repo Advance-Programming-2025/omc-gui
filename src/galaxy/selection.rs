@@ -17,7 +17,7 @@ pub(crate) fn choose_on_click(
         Query<(&mut Sprite, &Explorer)>,
     )>,
     mut chosen_entity: ResMut<EntityClickRes>,
-    size: Res<PlanetSizeRes>
+    size: Res<PlanetSizeRes>,
 ) {
     info!("Picking event was triggered");
 

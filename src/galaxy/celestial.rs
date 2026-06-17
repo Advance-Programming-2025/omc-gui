@@ -8,10 +8,8 @@ use crate::{
         components::Planet,
         events::{Celestial, CelestialBody, PlanetDespawn},
         resources::{PlanetInfoRes, PlanetSizeRes},
-    }, utils::{
-        assets::CelestialAssets,
-        constants::GAME_TICK,
-    }
+    },
+    utils::{assets::CelestialAssets, constants::GAME_TICK},
 };
 
 pub fn move_celestial(
@@ -19,7 +17,7 @@ pub fn move_celestial(
     mut commands: Commands,
     sprites: Res<CelestialAssets>,
     planet_query: Query<(&Planet, &Transform)>,
-    size: Res<PlanetSizeRes>
+    size: Res<PlanetSizeRes>,
 ) {
     info!("MOVE_CELESTIAL: EVENT FROM ID {} ", event.planet_id);
 

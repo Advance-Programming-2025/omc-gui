@@ -1,4 +1,7 @@
-use crate::{ecs::markers::Background, utils::constants::{PLANET_SCALING_A, PLANET_SCALING_B, PLANET_SCALING_C}};
+use crate::{
+    ecs::markers::Background,
+    utils::constants::{PLANET_SCALING_A, PLANET_SCALING_B, PLANET_SCALING_C},
+};
 use bevy::prelude::*;
 
 pub fn scale_background(
@@ -21,13 +24,12 @@ pub fn scale_background(
     }
 }
 
-pub(crate) fn scale_planet_size(planet_num: usize) -> f32 { 
-    // PLANET_SCALING_BASE + (PLANET_SCALING_FACTOR/(planet_num as f32)) 
+pub(crate) fn scale_planet_size(planet_num: usize) -> f32 {
     let exponent = PLANET_SCALING_B * (planet_num as f32);
     PLANET_SCALING_A * f32::exp(exponent) + PLANET_SCALING_C
-} 
+}
 
-pub(crate) fn scale_offset_size(planet_size: f32, positive_offset: bool) -> (f32,f32) { 
+pub(crate) fn scale_offset_size(planet_size: f32, positive_offset: bool) -> (f32, f32) {
     if positive_offset {
         (planet_size / 2., planet_size / 2.)
     } else {

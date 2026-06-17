@@ -14,7 +14,7 @@ impl Printable for BasicResourceType {
     fn to_print(&self) -> String {
         match self {
             BasicResourceType::Oxygen => format!("Oxygen"),
-            BasicResourceType::Hydrogen =>format!("Hydrogen"),
+            BasicResourceType::Hydrogen => format!("Hydrogen"),
             BasicResourceType::Carbon => format!("Carbon"),
             BasicResourceType::Silicon => format!("Silicon"),
         }
@@ -26,10 +26,10 @@ impl Printable for ComplexResourceType {
         match self {
             ComplexResourceType::AIPartner => format!("AI"),
             ComplexResourceType::Diamond => format!("Diamond"),
-            ComplexResourceType::Dolphin =>format!("Dolphin"),
+            ComplexResourceType::Dolphin => format!("Dolphin"),
             ComplexResourceType::Water => format!("Water"),
             ComplexResourceType::Life => format!("Life"),
-            ComplexResourceType::Robot => format!("Robot")
+            ComplexResourceType::Robot => format!("Robot"),
         }
     }
 }

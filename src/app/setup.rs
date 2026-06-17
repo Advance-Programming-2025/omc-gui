@@ -2,17 +2,17 @@ use bevy::prelude::*;
 use std::f32::consts::TAU;
 
 use crate::{
-    app::scaling::{scale_offset_size, scale_planet_size}, ecs::{
+    app::scaling::{scale_offset_size, scale_planet_size},
+    ecs::{
         components::{Explorer, Planet},
         markers::Background,
         resources::{ActiveNotification, ExpState, GalaxySnapshot, PlanetInfoRes, PlanetSizeRes},
-    }, galaxy::selection::choose_on_click, utils::{
+    },
+    galaxy::selection::choose_on_click,
+    utils::{
         assets::{ExplorerAssets, PlanetAssets},
-        constants::{
-            EXP_SPRITE_NUM, GALAXY_RADIUS,
-            PLANET_SPRITE_NUM,
-        },
-    }
+        constants::{EXP_SPRITE_NUM, GALAXY_RADIUS, PLANET_SPRITE_NUM},
+    },
 };
 
 pub fn setup_camera(mut commands: Commands) {
@@ -43,9 +43,9 @@ pub fn setup(
 
     let planet_radius = scale_planet_size(planet_num);
 
-    commands.insert_resource(PlanetSizeRes{
+    commands.insert_resource(PlanetSizeRes {
         planet_rad: planet_radius,
-        exp_rad: planet_radius * 0.8
+        exp_rad: planet_radius * 0.8,
     });
 
     for (&i, _info) in planets.map.iter() {
@@ -104,9 +104,7 @@ pub fn setup(
                         },
                         Sprite {
                             image: explorer_image_handle,
-                            custom_size: Some(Vec2::splat(
-                                planet_radius * 0.8
-                            )),
+                            custom_size: Some(Vec2::splat(planet_radius * 0.8)),
                             ..Default::default()
                         },
                         Transform::from_xyz(x + offset_x, y - offset_y, 3.0),

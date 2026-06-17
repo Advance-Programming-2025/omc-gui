@@ -90,7 +90,7 @@ pub fn fill_complex_dropdown(
             resources,
             ExpButtonActions::CreateComplex,
             "No combinations.",
-            |r| format!("{}",r.to_print()),
+            |r| format!("{}", r.to_print()),
         );
     }
 }

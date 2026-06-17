@@ -45,9 +45,9 @@ pub struct GalaxySnapshot {
 }
 
 #[derive(Resource)]
-pub struct PlanetSizeRes{
+pub struct PlanetSizeRes {
     pub planet_rad: f32,
-    pub exp_rad: f32
+    pub exp_rad: f32,
 }
 
 #[derive(Resource, Debug)]
