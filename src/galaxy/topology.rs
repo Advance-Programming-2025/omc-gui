@@ -4,7 +4,7 @@ use crate::{
     ecs::{
         components::{Edge, Explorer, Planet},
         events::PlanetDespawn,
-        resources::{ExpState, GalaxySnapshot},
+        resources::{ExpState, GalaxyScale, GalaxySnapshot},
     },
     utils::assets::SFXAssets,
 };
@@ -63,6 +63,7 @@ pub fn draw_topology(
     snapshot: Res<GalaxySnapshot>,
     planets: Query<(&Planet, &Transform)>,
     old_links: Query<(&Edge, Entity)>,
+    galaxy_scale: Res<GalaxyScale>,
 ) {
     if snapshot.is_changed() {
         for (_, en) in old_links {
@@ -95,7 +96,7 @@ pub fn draw_topology(
             commands.spawn((
                 Sprite {
                     color: Color::WHITE,
-                    custom_size: Some(Vec2::new(length, 1.)),
+                    custom_size: Some(Vec2::new(length, 1. * galaxy_scale.scale)),
                     ..default()
                 },
                 transform,

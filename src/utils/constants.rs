@@ -27,3 +27,7 @@ pub(crate) const EXPLORER_NUM: u32 = 2;
 /// the standard sunray to asteroid ratio at the beginning of the game.
 /// higher number = more sunrays.
 pub(crate) const DEFAULT_SUNRAY_RATIO: i32 = 80;
+
+/// Reference height to compute scaled values for the galaxy, depending
+/// on the user's display settings
+pub(crate) const BASE_HEIGHT: f32 = 960.;

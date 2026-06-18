@@ -108,3 +108,8 @@ impl Default for StartupConfig {
         }
     }
 }
+
+#[derive(Resource)]
+pub struct GalaxyScale {
+    pub scale: f32,
+}

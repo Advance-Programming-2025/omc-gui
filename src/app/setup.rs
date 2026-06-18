@@ -6,12 +6,15 @@ use crate::{
     ecs::{
         components::{Explorer, Planet},
         markers::Background,
-        resources::{ActiveNotification, ExpState, GalaxySnapshot, PlanetInfoRes, PlanetSizeRes},
+        resources::{
+            ActiveNotification, ExpState, GalaxyScale, GalaxySnapshot, PlanetInfoRes,
+            PlanetSizeRes,
+        },
     },
     galaxy::selection::choose_on_click,
     utils::{
         assets::{ExplorerAssets, PlanetAssets},
-        constants::{EXP_SPRITE_NUM, GALAXY_RADIUS, PLANET_SPRITE_NUM},
+        constants::{BASE_HEIGHT, EXP_SPRITE_NUM, GALAXY_RADIUS, PLANET_SPRITE_NUM},
     },
 };
 
@@ -49,12 +52,19 @@ pub fn setup(
 
     let planet_num = galaxy.planet_num;
 
-    let planet_radius = scale_planet_size(planet_num);
+    let scale = window.height() / BASE_HEIGHT;
+    let planet_radius = scale_planet_size(planet_num) * scale;
 
     commands.insert_resource(PlanetSizeRes {
         planet_rad: planet_radius,
         exp_rad: planet_radius * 0.8,
     });
+    commands.insert_resource(GalaxyScale { scale });
+
+    let ui_scale = scale.max(window.scale_factor() as f32);
+    commands.insert_resource(UiScale(ui_scale));
+
+    let galaxy_radius = GALAXY_RADIUS * scale;
 
     for (&i, _info) in planets.map.iter() {
         // spawn all the planets in a circle, with even spacing
@@ -62,8 +72,8 @@ pub fn setup(
         let angle = TAU * (i as f32) / (planet_num as f32);
 
         // extract x and y position via trigonometry
-        let x = GALAXY_RADIUS * angle.cos();
-        let y = GALAXY_RADIUS * angle.sin();
+        let x = galaxy_radius * angle.cos();
+        let y = galaxy_radius * angle.sin();
 
         let image_index = match planets.map.get_info(i).unwrap().name {
             omc_galaxy::utils::registry::PlanetType::BlackAdidasShoe => 0,
