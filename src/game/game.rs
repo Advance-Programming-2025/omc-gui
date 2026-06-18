@@ -14,6 +14,13 @@ use crate::{
     utils::constants::EXPLORER_NUM,
 };
 
+/// The core system at the heart of the game.
+/// 
+/// At each engine update the timer is ticked. if the timer runs out, the events
+/// in the previous rounds are sent to the [handle_tick] function to trigger the necessary
+/// observers and handle other specific logic. Afterwards, the maps are updated with their
+/// most recent values and a random action (nothing, sunray, asteroid) is chosen for the 
+/// following round
 pub fn game_loop(
     mut commands: Commands,
     mut orchestrator: ResMut<OrchestratorResource>,
@@ -89,6 +96,7 @@ pub fn game_loop(
     }
 }
 
+/// Routes the events in the tick to the correct functions.
 fn handle_tick(
     commands: &mut Commands,
     events: Vec<OrchestratorEvent>,
@@ -99,11 +107,12 @@ fn handle_tick(
     for ev in events {
         match ev {
             OrchestratorEvent::PlanetDestroyed { planet_id } => {
-                // handle the destruction of a planet
+                // no need to do anything, PlanetDestroyed is handled by destroy_link
                 info!("game-loop: planet {} has died, ", planet_id);
                 update_logs(&mut log_text, format!("planet {} died!\n", planet_id));
             }
             OrchestratorEvent::SunrayReceived { planet_id } => {
+                // spawn a sunray so that it can be moved to the planet
                 info!("game-loop: planet {} got a sunray (UI update), ", planet_id);
                 commands.trigger(Celestial {
                     planet_id,
@@ -115,10 +124,11 @@ fn handle_tick(
                 );
             }
             OrchestratorEvent::SunraySent { planet_id } => {
+                // TODO check if these are still needed
                 info!("game-loop: planet {} should get a sunray, ", planet_id);
             }
             OrchestratorEvent::AsteroidSent { planet_id } => {
-                info!("game-loop: planet {} should get an asteroid, ", planet_id);
+                // spawn an asteroid so it can be moved to the planet
                 commands.trigger(Celestial {
                     planet_id,
                     kind: CelestialBody::Asteroid,

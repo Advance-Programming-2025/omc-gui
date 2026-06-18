@@ -10,6 +10,11 @@ use crate::{
     utils::traits::Printable,
 };
 
+/// Updates the entity chosen by the user by giving visual feedback
+/// 
+/// This system scales the sprite of the selected entity to make it more evident
+/// and updates the [EntityClickRes] resource so that the [update_selected_entity] system can
+/// update the menu information
 pub(crate) fn choose_on_click(
     click: On<Pointer<Click>>,
     mut params: ParamSet<(
@@ -49,6 +54,12 @@ pub(crate) fn choose_on_click(
     }
 }
 
+/// Updates the information regarding the selected entity
+/// 
+/// According to the type and ID of the selected entity, the fields in the
+/// selected entity menu are updated accordingly: for the planet, that includes the name, ID,
+/// status, rocket availability and number of charged cells; for the explorer, that includes 
+/// the ID, state, visited planet and bag contents
 pub(crate) fn update_selected_entity(
     selected_entity: Res<EntityClickRes>,
     planet_status: Res<PlanetInfoRes>,
@@ -65,6 +76,7 @@ pub(crate) fn update_selected_entity(
 
     info!("update_selected_entity: {:?}", selected_entity);
 
+    // case: the chosen entity is a planet
     if let Some(planet_id) = selected_entity.planet {
         info!("updating planet {}", planet_id);
         let map = &planet_status.map;
@@ -96,12 +108,14 @@ pub(crate) fn update_selected_entity(
                 }
             }
 
+            // set all of the explorer fields to empty
             for (mut text, _) in &mut params.p1() {
                 **text = "".to_string();
             }
         }
     }
 
+    // case: the chosen entity is an explorer
     if let Some(explorer_id) = selected_entity.explorer {
         let map = &explorer_status.map;
 
@@ -135,6 +149,7 @@ pub(crate) fn update_selected_entity(
                 }
             }
 
+            // set all of the planet fields to empty
             for (mut text, _) in &mut params.p0() {
                 **text = "".to_string();
             }

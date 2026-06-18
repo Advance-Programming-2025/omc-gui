@@ -26,7 +26,7 @@ pub(crate) fn send_scroll_events(
 
         for pointer_map in hover_map.values() {
             for entity in pointer_map.keys().copied() {
-                commands.trigger(Scroll { entity, delta });
+                commands.trigger(Scroll { entity, scroll_delta: delta });
             }
         }
     }
@@ -42,7 +42,7 @@ pub(crate) fn on_scroll_handler(
 
     let max_offset = (computed.content_size() - computed.size()) * computed.inverse_scale_factor();
 
-    let delta = &mut scroll.delta;
+    let delta = &mut scroll.scroll_delta;
     if node.overflow.x == OverflowAxis::Scroll && delta.x != 0. {
         // Is this node already scrolled all the way in the direction of the scroll?
         let max = if delta.x > 0. {

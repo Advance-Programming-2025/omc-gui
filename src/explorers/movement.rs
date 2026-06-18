@@ -8,6 +8,12 @@ use crate::{
     utils::assets::SFXAssets,
 };
 
+/// Move the explorer to a different planet
+/// 
+/// The system moves an explorer to a different planet by changing the
+/// explorer's transform to the appropriate coordiantes with respect to the
+/// destination planet. This function does NOT call the orchestrator and only
+/// moves the explorer from a graphical point of view
 pub fn move_explorer(
     event: On<MoveExplorerEvent>,
     mut commands: Commands,

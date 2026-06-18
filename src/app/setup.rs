@@ -19,6 +19,14 @@ pub fn setup_camera(mut commands: Commands) {
     commands.spawn(Camera2d);
 }
 
+
+/// Galaxy setup system
+/// 
+/// The function achieves the following, in order:
+/// - loads the background image
+/// - spawns all planets with their respective sprite and transform
+/// - spawns the explorers on the planet with ID 0
+/// - spawns the active notification object 
 pub fn setup(
     galaxy: Res<GalaxySnapshot>,
     planets: Res<PlanetInfoRes>,
@@ -73,6 +81,7 @@ pub fn setup(
         // in case the index is out of bounds
         let planet_image_handle = planet_assets.handles[(image_index) % PLANET_SPRITE_NUM].clone();
 
+        // load the planet in the game world
         commands
             .spawn((
                 Planet { id: i },
@@ -86,6 +95,7 @@ pub fn setup(
             ))
             .observe(choose_on_click);
 
+        // create the explorers on the starter planet
         if i == 0 {
             for j in 0..EXP_SPRITE_NUM {
                 let explorer_image_handle = explorer_assets.handles[j].clone();

@@ -9,6 +9,12 @@ use crate::{
     utils::assets::SFXAssets,
 };
 
+/// Destroy a planet, its visiting explorer and its links to other planets.
+/// 
+/// This system deals with the cleanup after a planet death: it removes all links
+/// that match the planet's ID on any end, despawns the explorers that were on it and
+/// finally despawns the planet itself. Planet death logic only lives in the orchestrator,
+/// this is purely visual
 pub fn destroy_link(
     event: On<PlanetDespawn>,
     mut commands: Commands,
@@ -47,6 +53,11 @@ pub fn destroy_link(
     }
 }
 
+/// Draw all the links between planets in a galaxy
+/// 
+/// Link lines are displaced with trigonometric transformations (based around the fact that planets
+/// will be spawned in a circle) and are then spawned in the game world with a copy of the ID of the
+/// planets they are connecting
 pub fn draw_topology(
     mut commands: Commands,
     snapshot: Res<GalaxySnapshot>,

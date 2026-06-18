@@ -2,6 +2,10 @@ use common_game::components::resource::{BasicResourceType, ComplexResourceType, 
 
 use crate::ecs::resources::EntityClickRes;
 
+/// Controls conditional visibility
+/// 
+/// This trait gives the ability to a component to be hidden
+/// or shown given a specific selection criteria
 pub(crate) trait Visible {
     fn is_selected(entity: &EntityClickRes) -> bool;
 }

@@ -11,6 +11,11 @@ use crate::{
     utils::constants::GAME_TICK,
 };
 
+/// Orchestrator and lower level initialization
+/// 
+/// The system creates an orchestrator object to then place it in its corresponding resource.
+/// It also initializes the galaxy topology in the orchestrator, gets the necessary maps, starts the AIs,
+/// starts the game tick timer and initializes the logging resource
 pub fn setup_orchestrator(mut commands: Commands, start_config: Res<StartupConfig>) {
     dotenv::dotenv().ok();
 
@@ -26,8 +31,6 @@ pub fn setup_orchestrator(mut commands: Commands, start_config: Res<StartupConfi
         .expect("Failed to initialize galaxy");
 
     let (topology, planet_num) = orchestrator.get_topology();
-
-    let first_string = String::from("Orchestrator has started.\nWelcome to the game!");
 
     let lookup = orchestrator.get_planets_info();
 
@@ -48,6 +51,7 @@ pub fn setup_orchestrator(mut commands: Commands, start_config: Res<StartupConfi
 
     commands.insert_resource(ExplorerInfoRes { map: exp_info });
 
+    let first_string = String::from("Orchestrator has started.\nWelcome to the game!");
     commands.insert_resource(LogTextRes {
         text: VecDeque::from([first_string]),
     });

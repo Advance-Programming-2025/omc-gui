@@ -62,7 +62,7 @@ pub(crate) fn start_splash(mut commands: Commands) {
                     ));
 
                     ratio_container.spawn((
-                        Text::new(format!("Asteroid/sunray ratio: {}%", starter_ratio)),
+                        Text::new(format!("Sunray/asteroid ratio: {}%", starter_ratio)),
                         StartRatioText,
                     ));
 
@@ -107,13 +107,13 @@ pub(crate) fn start_menu_actions(
                 StartMenuButton::StartRatioLess => {
                     config_res.ratio = i32::max(0, config_res.ratio - 5);
                     for (mut text, _) in &mut ratio_query {
-                        **text = format!("Asteroid/sunray ratio: {}%", config_res.ratio);
+                        **text = format!("Sunray/asteroid ratio: {}%", config_res.ratio);
                     }
                 }
                 StartMenuButton::StartRatioMore => {
                     config_res.ratio = i32::min(100, config_res.ratio + 5);
                     for (mut text, _) in &mut ratio_query {
-                        **text = format!("Asteroid/sunray ratio: {}%", config_res.ratio);
+                        **text = format!("Sunray/asteroid ratio: {}%", config_res.ratio);
                     }
                 }
             }

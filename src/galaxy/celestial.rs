@@ -12,6 +12,11 @@ use crate::{
     utils::{assets::CelestialAssets, constants::GAME_TICK},
 };
 
+/// Move a celestial body (sunray or asteroid) towards a planet.
+/// 
+/// The moving animation is made by interpolating the movement over the start
+/// (the center of the galaxy) and the end (the center of the target planet) using
+/// a quadratic in and out function
 pub fn move_celestial(
     event: On<Celestial>,
     mut commands: Commands,
@@ -61,20 +66,26 @@ pub fn move_celestial(
     }
 }
 
-//TODO run this function at every tick, not every frame
+/// Remove the celestial body after the animation is done
+/// 
+/// This system checks for animations that have finished the interpolation cycle,
+/// queries for the corresponding sprite and removes it from the game world to then
+/// trigger the [PlanetDespawn] System if the planet has been hit and died
 pub(crate) fn despawn_celestial(
     mut commands: Commands,
     mut reader: MessageReader<CycleCompletedEvent>,
     status: Res<PlanetInfoRes>,
     celestial: Query<&Celestial>,
 ) {
+    // only run if an animation has finished
     for event in reader.read() {
-        info!("animation finished!");
+        debug!("animation finished!");
 
+        // if an asteroid hit a planet and killed it, trigger PlanetDespawn
         if let Ok(c) = celestial.get(event.anim_entity) {
             if c.kind == CelestialBody::Asteroid {
                 if status.map.get_status(&c.planet_id) == Status::Dead {
-                    info!("Triggerig PlanetDespawn for {}", c.planet_id);
+                    debug!("Triggerig PlanetDespawn for {}", c.planet_id);
                     commands.trigger(PlanetDespawn {
                         planet_id: c.planet_id,
                     });
@@ -82,6 +93,7 @@ pub(crate) fn despawn_celestial(
             }
         }
 
+        // remove the celestial body from the game world
         commands.entity(event.anim_entity).despawn();
     }
 }

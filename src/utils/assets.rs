@@ -22,6 +22,10 @@ pub(crate) struct SFXAssets {
     pub handles: HashMap<String, Handle<AudioSource>>,
 }
 
+/// Load all the necessary assets for the visualizer.
+/// 
+/// This system loads the background image, sound effects and the sprites for planets,
+/// celestial bodies and explorers into handles that live in a single [AssetServer] resource
 pub fn load_assets(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut planet_handles = Vec::new();
     for i in 0..PLANET_SPRITE_NUM {
