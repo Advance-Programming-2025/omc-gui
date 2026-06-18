@@ -2,8 +2,8 @@ use crate::ecs::components::ExpButtonActions;
 use crate::ecs::components::{ButtonActions, ListType, RatioButton, UiExplorerText, UiPlanetText};
 use crate::ecs::markers::{
     AliveExplorerButton, AlivePlanetActions, AlivePlanetButton, DropdownButton, DropdownLabel,
-    DropdownRoot, ExpModeText, ExplorerOnlyButton, GameStateText, LogText, ManualExplorer,
-    PlanetOnlyButton, RatioText,
+    DropdownRoot, ExpModeText, ExplorerOnlyButton, GameStateText, InGameUI, LogText,
+    ManualExplorer, PlanetOnlyButton, RatioText,
 };
 use crate::ecs::resources::{GameState, StartupConfig};
 use crate::ui::button_bundle;
@@ -99,7 +99,9 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
     };
 
     // root node
-    commands.spawn(root).with_children(|parent| {
+    commands
+        .spawn((root, InGameUI))
+        .with_children(|parent| {
         // side menu panel
         parent.spawn(side_menu_container).with_children(|parent| {
             // menu title
@@ -436,7 +438,7 @@ pub(crate) fn draw_game_options_menu(mut commands: Commands, ratio: Res<StartupC
     let title_text = Text::new("Galaxy Menu");
 
     // 1. Root node
-    commands.spawn(root).with_children(|parent| {
+    commands.spawn((root, InGameUI)).with_children(|parent| {
         // 2. Side menu panel
         parent.spawn(side_menu_container).with_children(|parent| {
             // 3a. Menu title

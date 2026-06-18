@@ -95,3 +95,15 @@ pub struct AlivePlanetButton;
 /// Marker for planet action buttons that should be hidden when the planet is dead
 #[derive(Component)]
 pub struct AlivePlanetActions;
+
+/// Marker for the root UI container of the game over splash screen
+#[derive(Component)]
+pub struct GameOverUI;
+
+/// Marker for the "Back to menu" button on the game over screen
+#[derive(Component)]
+pub struct GameOverButton;
+
+/// Marker for the root UI containers of the in-game side menus (used for cleanup)
+#[derive(Component)]
+pub struct InGameUI;

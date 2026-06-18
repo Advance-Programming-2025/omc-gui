@@ -68,6 +68,11 @@ pub fn game_loop(
                 planets.as_mut().map = orchestrator.orchestrator.get_planets_info();
                 // same thing but explorers
                 explorers.as_mut().map = orchestrator.orchestrator.get_explorer_states();
+
+                // if all planets die, end the game
+                if planets.map.count_survivors() == 0 {
+                    mutable_state.set(GameState::GameOver);
+                }
                 // launch either an asteroid or a sunray with a random choice
                 let _ = orchestrator
                     .orchestrator
@@ -98,6 +103,7 @@ pub fn game_loop(
             mutable_state.set(GameState::Playing);
         }
         GameState::WaitingStart => {}
+        GameState::GameOver => {}
     }
 }
 

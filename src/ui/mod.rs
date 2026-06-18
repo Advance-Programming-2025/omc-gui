@@ -5,6 +5,7 @@ pub mod dropdown;
 pub mod menu;
 pub mod notification;
 pub mod scroll;
+pub mod game_over;
 pub mod start;
 pub mod visibility;
 

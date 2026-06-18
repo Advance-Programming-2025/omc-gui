@@ -27,6 +27,7 @@ pub enum GameState {
     Playing,
     Paused,
     Override,
+    GameOver,
 }
 
 impl Display for GameState {
@@ -36,6 +37,7 @@ impl Display for GameState {
             GameState::Playing => String::from("Playing"),
             GameState::Paused => String::from("Paused"),
             GameState::Override => String::from("OVERRIDE"),
+            GameState::GameOver => String::from("Game Over"),
         };
         write!(f, "{}", out_str)
     }
