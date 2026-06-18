@@ -10,7 +10,7 @@ think you can do better than our AI!) to avoid asteroids and generate as many re
 more things. Who will survive the longest? Who will create the most resources? Who will make the most AI partners? 
 Take it for a spin and find out!
 
-![project screenshot](https://i.ibb.co/351HtFYf/image.png)
+![project screenshot](https://i.ibb.co/z35DJ4y/rsz-omc-screen.jpg)
 
 ## Run the project
 
