@@ -4095,7 +4095,7 @@ dependencies = [
 
 [[package]]
 name = "omc-gui"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "bevy",
  "bevy_embedded_assets",
