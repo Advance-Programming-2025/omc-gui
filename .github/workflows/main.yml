@@ -1,0 +1,58 @@
+name: Cargo Build & Test
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env: 
+  CARGO_TERM_COLOR: always
+  binary: omc-gui
+
+jobs:
+  build_and_test:
+    name: omc-gui - latest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install wayland dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config libx11-dev libasound2-dev libudev-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libwayland-dev
+
+      - name: Build package
+        run: | 
+          cargo build --release --target x86_64-unknown-linux-gnu
+      
+      - run: cargo test
+
+      - name: Prepare package
+        run: |
+          mkdir linux
+          cp target/x86_64-unknown-linux-gnu/release/${{ env.binary }} linux/
+          cp -r assets linux/ || true
+
+      - name: Create tarball
+        run: |
+          tar -czf ${{ env.binary }}.tar.gz -C linux .
+
+      - name: Upload binaries to artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path: ${{ env.binary }}.tar.gz
+          name: linux
+          retention-days: 1
+
+      - name: Upload binary to releases
+        uses: svenstaro/upload-release-action@v2
+        with: 
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ env.binary }}.tar.gz
+          asset_name:  ${{ env.binary }}-linux.tar.gz
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "Latest release of the OMC galaxy visualizer"
