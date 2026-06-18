@@ -55,6 +55,9 @@ pub fn main() -> Result<(), String> {
             game::game::flush_events_before_pause, 
             utils::debug::log_state_entry
         ))
+        .add_systems(OnExit(GameState::Paused),
+            game::game::flush_events_before_resume
+        )
         .add_systems(
             Update,
             ui::start::start_menu_actions.run_if(in_state(GameState::WaitingStart)),

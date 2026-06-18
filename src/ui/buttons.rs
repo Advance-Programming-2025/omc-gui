@@ -264,8 +264,6 @@ pub(crate) fn explorer_move_action(
             {
                 error!("error in explorer move:{}", e);
             }
-
-            state.set(GameState::Playing);
         }
     }
 }

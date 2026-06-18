@@ -36,6 +36,16 @@ pub fn game_loop(
     ratio: Res<StartupConfig>,
 ) {
     match **state {
+        GameState::Paused => {
+            // CASE: leftover events in the queue
+            if orchestrator.orchestrator.gui_messages.len() > 0 {
+                let events = std::mem::take(&mut orchestrator.orchestrator.gui_messages);
+                handle_tick(&mut commands, events, log_text, game_explorers, sel);
+
+                planets.as_mut().map = orchestrator.orchestrator.get_planets_info();
+                explorers.as_mut().map = orchestrator.orchestrator.get_explorer_states();
+            }
+        }
         GameState::Playing => {
             timer.tick(time.delta());
 
@@ -78,7 +88,7 @@ pub fn game_loop(
 
             mutable_state.set(GameState::Playing);
         }
-        _ => {}
+        GameState::WaitingStart => {}
     }
 }
 
@@ -122,6 +132,19 @@ fn handle_tick(
                 update_logs(
                     &mut log_text,
                     format!("planet {} got an asteroid\n", planet_id),
+                );
+            }
+            OrchestratorEvent::ExplorerMoveStarted {
+                explorer_id,
+                destination,
+            } => {
+                info!(
+                    "game-loop: explorer {} move to planet {} initiated",
+                    explorer_id, destination
+                );
+                update_logs(
+                    &mut log_text,
+                    format!("exp {} moving to pl {}...\n", explorer_id, destination),
                 );
             }
             OrchestratorEvent::ExplorerMoved {
@@ -190,6 +213,18 @@ fn drain_stale_events(
             }
         }
     }
+}
+
+pub(crate) fn flush_events_before_resume(
+    mut commands: Commands,
+    orchestrator: ResMut<OrchestratorResource>,
+    log_text: ResMut<LogTextRes>,
+    game_explorers: Query<&Explorer>,
+    sel: Res<EntityClickRes>,
+    planets: ResMut<PlanetInfoRes>,
+    explorers: ResMut<ExplorerInfoRes>,
+) {
+    drain_stale_events(&mut commands, orchestrator, log_text, game_explorers, sel, planets, explorers);
 }
 
 pub(crate) fn flush_events_before_pause(
