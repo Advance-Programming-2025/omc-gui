@@ -58,9 +58,10 @@ pub fn game_loop(
 
                 // get the bag of the explorers to update
                 for exp_id in 0..EXPLORER_NUM {
-                    let res = orchestrator.orchestrator.send_bag_content_request(exp_id);
-                    if let Err(e) = res {
-                        error!("Could not update the explorer's bag. {}", e);
+                    if !explorers.as_mut().map.is_dead(&exp_id) {
+                        if let Err(s) = orchestrator.orchestrator.send_bag_content_request(exp_id) {
+                            error!(s);
+                        }
                     }
                 }
                 // update the planet state map after the events occurred
