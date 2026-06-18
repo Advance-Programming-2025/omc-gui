@@ -268,7 +268,7 @@ pub(crate) fn flush_events_before_pause(
         dbg.push_str(&msg);
     }
 
-    info!("FLUSH: game was paused, flushing the following: {}", dbg);
+    debug!("FLUSH: game was paused, flushing the following: {}", dbg);
     drain_stale_events(
         &mut commands,
         orchestrator,

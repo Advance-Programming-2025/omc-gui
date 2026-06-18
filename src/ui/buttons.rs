@@ -22,7 +22,6 @@ pub(crate) fn button_hover(
         match interaction {
             Interaction::Pressed => {
                 *color = Color::srgb(0.35, 0.75, 0.35).into();
-                debug!("Button Pressed!");
             }
             Interaction::Hovered => {
                 *color = Color::srgb(0.25, 0.25, 0.25).into();

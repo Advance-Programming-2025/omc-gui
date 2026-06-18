@@ -61,7 +61,6 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                     flex_direction: FlexDirection::Column,
                     ..default()
                 },
-                // ExplorerOnlyButton,
                 DropdownRoot,
             ),
             children![
@@ -99,9 +98,7 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
     };
 
     // root node
-    commands
-        .spawn((root, InGameUI))
-        .with_children(|parent| {
+    commands.spawn((root, InGameUI)).with_children(|parent| {
         // side menu panel
         parent.spawn(side_menu_container).with_children(|parent| {
             // menu title
@@ -314,7 +311,6 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                         .spawn((
                             Node {
                                 width: percent(100.0),
-                                //debug
                                 flex_direction: FlexDirection::Column,
                                 justify_content: JustifyContent::Center,
                                 align_items: AlignItems::Center,

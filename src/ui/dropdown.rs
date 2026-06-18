@@ -193,7 +193,7 @@ pub fn fill_neighbors_dropdown(
 
         let mut neighbors = Vec::new();
 
-        // get the neigbors of the planet
+        // get the neighbors of the planet
         for edge in edges {
             if edge.connects.0 == planet_id {
                 neighbors.push(edge.connects.1);

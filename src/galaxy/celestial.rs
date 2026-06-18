@@ -85,7 +85,7 @@ pub(crate) fn despawn_celestial(
         if let Ok(c) = celestial.get(event.anim_entity) {
             if c.kind == CelestialBody::Asteroid {
                 if status.map.get_status(&c.planet_id) == Status::Dead {
-                    debug!("Triggerig PlanetDespawn for {}", c.planet_id);
+                    debug!("Triggering PlanetDespawn for {}", c.planet_id);
                     commands.trigger(PlanetDespawn {
                         planet_id: c.planet_id,
                     });

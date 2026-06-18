@@ -28,10 +28,7 @@ pub(crate) fn spawn_game_over_splash(mut commands: Commands) {
                 },
             ));
 
-            container.spawn((
-                button_bundle(Text::new("Quit"), 50.),
-                GameOverButton,
-            ));
+            container.spawn((button_bundle(Text::new("Quit"), 50.), GameOverButton));
         });
 }
 

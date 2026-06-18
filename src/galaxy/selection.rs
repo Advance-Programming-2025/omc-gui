@@ -24,7 +24,7 @@ pub(crate) fn choose_on_click(
     mut chosen_entity: ResMut<EntityClickRes>,
     size: Res<PlanetSizeRes>,
 ) {
-    info!("Picking event was triggered");
+    debug!("Picking event was triggered");
 
     //reset all sprite dimensions to normal
     for (mut sprite, _) in &mut params.p0() {
@@ -36,7 +36,7 @@ pub(crate) fn choose_on_click(
     }
 
     if let Ok((mut sprite, planet)) = params.p0().get_mut(click.entity) {
-        info!("picked info for planet {}", planet.id);
+        debug!("picked info for planet {}", planet.id);
         // make sprite slightly bigger
         sprite.custom_size = Some(Vec2::splat(size.planet_rad * 2.5));
 
@@ -45,7 +45,7 @@ pub(crate) fn choose_on_click(
     }
 
     if let Ok((mut sprite, explorer)) = params.p1().get_mut(click.entity) {
-        info!("picked info for explorer {}", explorer.id);
+        debug!("picked info for explorer {}", explorer.id);
         // make sprite slightly bigger
         sprite.custom_size = Some(Vec2::splat(size.exp_rad * 1.5));
 
@@ -74,11 +74,11 @@ pub(crate) fn update_selected_entity(
         return;
     }
 
-    info!("update_selected_entity: {:?}", selected_entity);
+    debug!("update_selected_entity: {:?}", selected_entity);
 
     // case: the chosen entity is a planet
     if let Some(planet_id) = selected_entity.planet {
-        info!("updating planet {}", planet_id);
+        debug!("updating planet {}", planet_id);
         let map = &planet_status.map;
 
         if let Some(planet_info) = map.get_info(planet_id) {

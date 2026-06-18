@@ -63,7 +63,7 @@ The guide for correctly structured topology files can be found in the README for
 - The event queue is then passed on to the main game function to trigger the necessary actions
 - Events are handled in chunks thanks to observers, which allows for concurrent event handling
 
-### Advanced Rust featuers
+### Advanced Rust features
 
 - Generic functions to reduce code duplication for shared logic
 - Custom traits for components with similar behavior

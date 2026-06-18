@@ -52,7 +52,10 @@ pub fn main() -> Result<(), String> {
         .add_systems(OnEnter(GameState::Override), utils::debug::log_state_entry)
         .add_systems(
             OnEnter(GameState::GameOver),
-            (ui::game_over::spawn_game_over_splash, utils::debug::log_state_entry),
+            (
+                ui::game_over::spawn_game_over_splash,
+                utils::debug::log_state_entry,
+            ),
         )
         .add_systems(
             OnEnter(GameState::Paused),
@@ -104,7 +107,9 @@ pub fn main() -> Result<(), String> {
                 ui::visibility::update_alive_planet_button_visibility,
                 ui::visibility::update_alive_planet_actions_visibility,
             )
-                .run_if(not(in_state(GameState::WaitingStart)).and(not(in_state(GameState::GameOver)))),
+                .run_if(
+                    not(in_state(GameState::WaitingStart)).and(not(in_state(GameState::GameOver))),
+                ),
         )
         .add_systems(
             Update,
@@ -120,12 +125,15 @@ pub fn main() -> Result<(), String> {
                 explorers::movement::change_explorer_mode_text,
                 app::scaling::scale_background,
             )
-                .run_if(not(in_state(GameState::WaitingStart)).and(not(in_state(GameState::GameOver)))),
+                .run_if(
+                    not(in_state(GameState::WaitingStart)).and(not(in_state(GameState::GameOver))),
+                ),
         )
         .add_systems(
             FixedUpdate,
-            (game::game::game_loop, galaxy::topology::draw_topology)
-                .run_if(not(in_state(GameState::WaitingStart)).and(not(in_state(GameState::GameOver)))),
+            (game::game::game_loop, galaxy::topology::draw_topology).run_if(
+                not(in_state(GameState::WaitingStart)).and(not(in_state(GameState::GameOver))),
+            ),
         )
         .add_observer(galaxy::topology::destroy_link)
         .add_observer(galaxy::celestial::move_celestial)
