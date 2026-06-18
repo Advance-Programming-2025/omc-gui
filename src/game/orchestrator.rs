@@ -30,7 +30,7 @@ pub fn setup_orchestrator(mut commands: Commands, start_config: Res<StartupConfi
         )
         .expect("Failed to initialize galaxy");
     } else {
-        let res = orchestrator.initialize_galaxy_by_random_selection(10);
+        let res = orchestrator.initialize_galaxy_by_random_selection(start_config.random_planets);
         if let Err(e) = res {
             error!("Error in random galaxy initialization: {}", e)
         }

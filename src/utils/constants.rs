@@ -31,3 +31,6 @@ pub(crate) const DEFAULT_SUNRAY_RATIO: i32 = 80;
 /// Reference height to compute scaled values for the galaxy, depending
 /// on the user's display settings
 pub(crate) const BASE_HEIGHT: f32 = 960.;
+
+/// number of planets in a randomly generated galaxy
+pub(crate) const DEFAULT_RANDOM_PLANETS: u32 = 7;

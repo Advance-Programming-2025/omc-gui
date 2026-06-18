@@ -76,6 +76,10 @@ pub struct CurrentPathText;
 #[derive(Component)]
 pub struct StartRatioText;
 
+/// Marker for the text for the number of planets in a random galaxy
+#[derive(Component)]
+pub struct StartPlanetText;
+
 /// Marker for the text of the button that signals the explorer AI mode: auto or manual
 #[derive(Component)]
 pub struct ExpModeText;

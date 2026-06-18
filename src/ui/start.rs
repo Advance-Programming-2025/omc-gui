@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use crate::{
     ecs::{
         components::StartMenuButton,
-        markers::{CurrentPathText, StartMenuUI, StartRatioText},
+        markers::{CurrentPathText, StartMenuUI, StartPlanetText, StartRatioText},
         resources::{GameState, StartupConfig},
     },
     ui::button_bundle,
@@ -15,6 +15,7 @@ pub(crate) fn start_splash(mut commands: Commands) {
     let config_file = StartupConfig::default();
     let starter_file = config_file.topology_path.clone();
     let starter_ratio = config_file.ratio;
+    let starter_planets = config_file.random_planets;
     commands.insert_resource(config_file);
 
     commands
@@ -74,6 +75,32 @@ pub(crate) fn start_splash(mut commands: Commands) {
                     ));
                 });
 
+            container
+                .spawn(Node {
+                    width: Val::Percent(100.),
+                    display: Display::Flex,
+                    flex_direction: FlexDirection::Row,
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    ..Default::default()
+                })
+                .with_children(|planet_container| {
+                    planet_container.spawn((
+                        button_bundle(Text::new("-"), 10.),
+                        StartMenuButton::RandomPlanetLess,
+                    ));
+
+                    planet_container.spawn((
+                        Text::new(format!("Random galaxy planet count: {}", starter_planets)),
+                        StartPlanetText,
+                    ));
+
+                    planet_container.spawn((
+                        button_bundle(Text::new("+"), 10.),
+                        StartMenuButton::RandomPlanetMore,
+                    ));
+                });
+
             container.spawn((
                 button_bundle(Text::new("Start from topology"), 50.),
                 StartMenuButton::StartGame,
@@ -91,7 +118,10 @@ pub(crate) fn start_menu_actions(
     mut state: ResMut<NextState<GameState>>,
     mut config_res: ResMut<StartupConfig>,
     mut text_query: Query<(&mut Text, &CurrentPathText)>,
-    mut ratio_query: Query<(&mut Text, &StartRatioText), Without<CurrentPathText>>,
+    mut label_texts: ParamSet<(
+        Query<(&mut Text, &StartRatioText), Without<CurrentPathText>>,
+        Query<(&mut Text, &StartPlanetText), Without<CurrentPathText>>,
+    )>,
 ) {
     for (&interaction, action_type) in &mut action_query {
         if interaction == Interaction::Pressed {
@@ -114,14 +144,26 @@ pub(crate) fn start_menu_actions(
                 }
                 StartMenuButton::StartRatioLess => {
                     config_res.ratio = i32::max(0, config_res.ratio - 5);
-                    for (mut text, _) in &mut ratio_query {
+                    for (mut text, _) in &mut label_texts.p0() {
                         **text = format!("Sunray/asteroid ratio: {}%", config_res.ratio);
                     }
                 }
                 StartMenuButton::StartRatioMore => {
                     config_res.ratio = i32::min(100, config_res.ratio + 5);
-                    for (mut text, _) in &mut ratio_query {
+                    for (mut text, _) in &mut label_texts.p0() {
                         **text = format!("Sunray/asteroid ratio: {}%", config_res.ratio);
+                    }
+                }
+                StartMenuButton::RandomPlanetLess => {
+                    config_res.random_planets = config_res.random_planets.saturating_sub(1).max(2);
+                    for (mut text, _) in &mut label_texts.p1() {
+                        **text = format!("Random galaxy planet count: {}", config_res.random_planets);
+                    }
+                }
+                StartMenuButton::RandomPlanetMore => {
+                    config_res.random_planets = config_res.random_planets.saturating_add(1);
+                    for (mut text, _) in &mut label_texts.p1() {
+                        **text = format!("Random galaxy planet count: {}", config_res.random_planets);
                     }
                 }
                 StartMenuButton::StartRandom => {

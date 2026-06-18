@@ -3,7 +3,7 @@ use std::{collections::VecDeque, fmt::Display, path::PathBuf};
 use bevy::prelude::*;
 use omc_galaxy::{Orchestrator, PlanetInfoMap, utils::ExplorerInfoMap};
 
-use crate::utils::constants::DEFAULT_SUNRAY_RATIO;
+use crate::utils::constants::{DEFAULT_RANDOM_PLANETS, DEFAULT_SUNRAY_RATIO};
 
 /// Main holder for the orchestrator, all interactions with parts of the simulation should pass through here
 #[derive(Resource)]
@@ -94,10 +94,12 @@ pub struct ActiveNotification {
 /// Holds the initial parameters used to start the game.
 /// * `topology_path` = OS path to the file that contains a galaxy topology
 /// * `ratio` = sunray to asteroid spawn probability
+/// * `random_planets` = number of planets in a randomly generated galaxy
 #[derive(Resource, Clone)]
 pub struct StartupConfig {
     pub topology_path: Option<PathBuf>,
     pub ratio: i32,
+    pub random_planets: u32
 }
 
 impl Default for StartupConfig {
@@ -105,6 +107,7 @@ impl Default for StartupConfig {
         Self {
             topology_path: Some("assets/topologies/default.txt".into()),
             ratio: DEFAULT_SUNRAY_RATIO,
+            random_planets: DEFAULT_RANDOM_PLANETS
         }
     }
 }

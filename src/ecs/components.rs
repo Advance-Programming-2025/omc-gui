@@ -91,5 +91,7 @@ pub enum StartMenuButton {
     StartGame,
     StartRatioLess,
     StartRatioMore,
-    StartRandom
+    RandomPlanetLess,
+    RandomPlanetMore,
+    StartRandom,
 }
