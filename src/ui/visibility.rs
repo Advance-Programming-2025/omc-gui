@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use omc_galaxy::Status;
 
 use crate::ecs::components::{Explorer, Planet};
-use crate::ecs::markers::{AliveExplorerButton, AlivePlanetButton, ManualExplorer};
+use crate::ecs::markers::{AliveExplorerButton, AlivePlanetActions, AlivePlanetButton, ManualExplorer};
 use crate::ecs::resources::{EntityClickRes, ExpState, PlanetInfoRes};
 use crate::utils::traits::Visible;
 
@@ -79,5 +79,21 @@ pub fn update_alive_planet_button_visibility(
     });
     for mut node in &mut query {
         node.display = if has_alive { Display::Flex } else { Display::None };
+    }
+}
+
+/// Hide the Send asteroid/Send sunray buttons when the selected planet is dead
+pub fn update_alive_planet_actions_visibility(
+    selected: Res<EntityClickRes>,
+    planet_info: Res<PlanetInfoRes>,
+    mut query: Query<&mut Node, With<AlivePlanetActions>>,
+) {
+    let visible = selected
+        .planet
+        .and_then(|id| planet_info.map.get_info(id))
+        .map_or(false, |info| info.status != Status::Dead);
+
+    for mut node in &mut query {
+        node.display = if visible { Display::Flex } else { Display::None };
     }
 }

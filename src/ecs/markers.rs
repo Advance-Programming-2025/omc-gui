@@ -87,3 +87,7 @@ pub struct AliveExplorerButton;
 /// Marker for the button that selects a random alive planet
 #[derive(Component)]
 pub struct AlivePlanetButton;
+
+/// Marker for planet action buttons that should be hidden when the planet is dead
+#[derive(Component)]
+pub struct AlivePlanetActions;

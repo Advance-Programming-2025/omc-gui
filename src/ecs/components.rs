@@ -33,6 +33,8 @@ pub enum ButtonActions {
     Nuke,
     RandomExplorer,
     RandomPlanet,
+    PrevPlanet,
+    NextPlanet,
 }
 
 /// Button associated actions
@@ -41,6 +43,8 @@ pub enum ExpButtonActions {
     ExpModeChange,
     CreateBasic(BasicResourceType),
     CreateComplex(ComplexResourceType),
+    PrevExplorer,
+    NextExplorer,
 }
 
 /// Planet info marker component

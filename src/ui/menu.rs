@@ -1,7 +1,7 @@
 use crate::ecs::components::ExpButtonActions;
 use crate::ecs::components::{ButtonActions, ListType, RatioButton, UiExplorerText, UiPlanetText};
 use crate::ecs::markers::{
-    AliveExplorerButton, AlivePlanetButton, DropdownButton, DropdownLabel, DropdownRoot, ExpModeText, ExplorerOnlyButton, GameStateText, LogText, ManualExplorer, PlanetOnlyButton, RatioText
+    AliveExplorerButton, AlivePlanetActions, AlivePlanetButton, DropdownButton, DropdownLabel, DropdownRoot, ExpModeText, ExplorerOnlyButton, GameStateText, LogText, ManualExplorer, PlanetOnlyButton, RatioText
 };
 use crate::ecs::resources::{GameState, StartupConfig};
 use crate::ui::button_bundle;
@@ -110,19 +110,42 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                     Text::new("choose an entity to display its characteristics!"),
                     UiPlanetText::Name,
                 ));
+                parent
+                    .spawn((
+                        Node {
+                            display: Display::None,
+                            flex_direction: FlexDirection::Row,
+                            justify_content: JustifyContent::Center,
+                            align_items: AlignItems::Center,
+                            ..default()
+                        },
+                        PlanetOnlyButton,
+                    ))
+                    .with_children(|parent| {
+                        parent.spawn((
+                            button_bundle(Text::new("<"), 20.),
+                            ButtonActions::PrevPlanet,
+                        ));
+                        parent.spawn((
+                            Text::new(""),
+                            TextLayout { justify: Justify::Center, ..default() },
+                            Node {
+                                width: Val::Percent(60.0),
+                                ..default()
+                            },
+                            UiPlanetText::Id,
+                        ));
+                        parent.spawn((
+                            button_bundle(Text::new(">"), 20.),
+                            ButtonActions::NextPlanet,
+                        ));
+                    });
                 parent.spawn((
                     Text::new(""),
+                    TextLayout { justify: Justify::Center, ..default() },
                     Node {
                         display: Display::None,
-                        ..default()
-                    },
-                    PlanetOnlyButton,
-                    UiPlanetText::Id,
-                ));
-                parent.spawn((
-                    Text::new(""),
-                    Node {
-                        display: Display::None,
+                        width: Val::Percent(100.0),
                         ..default()
                     },
                     PlanetOnlyButton,
@@ -130,8 +153,10 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                 ));
                 parent.spawn((
                     Text::new(""),
+                    TextLayout { justify: Justify::Center, ..default() },
                     Node {
                         display: Display::None,
+                        width: Val::Percent(100.0),
                         ..default()
                     },
                     PlanetOnlyButton,
@@ -139,26 +164,51 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                 ));
                 parent.spawn((
                     Text::new(""),
+                    TextLayout { justify: Justify::Center, ..default() },
                     Node {
                         display: Display::None,
+                        width: Val::Percent(100.0),
                         ..default()
                     },
                     PlanetOnlyButton,
                     UiPlanetText::Rocket,
                 ));
+                parent
+                    .spawn((
+                        Node {
+                            display: Display::None,
+                            flex_direction: FlexDirection::Row,
+                            justify_content: JustifyContent::Center,
+                            align_items: AlignItems::Center,
+                            ..default()
+                        },
+                        ExplorerOnlyButton,
+                    ))
+                    .with_children(|parent| {
+                        parent.spawn((
+                            button_bundle(Text::new("<"), 20.),
+                            ExpButtonActions::PrevExplorer,
+                        ));
+                        parent.spawn((
+                            Text::new(""),
+                            TextLayout { justify: Justify::Center, ..default() },
+                            Node {
+                                width: Val::Percent(60.0),
+                                ..default()
+                            },
+                            UiExplorerText::Id,
+                        ));
+                        parent.spawn((
+                            button_bundle(Text::new(">"), 20.),
+                            ExpButtonActions::NextExplorer,
+                        ));
+                    });
                 parent.spawn((
                     Text::new(""),
+                    TextLayout { justify: Justify::Center, ..default() },
                     Node {
                         display: Display::None,
-                        ..default()
-                    },
-                    ExplorerOnlyButton,
-                    UiExplorerText::Id,
-                ));
-                parent.spawn((
-                    Text::new(""),
-                    Node {
-                        display: Display::None,
+                        width: Val::Percent(100.0),
                         ..default()
                     },
                     ExplorerOnlyButton,
@@ -166,8 +216,10 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                 ));
                 parent.spawn((
                     Text::new(""),
+                    TextLayout { justify: Justify::Center, ..default() },
                     Node {
                         display: Display::None,
+                        width: Val::Percent(100.0),
                         ..default()
                     },
                     ExplorerOnlyButton,
@@ -175,8 +227,10 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                 ));
                 parent.spawn((
                     Text::new(""),
+                    TextLayout { justify: Justify::Center, ..default() },
                     Node {
                         display: Display::None,
+                        width: Val::Percent(100.0),
                         ..default()
                     },
                     ExplorerOnlyButton,
@@ -196,6 +250,7 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                         ..button_row.clone()
                     },
                     PlanetOnlyButton,
+                    AlivePlanetActions,
                 ))
                 .with_children(|parent| {
                     parent.spawn((
@@ -224,7 +279,7 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                     parent.spawn((
                         button_bundle(Text::new("Explorer mode: "), 50.),
                         ExpButtonActions::ExpModeChange,
-                        ExpModeText
+                        ExpModeText,
                     ));
                     // show the following stuff only if the explorer is in manual mode
                     parent

@@ -192,6 +192,7 @@ pub(crate) fn manual_explorer_action(
                         }
                     }
                 }
+                ExpButtonActions::PrevExplorer | ExpButtonActions::NextExplorer => {}
                 ExpButtonActions::ExpModeChange => {
                     if let Some(id) = selected_entity.explorer {
                         if let Some(mut target) = explorers.iter_mut().find(|exp| exp.id == id) {
@@ -238,6 +239,140 @@ pub(crate) fn manual_explorer_action(
                     }
                 }
             }
+        }
+    }
+}
+
+pub(crate) fn cycle_explorer_action(
+    mut action_query: Query<
+        (&Interaction, &ExpButtonActions),
+        (Changed<Interaction>, With<Button>),
+    >,
+    explorer_entities: Query<(Entity, &Explorer)>,
+    mut sprites: ParamSet<(
+        Query<&mut Sprite, With<Planet>>,
+        Query<&mut Sprite, With<Explorer>>,
+    )>,
+    size: Res<PlanetSizeRes>,
+    mut selected: ResMut<EntityClickRes>,
+) {
+    for (&interaction, action) in &mut action_query {
+        if interaction != Interaction::Pressed {
+            continue;
+        }
+
+        match action {
+            ExpButtonActions::PrevExplorer | ExpButtonActions::NextExplorer => {
+                let current_id = match selected.explorer {
+                    Some(id) => id,
+                    None => return,
+                };
+
+                let mut ids: Vec<(Entity, u32)> = explorer_entities
+                    .iter()
+                    .map(|(e, exp)| (e, exp.id))
+                    .collect();
+                ids.sort_by_key(|(_, id)| *id);
+
+                if ids.len() < 2 {
+                    return;
+                }
+
+                let pos = ids.iter().position(|(_, id)| *id == current_id);
+                let pos = match pos {
+                    Some(p) => p,
+                    None => return,
+                };
+
+                let next_pos = match action {
+                    ExpButtonActions::NextExplorer => (pos + 1) % ids.len(),
+                    _ => (pos + ids.len() - 1) % ids.len(),
+                };
+
+                let (entity, id) = ids[next_pos];
+
+                for mut sprite in &mut sprites.p0() {
+                    sprite.custom_size = Some(Vec2::splat(size.planet_rad * 2.));
+                }
+                for mut sprite in &mut sprites.p1() {
+                    sprite.custom_size = Some(Vec2::splat(size.exp_rad));
+                }
+
+                if let Ok(mut sprite) = sprites.p1().get_mut(entity) {
+                    sprite.custom_size = Some(Vec2::splat(size.exp_rad * 1.5));
+                }
+
+                selected.explorer = Some(id);
+                selected.planet = None;
+            }
+            _ => {}
+        }
+    }
+}
+
+pub(crate) fn cycle_planet_action(
+    mut action_query: Query<
+        (&Interaction, &ButtonActions),
+        (Changed<Interaction>, With<Button>),
+    >,
+    planet_entities: Query<(Entity, &Planet)>,
+    mut sprites: ParamSet<(
+        Query<&mut Sprite, With<Planet>>,
+        Query<&mut Sprite, With<Explorer>>,
+    )>,
+    size: Res<PlanetSizeRes>,
+    mut selected: ResMut<EntityClickRes>,
+) {
+    for (&interaction, action) in &mut action_query {
+        if interaction != Interaction::Pressed {
+            continue;
+        }
+
+        match action {
+            ButtonActions::PrevPlanet | ButtonActions::NextPlanet => {
+                let current_id = match selected.planet {
+                    Some(id) => id,
+                    None => return,
+                };
+
+                let mut ids: Vec<(Entity, u32)> = planet_entities
+                    .iter()
+                    .map(|(e, planet)| (e, planet.id))
+                    .collect();
+                ids.sort_by_key(|(_, id)| *id);
+
+                if ids.len() < 2 {
+                    return;
+                }
+
+                let pos = ids.iter().position(|(_, id)| *id == current_id);
+                let pos = match pos {
+                    Some(p) => p,
+                    None => return,
+                };
+
+                let next_pos = match action {
+                    ButtonActions::NextPlanet => (pos + 1) % ids.len(),
+                    _ => (pos + ids.len() - 1) % ids.len(),
+                };
+
+                let (entity, id) = ids[next_pos];
+
+                for mut sprite in &mut sprites.p0() {
+                    sprite.custom_size = Some(Vec2::splat(size.planet_rad * 2.));
+                }
+                for mut sprite in &mut sprites.p1() {
+                    sprite.custom_size = Some(Vec2::splat(size.exp_rad));
+                }
+
+                if let Ok(mut sprite) = sprites.p0().get_mut(entity) {
+                    sprite.custom_size = Some(Vec2::splat(size.planet_rad * 2.5));
+                }
+
+                selected.planet = Some(id);
+                selected.explorer = None;
+            }
+            _ => {}
         }
     }
 }
