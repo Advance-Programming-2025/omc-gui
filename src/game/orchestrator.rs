@@ -21,14 +21,20 @@ pub fn setup_orchestrator(mut commands: Commands, start_config: Res<StartupConfi
 
     let mut orchestrator = Orchestrator::new().expect("Failed to create orchestrator");
 
-    orchestrator
+    if let Some(path) = &start_config.topology_path {
+        orchestrator
         .initialize_galaxy_by_file(
-            start_config
-                .topology_path
+            path
                 .to_str()
                 .expect("failed to load path from file. try changing the galaxy file."),
         )
         .expect("Failed to initialize galaxy");
+    } else {
+        let res = orchestrator.initialize_galaxy_by_random_selection(10);
+        if let Err(e) = res {
+            error!("Error in random galaxy initialization: {}", e)
+        }
+    }
 
     let (topology, planet_num) = orchestrator.get_topology();
 

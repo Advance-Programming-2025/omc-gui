@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use bevy::prelude::*;
 
 use crate::{
@@ -42,7 +44,7 @@ pub(crate) fn start_splash(mut commands: Commands) {
             ));
 
             container.spawn((
-                Text::new(format!("Current path: {}", starter_file.display())),
+                Text::new(format!("Current path: {}", starter_file.unwrap_or(PathBuf::default()).display())),
                 CurrentPathText,
             ));
 
@@ -73,8 +75,13 @@ pub(crate) fn start_splash(mut commands: Commands) {
                 });
 
             container.spawn((
-                button_bundle(Text::new("Start game"), 50.),
+                button_bundle(Text::new("Start from topology"), 50.),
                 StartMenuButton::StartGame,
+            ));
+
+            container.spawn((
+                button_bundle(Text::new("Start from random galaxy"), 50.),
+                StartMenuButton::StartRandom,
             ));
         });
 }
@@ -94,10 +101,11 @@ pub(crate) fn start_menu_actions(
                         .add_filter("Galaxy", &["txt"])
                         .pick_file()
                     {
-                        config_res.topology_path = path;
+                        let to_display = path.clone();
+                        config_res.topology_path = Some(path);
                         for (mut text, _) in &mut text_query {
                             **text =
-                                format!("Current path: {}", config_res.topology_path.display());
+                                format!("Current path: {}", to_display.display());
                         }
                     };
                 }
@@ -116,6 +124,10 @@ pub(crate) fn start_menu_actions(
                         **text = format!("Sunray/asteroid ratio: {}%", config_res.ratio);
                     }
                 }
+                StartMenuButton::StartRandom => {
+                    config_res.topology_path = None;
+                    state.set(GameState::Playing);
+                },
             }
         }
     }

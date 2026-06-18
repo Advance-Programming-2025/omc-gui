@@ -96,14 +96,14 @@ pub struct ActiveNotification {
 /// * `ratio` = sunray to asteroid spawn probability
 #[derive(Resource, Clone)]
 pub struct StartupConfig {
-    pub topology_path: PathBuf,
+    pub topology_path: Option<PathBuf>,
     pub ratio: i32,
 }
 
 impl Default for StartupConfig {
     fn default() -> Self {
         Self {
-            topology_path: "assets/topologies/default.txt".into(),
+            topology_path: Some("assets/topologies/default.txt".into()),
             ratio: DEFAULT_SUNRAY_RATIO,
         }
     }
