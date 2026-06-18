@@ -31,6 +31,8 @@ pub enum ButtonActions {
     ManualSunray,
     Blind,
     Nuke,
+    RandomExplorer,
+    RandomPlanet,
 }
 
 /// Button associated actions

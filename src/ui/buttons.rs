@@ -1,11 +1,14 @@
 use bevy::prelude::*;
+use omc_galaxy::Status;
+use rand::Rng;
 
 use crate::ecs::components::{
-    ButtonActions, DropdownItem, ExpButtonActions, Explorer, RatioButton,
+    ButtonActions, DropdownItem, ExpButtonActions, Explorer, Planet, RatioButton,
 };
 use crate::ecs::markers::RatioText;
 use crate::ecs::resources::{
-    EntityClickRes, ExpState, GameState, LogTextRes, OrchestratorResource, StartupConfig,
+    EntityClickRes, ExpState, GameState, LogTextRes, OrchestratorResource, PlanetInfoRes,
+    PlanetSizeRes, StartupConfig,
 };
 use crate::game::logs::update_logs;
 
@@ -254,6 +257,101 @@ pub(crate) fn explorer_move_action(
             {
                 error!("error in explorer move:{}", e);
             }
+        }
+    }
+}
+
+/// Choose a random entity to view
+/// 
+/// Chooses a random entity (either a planet or an explorer, depending on the user's choice) to
+/// visualize in the entity selection menu. Only alive entities can be chosen; the buttons are
+/// no longer active once either all planets or all explorers died
+pub(crate) fn random_entity_action(
+    mut action_query: Query<(&Interaction, &ButtonActions), (Changed<Interaction>, With<Button>)>,
+    explorers: Query<(Entity, &Explorer)>,
+    planets: Query<(Entity, &Planet)>,
+    planet_info: Res<PlanetInfoRes>,
+    mut sprites: ParamSet<(
+        Query<&mut Sprite, With<Planet>>,
+        Query<&mut Sprite, With<Explorer>>,
+    )>,
+    size: Res<PlanetSizeRes>,
+    mut selected: ResMut<EntityClickRes>,
+) {
+    for (&interaction, action) in &mut action_query {
+        if interaction != Interaction::Pressed {
+            continue;
+        }
+
+        match action {
+            // reset the size of all the sprites
+            ButtonActions::RandomExplorer => {
+                for mut sprite in &mut sprites.p0() {
+                    sprite.custom_size = Some(Vec2::splat(size.planet_rad * 2.));
+                }
+                for mut sprite in &mut sprites.p1() {
+                    sprite.custom_size = Some(Vec2::splat(size.exp_rad));
+                }
+
+                // get all currently alive explorers
+                let alive: Vec<(Entity, u32)> = explorers
+                    .iter()
+                    .filter(|(_, exp)| !matches!(exp.state, ExpState::Dead))
+                    .map(|(e, exp)| (e, exp.id))
+                    .collect();
+
+                if alive.is_empty() {
+                    return;
+                }
+
+                let idx = rand::rng().random_range(0..alive.len());
+                let (entity, id) = alive[idx];
+
+                // increase the size of the sprite of the selected explorer
+                if let Ok(mut sprite) = sprites.p1().get_mut(entity) {
+                    sprite.custom_size = Some(Vec2::splat(size.exp_rad * 1.5));
+                }
+
+                selected.explorer = Some(id);
+                selected.planet = None;
+            }
+            ButtonActions::RandomPlanet => {
+                // reset all sprite sizes
+                for mut sprite in &mut sprites.p0() {
+                    sprite.custom_size = Some(Vec2::splat(size.planet_rad * 2.));
+                }
+                for mut sprite in &mut sprites.p1() {
+                    sprite.custom_size = Some(Vec2::splat(size.exp_rad));
+                }
+
+                // get all currently alive planets
+                let alive: Vec<(Entity, u32)> = planets
+                    .iter()
+                    .filter(|(_, planet)| {
+                        planet_info
+                            .map
+                            .get_info(planet.id)
+                            .map_or(false, |info| info.status != Status::Dead)
+                    })
+                    .map(|(e, planet)| (e, planet.id))
+                    .collect();
+
+                if alive.is_empty() {
+                    return;
+                }
+
+                let idx = rand::rng().random_range(0..alive.len());
+                let (entity, id) = alive[idx];
+
+                // increase the size of the sprite of the selected planet
+                if let Ok(mut sprite) = sprites.p0().get_mut(entity) {
+                    sprite.custom_size = Some(Vec2::splat(size.planet_rad * 2.5));
+                }
+
+                selected.planet = Some(id);
+                selected.explorer = None;
+            }
+            _ => {}
         }
     }
 }

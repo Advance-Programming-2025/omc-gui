@@ -79,3 +79,11 @@ pub struct StartRatioText;
 /// Marker for the text of the button that signals the explorer AI mode: auto or manual
 #[derive(Component)]
 pub struct ExpModeText;
+
+/// Marker for the button that selects a random alive explorer
+#[derive(Component)]
+pub struct AliveExplorerButton;
+
+/// Marker for the button that selects a random alive planet
+#[derive(Component)]
+pub struct AlivePlanetButton;

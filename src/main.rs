@@ -82,10 +82,19 @@ pub fn main() -> Result<(), String> {
                 ui::buttons::manual_planet_action,
                 ui::buttons::manual_explorer_action,
                 ui::buttons::explorer_move_action,
+                ui::buttons::random_entity_action,
                 ui::scroll::send_scroll_events,
                 ui::visibility::update_button_visibility::<ExplorerOnlyButton>,
                 ui::visibility::update_button_visibility::<PlanetOnlyButton>,
                 ui::visibility::update_manual_explorer_visibility,
+                ui::visibility::update_alive_explorer_button_visibility,
+                ui::visibility::update_alive_planet_button_visibility,
+            )
+                .run_if(not(in_state(GameState::WaitingStart))),
+        )
+        .add_systems(
+            Update,
+            (
                 ui::dropdown::fill_neighbors_dropdown,
                 ui::dropdown::fill_basic_dropdown,
                 ui::dropdown::fill_complex_dropdown,

@@ -1,8 +1,9 @@
 use bevy::prelude::*;
+use omc_galaxy::Status;
 
-use crate::ecs::components::Explorer;
-use crate::ecs::markers::ManualExplorer;
-use crate::ecs::resources::{EntityClickRes, ExpState};
+use crate::ecs::components::{Explorer, Planet};
+use crate::ecs::markers::{AliveExplorerButton, AlivePlanetButton, ManualExplorer};
+use crate::ecs::resources::{EntityClickRes, ExpState, PlanetInfoRes};
 use crate::utils::traits::Visible;
 
 pub fn update_button_visibility<T>(
@@ -49,5 +50,34 @@ pub fn update_manual_explorer_visibility(
         } else {
             node.display = Display::None;
         }
+    }
+}
+
+/// Hide the random explorer button if all explorers are dead
+pub fn update_alive_explorer_button_visibility(
+    explorers: Query<&Explorer>,
+    mut query: Query<&mut Node, With<AliveExplorerButton>>,
+) {
+    let has_alive = explorers.iter().any(|exp| !matches!(exp.state, ExpState::Dead));
+    for mut node in &mut query {
+        node.display = if has_alive { Display::Flex } else { Display::None };
+    }
+}
+
+
+/// Hide the random planet button if all planets are dead
+pub fn update_alive_planet_button_visibility(
+    planet_info: Res<PlanetInfoRes>,
+    planets: Query<&Planet>,
+    mut query: Query<&mut Node, With<AlivePlanetButton>>,
+) {
+    let has_alive = planets.iter().any(|planet| {
+        planet_info
+            .map
+            .get_info(planet.id)
+            .map_or(false, |info| info.status != Status::Dead)
+    });
+    for mut node in &mut query {
+        node.display = if has_alive { Display::Flex } else { Display::None };
     }
 }

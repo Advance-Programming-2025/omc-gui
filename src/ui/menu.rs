@@ -1,7 +1,7 @@
 use crate::ecs::components::ExpButtonActions;
 use crate::ecs::components::{ButtonActions, ListType, RatioButton, UiExplorerText, UiPlanetText};
 use crate::ecs::markers::{
-    DropdownButton, DropdownLabel, DropdownRoot, ExpModeText, ExplorerOnlyButton, GameStateText, LogText, ManualExplorer, PlanetOnlyButton, RatioText
+    AliveExplorerButton, AlivePlanetButton, DropdownButton, DropdownLabel, DropdownRoot, ExpModeText, ExplorerOnlyButton, GameStateText, LogText, ManualExplorer, PlanetOnlyButton, RatioText
 };
 use crate::ecs::resources::{GameState, StartupConfig};
 use crate::ui::button_bundle;
@@ -272,6 +272,28 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                                 Some(Val::Px(300.)),
                             )));
                         });
+                });
+
+            // random selection buttons
+            parent
+                .spawn(Node {
+                    width: Val::Percent(100.0),
+                    flex_direction: FlexDirection::Row,
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    ..default()
+                })
+                .with_children(|parent| {
+                    parent.spawn((
+                        button_bundle(Text::new("Random Explorer"), 50.),
+                        ButtonActions::RandomExplorer,
+                        AliveExplorerButton,
+                    ));
+                    parent.spawn((
+                        button_bundle(Text::new("Random Planet"), 50.),
+                        ButtonActions::RandomPlanet,
+                        AlivePlanetButton,
+                    ));
                 });
         });
     });
