@@ -3484,7 +3484,7 @@ checksum = "953f07c43838f8e6f9758cab68bf5bed85465e7587ebe0b823f1bcd81978ad3a"
 [[package]]
 name = "logging_utils"
 version = "0.1.0"
-source = "git+https://github.com/Advance-Programming-2025/omc-galaxy.git#e7e05eaa29bfdcfe9c6e858485d12fd8ef48157b"
+source = "git+https://github.com/Advance-Programming-2025/omc-galaxy.git#0fc2da5b7ec57efddb1cbde702d9a17401f1ee56"
 dependencies = [
  "common-game",
  "crossbeam-channel",
@@ -4070,7 +4070,7 @@ dependencies = [
 [[package]]
 name = "omc-galaxy"
 version = "0.1.0"
-source = "git+https://github.com/Advance-Programming-2025/omc-galaxy.git#e7e05eaa29bfdcfe9c6e858485d12fd8ef48157b"
+source = "git+https://github.com/Advance-Programming-2025/omc-galaxy.git#0fc2da5b7ec57efddb1cbde702d9a17401f1ee56"
 dependencies = [
  "Planet",
  "black_adidas_shoe",
@@ -4095,7 +4095,7 @@ dependencies = [
 
 [[package]]
 name = "omc-gui"
-version = "1.0.1"
+version = "1.1.0"
 dependencies = [
  "bevy",
  "bevy_embedded_assets",
@@ -4122,7 +4122,7 @@ checksum = "384b8ab6d37215f3c5301a95a4accb5d64aa607f1fcb26a11b5303878451b4fe"
 [[package]]
 name = "one-million-crabs"
 version = "0.1.0"
-source = "git+https://github.com/Advance-Programming-2025/One_million_crabs.git#b5dc45e96c3615adba5c6cf63ee3df82bf3c38c7"
+source = "git+https://github.com/Advance-Programming-2025/One_million_crabs.git#b4134f97809ee1bc85a56815b94465090a60bd91"
 dependencies = [
  "common-game",
  "crossbeam-channel",
