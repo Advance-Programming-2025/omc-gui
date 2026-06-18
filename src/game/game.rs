@@ -15,11 +15,11 @@ use crate::{
 };
 
 /// The core system at the heart of the game.
-/// 
+///
 /// At each engine update the timer is ticked. if the timer runs out, the events
 /// in the previous rounds are sent to the [handle_tick] function to trigger the necessary
 /// observers and handle other specific logic. Afterwards, the maps are updated with their
-/// most recent values and a random action (nothing, sunray, asteroid) is chosen for the 
+/// most recent values and a random action (nothing, sunray, asteroid) is chosen for the
 /// following round
 pub fn game_loop(
     mut commands: Commands,
@@ -85,7 +85,15 @@ pub fn game_loop(
             //if there are manually imputted events, run those immediately
             //else, keep going
 
-            drain_stale_events(&mut commands, orchestrator, log_text, game_explorers, sel, planets, explorers);
+            drain_stale_events(
+                &mut commands,
+                orchestrator,
+                log_text,
+                game_explorers,
+                sel,
+                planets,
+                explorers,
+            );
 
             mutable_state.set(GameState::Playing);
         }
@@ -184,10 +192,8 @@ fn handle_tick(
             }
             OrchestratorEvent::ResourceGenerationFailed { message } => {
                 warn!("Error in resource generation, notifying user");
-                commands.trigger(Notification{
-                    message
-                });
-            },
+                commands.trigger(Notification { message });
+            }
         }
     }
 }
@@ -231,7 +237,15 @@ pub(crate) fn flush_events_before_resume(
     planets: ResMut<PlanetInfoRes>,
     explorers: ResMut<ExplorerInfoRes>,
 ) {
-    drain_stale_events(&mut commands, orchestrator, log_text, game_explorers, sel, planets, explorers);
+    drain_stale_events(
+        &mut commands,
+        orchestrator,
+        log_text,
+        game_explorers,
+        sel,
+        planets,
+        explorers,
+    );
 }
 
 pub(crate) fn flush_events_before_pause(
@@ -250,5 +264,13 @@ pub(crate) fn flush_events_before_pause(
     }
 
     info!("FLUSH: game was paused, flushing the following: {}", dbg);
-    drain_stale_events(&mut commands, orchestrator, log_text, game_explorers, sel, planets, explorers);
+    drain_stale_events(
+        &mut commands,
+        orchestrator,
+        log_text,
+        game_explorers,
+        sel,
+        planets,
+        explorers,
+    );
 }

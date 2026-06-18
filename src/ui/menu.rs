@@ -1,7 +1,9 @@
 use crate::ecs::components::ExpButtonActions;
 use crate::ecs::components::{ButtonActions, ListType, RatioButton, UiExplorerText, UiPlanetText};
 use crate::ecs::markers::{
-    AliveExplorerButton, AlivePlanetActions, AlivePlanetButton, DropdownButton, DropdownLabel, DropdownRoot, ExpModeText, ExplorerOnlyButton, GameStateText, LogText, ManualExplorer, PlanetOnlyButton, RatioText
+    AliveExplorerButton, AlivePlanetActions, AlivePlanetButton, DropdownButton, DropdownLabel,
+    DropdownRoot, ExpModeText, ExplorerOnlyButton, GameStateText, LogText, ManualExplorer,
+    PlanetOnlyButton, RatioText,
 };
 use crate::ecs::resources::{GameState, StartupConfig};
 use crate::ui::button_bundle;
@@ -128,7 +130,10 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                         ));
                         parent.spawn((
                             Text::new(""),
-                            TextLayout { justify: Justify::Center, ..default() },
+                            TextLayout {
+                                justify: Justify::Center,
+                                ..default()
+                            },
                             Node {
                                 width: Val::Percent(60.0),
                                 ..default()
@@ -142,7 +147,10 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                     });
                 parent.spawn((
                     Text::new(""),
-                    TextLayout { justify: Justify::Center, ..default() },
+                    TextLayout {
+                        justify: Justify::Center,
+                        ..default()
+                    },
                     Node {
                         display: Display::None,
                         width: Val::Percent(100.0),
@@ -153,7 +161,10 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                 ));
                 parent.spawn((
                     Text::new(""),
-                    TextLayout { justify: Justify::Center, ..default() },
+                    TextLayout {
+                        justify: Justify::Center,
+                        ..default()
+                    },
                     Node {
                         display: Display::None,
                         width: Val::Percent(100.0),
@@ -164,7 +175,10 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                 ));
                 parent.spawn((
                     Text::new(""),
-                    TextLayout { justify: Justify::Center, ..default() },
+                    TextLayout {
+                        justify: Justify::Center,
+                        ..default()
+                    },
                     Node {
                         display: Display::None,
                         width: Val::Percent(100.0),
@@ -191,7 +205,10 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                         ));
                         parent.spawn((
                             Text::new(""),
-                            TextLayout { justify: Justify::Center, ..default() },
+                            TextLayout {
+                                justify: Justify::Center,
+                                ..default()
+                            },
                             Node {
                                 width: Val::Percent(60.0),
                                 ..default()
@@ -205,7 +222,10 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                     });
                 parent.spawn((
                     Text::new(""),
-                    TextLayout { justify: Justify::Center, ..default() },
+                    TextLayout {
+                        justify: Justify::Center,
+                        ..default()
+                    },
                     Node {
                         display: Display::None,
                         width: Val::Percent(100.0),
@@ -216,7 +236,10 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                 ));
                 parent.spawn((
                     Text::new(""),
-                    TextLayout { justify: Justify::Center, ..default() },
+                    TextLayout {
+                        justify: Justify::Center,
+                        ..default()
+                    },
                     Node {
                         display: Display::None,
                         width: Val::Percent(100.0),
@@ -227,7 +250,10 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                 ));
                 parent.spawn((
                     Text::new(""),
-                    TextLayout { justify: Justify::Center, ..default() },
+                    TextLayout {
+                        justify: Justify::Center,
+                        ..default()
+                    },
                     Node {
                         display: Display::None,
                         width: Val::Percent(100.0),

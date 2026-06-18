@@ -11,7 +11,7 @@ use crate::{
 };
 
 /// Updates the entity chosen by the user by giving visual feedback
-/// 
+///
 /// This system scales the sprite of the selected entity to make it more evident
 /// and updates the [EntityClickRes] resource so that the [update_selected_entity] system can
 /// update the menu information
@@ -55,10 +55,10 @@ pub(crate) fn choose_on_click(
 }
 
 /// Updates the information regarding the selected entity
-/// 
+///
 /// According to the type and ID of the selected entity, the fields in the
 /// selected entity menu are updated accordingly: for the planet, that includes the name, ID,
-/// status, rocket availability and number of charged cells; for the explorer, that includes 
+/// status, rocket availability and number of charged cells; for the explorer, that includes
 /// the ID, state, visited planet and bag contents
 pub(crate) fn update_selected_entity(
     selected_entity: Res<EntityClickRes>,

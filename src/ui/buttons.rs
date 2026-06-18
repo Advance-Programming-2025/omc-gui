@@ -176,7 +176,7 @@ pub(crate) fn manual_explorer_action(
                         let res = orchestrator
                             .orchestrator
                             .send_generate_resource_request(id, *basic);
-                        if let Ok(_) = res { 
+                        if let Ok(_) = res {
                             info!("basic resource was generated");
                         }
                     }
@@ -311,10 +311,7 @@ pub(crate) fn cycle_explorer_action(
 }
 
 pub(crate) fn cycle_planet_action(
-    mut action_query: Query<
-        (&Interaction, &ButtonActions),
-        (Changed<Interaction>, With<Button>),
-    >,
+    mut action_query: Query<(&Interaction, &ButtonActions), (Changed<Interaction>, With<Button>)>,
     planet_entities: Query<(Entity, &Planet)>,
     mut sprites: ParamSet<(
         Query<&mut Sprite, With<Planet>>,
@@ -397,7 +394,7 @@ pub(crate) fn explorer_move_action(
 }
 
 /// Choose a random entity to view
-/// 
+///
 /// Chooses a random entity (either a planet or an explorer, depending on the user's choice) to
 /// visualize in the entity selection menu. Only alive entities can be chosen; the buttons are
 /// no longer active once either all planets or all explorers died

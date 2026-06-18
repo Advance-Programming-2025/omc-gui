@@ -45,7 +45,10 @@ pub(crate) fn start_splash(mut commands: Commands) {
             ));
 
             container.spawn((
-                Text::new(format!("Current path: {}", starter_file.unwrap_or(PathBuf::default()).display())),
+                Text::new(format!(
+                    "Current path: {}",
+                    starter_file.unwrap_or(PathBuf::default()).display()
+                )),
                 CurrentPathText,
             ));
 
@@ -134,8 +137,7 @@ pub(crate) fn start_menu_actions(
                         let to_display = path.clone();
                         config_res.topology_path = Some(path);
                         for (mut text, _) in &mut text_query {
-                            **text =
-                                format!("Current path: {}", to_display.display());
+                            **text = format!("Current path: {}", to_display.display());
                         }
                     };
                 }
@@ -157,19 +159,21 @@ pub(crate) fn start_menu_actions(
                 StartMenuButton::RandomPlanetLess => {
                     config_res.random_planets = config_res.random_planets.saturating_sub(1).max(2);
                     for (mut text, _) in &mut label_texts.p1() {
-                        **text = format!("Random galaxy planet count: {}", config_res.random_planets);
+                        **text =
+                            format!("Random galaxy planet count: {}", config_res.random_planets);
                     }
                 }
                 StartMenuButton::RandomPlanetMore => {
                     config_res.random_planets = config_res.random_planets.saturating_add(1);
                     for (mut text, _) in &mut label_texts.p1() {
-                        **text = format!("Random galaxy planet count: {}", config_res.random_planets);
+                        **text =
+                            format!("Random galaxy planet count: {}", config_res.random_planets);
                     }
                 }
                 StartMenuButton::StartRandom => {
                     config_res.topology_path = None;
                     state.set(GameState::Playing);
-                },
+                }
             }
         }
     }

@@ -13,7 +13,7 @@ use crate::{
 };
 
 /// Move a celestial body (sunray or asteroid) towards a planet.
-/// 
+///
 /// The moving animation is made by interpolating the movement over the start
 /// (the center of the galaxy) and the end (the center of the target planet) using
 /// a quadratic in and out function
@@ -67,7 +67,7 @@ pub fn move_celestial(
 }
 
 /// Remove the celestial body after the animation is done
-/// 
+///
 /// This system checks for animations that have finished the interpolation cycle,
 /// queries for the corresponding sprite and removes it from the game world to then
 /// trigger the [PlanetDespawn] System if the planet has been hit and died

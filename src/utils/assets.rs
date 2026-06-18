@@ -23,7 +23,7 @@ pub(crate) struct SFXAssets {
 }
 
 /// Load all the necessary assets for the visualizer.
-/// 
+///
 /// This system loads the background image, sound effects and the sprites for planets,
 /// celestial bodies and explorers into handles that live in a single [AssetServer] resource
 pub fn load_assets(mut commands: Commands, asset_server: Res<AssetServer>) {

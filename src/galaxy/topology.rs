@@ -10,7 +10,7 @@ use crate::{
 };
 
 /// Destroy a planet, its visiting explorer and its links to other planets.
-/// 
+///
 /// This system deals with the cleanup after a planet death: it removes all links
 /// that match the planet's ID on any end, despawns the explorers that were on it and
 /// finally despawns the planet itself. Planet death logic only lives in the orchestrator,
@@ -54,7 +54,7 @@ pub fn destroy_link(
 }
 
 /// Draw all the links between planets in a galaxy
-/// 
+///
 /// Link lines are displaced with trigonometric transformations (based around the fact that planets
 /// will be spawned in a circle) and are then spawned in the game world with a copy of the ID of the
 /// planets they are connecting

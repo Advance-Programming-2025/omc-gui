@@ -74,7 +74,7 @@ pub struct ExplorerInfoRes {
     pub map: ExplorerInfoMap,
 }
 
-/// Resource keeping track of all the loggable events that have happened in the game 
+/// Resource keeping track of all the loggable events that have happened in the game
 #[derive(Resource)]
 pub struct LogTextRes {
     pub text: VecDeque<String>,
@@ -99,7 +99,7 @@ pub struct ActiveNotification {
 pub struct StartupConfig {
     pub topology_path: Option<PathBuf>,
     pub ratio: i32,
-    pub random_planets: u32
+    pub random_planets: u32,
 }
 
 impl Default for StartupConfig {
@@ -107,7 +107,7 @@ impl Default for StartupConfig {
         Self {
             topology_path: Some("assets/topologies/default.txt".into()),
             ratio: DEFAULT_SUNRAY_RATIO,
-            random_planets: DEFAULT_RANDOM_PLANETS
+            random_planets: DEFAULT_RANDOM_PLANETS,
         }
     }
 }

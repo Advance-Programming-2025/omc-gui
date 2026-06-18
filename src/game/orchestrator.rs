@@ -12,7 +12,7 @@ use crate::{
 };
 
 /// Orchestrator and lower level initialization
-/// 
+///
 /// The system creates an orchestrator object to then place it in its corresponding resource.
 /// It also initializes the galaxy topology in the orchestrator, gets the necessary maps, starts the AIs,
 /// starts the game tick timer and initializes the logging resource
@@ -23,12 +23,11 @@ pub fn setup_orchestrator(mut commands: Commands, start_config: Res<StartupConfi
 
     if let Some(path) = &start_config.topology_path {
         orchestrator
-        .initialize_galaxy_by_file(
-            path
-                .to_str()
-                .expect("failed to load path from file. try changing the galaxy file."),
-        )
-        .expect("Failed to initialize galaxy");
+            .initialize_galaxy_by_file(
+                path.to_str()
+                    .expect("failed to load path from file. try changing the galaxy file."),
+            )
+            .expect("Failed to initialize galaxy");
     } else {
         let res = orchestrator.initialize_galaxy_by_random_selection(start_config.random_planets);
         if let Err(e) = res {

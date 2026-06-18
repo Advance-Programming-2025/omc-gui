@@ -7,8 +7,7 @@ use crate::{
         components::{Explorer, Planet},
         markers::Background,
         resources::{
-            ActiveNotification, ExpState, GalaxyScale, GalaxySnapshot, PlanetInfoRes,
-            PlanetSizeRes,
+            ActiveNotification, ExpState, GalaxyScale, GalaxySnapshot, PlanetInfoRes, PlanetSizeRes,
         },
     },
     galaxy::selection::choose_on_click,
@@ -22,14 +21,13 @@ pub fn setup_camera(mut commands: Commands) {
     commands.spawn(Camera2d);
 }
 
-
 /// Galaxy setup system
-/// 
+///
 /// The function achieves the following, in order:
 /// - loads the background image
 /// - spawns all planets with their respective sprite and transform
 /// - spawns the explorers on the planet with ID 0
-/// - spawns the active notification object 
+/// - spawns the active notification object
 pub fn setup(
     galaxy: Res<GalaxySnapshot>,
     planets: Res<PlanetInfoRes>,

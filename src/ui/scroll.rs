@@ -26,7 +26,10 @@ pub(crate) fn send_scroll_events(
 
         for pointer_map in hover_map.values() {
             for entity in pointer_map.keys().copied() {
-                commands.trigger(Scroll { entity, scroll_delta: delta });
+                commands.trigger(Scroll {
+                    entity,
+                    scroll_delta: delta,
+                });
             }
         }
     }

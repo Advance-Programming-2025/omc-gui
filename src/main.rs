@@ -50,13 +50,16 @@ pub fn main() -> Result<(), String> {
         )
         .add_systems(OnEnter(GameState::Playing), utils::debug::log_state_entry)
         .add_systems(OnEnter(GameState::Override), utils::debug::log_state_entry)
-        .add_systems(OnEnter(GameState::Paused), 
-        (
-            game::game::flush_events_before_pause, 
-            utils::debug::log_state_entry
-        ))
-        .add_systems(OnExit(GameState::Paused),
-            game::game::flush_events_before_resume
+        .add_systems(
+            OnEnter(GameState::Paused),
+            (
+                game::game::flush_events_before_pause,
+                utils::debug::log_state_entry,
+            ),
+        )
+        .add_systems(
+            OnExit(GameState::Paused),
+            game::game::flush_events_before_resume,
         )
         .add_systems(
             Update,

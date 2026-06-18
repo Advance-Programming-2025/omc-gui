@@ -3,13 +3,15 @@ use bevy::prelude::*;
 use crate::{
     ecs::{
         components::{Explorer, Planet},
-        events::MoveExplorerEvent, markers::ExpModeText, resources::EntityClickRes,
+        events::MoveExplorerEvent,
+        markers::ExpModeText,
+        resources::EntityClickRes,
     },
     utils::assets::SFXAssets,
 };
 
 /// Move the explorer to a different planet
-/// 
+///
 /// The system moves an explorer to a different planet by changing the
 /// explorer's transform to the appropriate coordiantes with respect to the
 /// destination planet. This function does NOT call the orchestrator and only
@@ -66,7 +68,7 @@ pub fn move_explorer(
     }
 }
 
-pub(crate) fn change_explorer_mode_text (
+pub(crate) fn change_explorer_mode_text(
     parents: Query<&Children, With<ExpModeText>>,
     mut texts: Query<&mut Text>,
     selected: Res<EntityClickRes>,
