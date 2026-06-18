@@ -201,5 +201,12 @@ pub(crate) fn flush_events_before_pause(
     planets: ResMut<PlanetInfoRes>,
     explorers: ResMut<ExplorerInfoRes>,
 ) {
+    let mut dbg = String::new();
+    for event in orchestrator.orchestrator.gui_messages.iter().clone() {
+        let msg = format!("{:?}", event);
+        dbg.push_str(&msg);
+    }
+
+    info!("FLUSH: game was paused, flushing the following: {}", dbg);
     drain_stale_events(&mut commands, orchestrator, log_text, game_explorers, sel, planets, explorers);
 }

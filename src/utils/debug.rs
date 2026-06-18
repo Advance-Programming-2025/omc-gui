@@ -1,4 +1,4 @@
-use bevy::{ecs::system::Res, log::debug, state::state::State};
+use bevy::{ecs::system::Res, log::info, state::state::State};
 
 use crate::ecs::resources::{GameState, OrchestratorResource};
 
@@ -9,7 +9,7 @@ pub(crate) fn log_state_entry(state: Res<State<GameState>>, orchestrator: Option
             let msg = format!("{:?}", message);
             debug_str.push_str(&msg);
         }
-        debug!(
+        info!(
                 "→ EVENT QUEUE: entered state {:?}, pending orchestrator events: {}",
                 state.get(),
                 debug_str

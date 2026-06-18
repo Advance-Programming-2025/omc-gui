@@ -8,7 +8,6 @@ use bevy_embedded_assets::EmbeddedAssetPlugin;
 
 use crate::ecs::markers::{ExplorerOnlyButton, PlanetOnlyButton};
 use crate::ecs::resources::GameState;
-use crate::game::game::flush_events_before_pause;
 use crate::game::orchestrator::setup_orchestrator;
 
 mod app;
@@ -53,7 +52,7 @@ pub fn main() -> Result<(), String> {
         .add_systems(OnEnter(GameState::Override), utils::debug::log_state_entry)
         .add_systems(OnEnter(GameState::Paused), 
         (
-            flush_events_before_pause, 
+            game::game::flush_events_before_pause, 
             utils::debug::log_state_entry
         ))
         .add_systems(
