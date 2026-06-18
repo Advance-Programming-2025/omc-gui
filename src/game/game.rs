@@ -135,7 +135,6 @@ fn handle_tick(
                 );
             }
             OrchestratorEvent::SunraySent { planet_id } => {
-                // TODO check if these are still needed
                 info!("game-loop: planet {} should get a sunray, ", planet_id);
             }
             OrchestratorEvent::AsteroidSent { planet_id } => {
