@@ -173,12 +173,7 @@ pub(crate) fn manual_explorer_action(
                         let res = orchestrator
                             .orchestrator
                             .send_generate_resource_request(id, *basic);
-                        if let Err(_) = res {
-                            update_logs(
-                                &mut log_text,
-                                "Basic resource generation failed!".to_string(),
-                            );
-                        } else {
+                        if let Ok(_) = res { 
                             info!("basic resource was generated");
                         }
                     }
@@ -189,12 +184,7 @@ pub(crate) fn manual_explorer_action(
                         let res = orchestrator
                             .orchestrator
                             .send_combine_resource_request(id, *complex);
-                        if let Err(_) = res {
-                            update_logs(
-                                &mut log_text,
-                                "Complex resource generation failed!".to_string(),
-                            );
-                        } else {
+                        if let Ok(_) = res {
                             info!("complex resource was generated");
                         }
                     }

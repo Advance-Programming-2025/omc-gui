@@ -181,6 +181,12 @@ fn handle_tick(
                     format!("exp {} moved to pl {}\n", explorer_id, destination),
                 );
             }
+            OrchestratorEvent::ResourceGenerationFailed { message } => {
+                warn!("Error in resource generation, notifying user");
+                commands.trigger(Notification{
+                    message
+                });
+            },
         }
     }
 }
