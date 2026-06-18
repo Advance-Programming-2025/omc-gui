@@ -61,8 +61,9 @@ pub fn setup(
     });
     commands.insert_resource(GalaxyScale { scale });
 
-    let ui_scale = scale.max(window.scale_factor() as f32);
-    commands.insert_resource(UiScale(ui_scale));
+    if window.scale_factor() <= 1.0 {
+        commands.insert_resource(UiScale(scale));
+    }
 
     let galaxy_radius = GALAXY_RADIUS * scale;
 
