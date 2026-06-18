@@ -29,6 +29,7 @@ pub fn game_loop(
     mut timer: ResMut<GameTimer>,
     log_text: ResMut<LogTextRes>,
     state: Res<State<GameState>>,
+    mut mutable_state: ResMut<NextState<GameState>>,
     time: Res<Time>,
     game_explorers: Query<&Explorer>,
     sel: Res<EntityClickRes>,
@@ -73,24 +74,9 @@ pub fn game_loop(
             //if there are manually imputted events, run those immediately
             //else, keep going
 
-            if orchestrator.orchestrator.gui_messages.len() > 0 {
-                let events = std::mem::take(&mut orchestrator.orchestrator.gui_messages);
-                handle_tick(&mut commands, events, log_text, game_explorers, sel);
+            drain_stale_events(&mut commands, orchestrator, log_text, game_explorers, sel, planets, explorers);
 
-                // handle all of the previous events
-                let _ = orchestrator.orchestrator.handle_game_messages();
-                // update the state maps after the events occurred
-                planets.as_mut().map = orchestrator.orchestrator.get_planets_info();
-                explorers.as_mut().map = orchestrator.orchestrator.get_explorer_states();
-                // get the current state of the explorer bag for the next round (if it's alive)
-                for i in 0..EXPLORER_NUM {
-                    if !explorers.as_mut().map.is_dead(&i) {
-                        if let Err(s) = orchestrator.orchestrator.send_bag_content_request(i) {
-                            error!(s);
-                        }
-                    }
-                }
-            }
+            mutable_state.set(GameState::Playing);
         }
         _ => {}
     }
@@ -174,4 +160,46 @@ fn handle_tick(
             }
         }
     }
+}
+
+fn drain_stale_events(
+    mut commands: &mut Commands,
+    mut orchestrator: ResMut<OrchestratorResource>,
+    log_text: ResMut<LogTextRes>,
+    game_explorers: Query<&Explorer>,
+    sel: Res<EntityClickRes>,
+    mut planets: ResMut<PlanetInfoRes>,
+    mut explorers: ResMut<ExplorerInfoRes>,
+) {
+    // handle all of the previous events
+    let _ = orchestrator.orchestrator.handle_game_messages();
+
+    if orchestrator.orchestrator.gui_messages.len() > 0 {
+        let events = std::mem::take(&mut orchestrator.orchestrator.gui_messages);
+        handle_tick(&mut commands, events, log_text, game_explorers, sel);
+
+        // update the state maps after the events occurred
+        planets.as_mut().map = orchestrator.orchestrator.get_planets_info();
+        explorers.as_mut().map = orchestrator.orchestrator.get_explorer_states();
+        // get the current state of the explorer bag for the next round (if it's alive)
+        for i in 0..EXPLORER_NUM {
+            if !explorers.as_mut().map.is_dead(&i) {
+                if let Err(s) = orchestrator.orchestrator.send_bag_content_request(i) {
+                    error!(s);
+                }
+            }
+        }
+    }
+}
+
+pub(crate) fn flush_events_before_pause(
+    mut commands: Commands,
+    orchestrator: ResMut<OrchestratorResource>,
+    log_text: ResMut<LogTextRes>,
+    game_explorers: Query<&Explorer>,
+    sel: Res<EntityClickRes>,
+    planets: ResMut<PlanetInfoRes>,
+    explorers: ResMut<ExplorerInfoRes>,
+) {
+    drain_stale_events(&mut commands, orchestrator, log_text, game_explorers, sel, planets, explorers);
 }

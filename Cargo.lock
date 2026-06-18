@@ -3484,7 +3484,7 @@ checksum = "953f07c43838f8e6f9758cab68bf5bed85465e7587ebe0b823f1bcd81978ad3a"
 [[package]]
 name = "logging_utils"
 version = "0.1.0"
-source = "git+https://github.com/Advance-Programming-2025/omc-galaxy.git#ffbd20a81267c9fc2b24603f75265486c8db8717"
+source = "git+https://github.com/Advance-Programming-2025/omc-galaxy.git#afcb1f1653a0718eb1837e0ded1c282d9f6f1119"
 dependencies = [
  "common-game",
  "crossbeam-channel",
@@ -4070,7 +4070,7 @@ dependencies = [
 [[package]]
 name = "omc-galaxy"
 version = "0.1.0"
-source = "git+https://github.com/Advance-Programming-2025/omc-galaxy.git#ffbd20a81267c9fc2b24603f75265486c8db8717"
+source = "git+https://github.com/Advance-Programming-2025/omc-galaxy.git#afcb1f1653a0718eb1837e0ded1c282d9f6f1119"
 dependencies = [
  "Planet",
  "black_adidas_shoe",
