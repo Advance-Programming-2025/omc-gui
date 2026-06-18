@@ -94,6 +94,7 @@ pub fn main() -> Result<(), String> {
                 galaxy::celestial::despawn_celestial,
                 galaxy::selection::update_selected_entity,
                 game::logs::log_text,
+                explorers::movement::change_explorer_mode_text,
                 app::scaling::scale_background,
             )
                 .run_if(not(in_state(GameState::WaitingStart))),

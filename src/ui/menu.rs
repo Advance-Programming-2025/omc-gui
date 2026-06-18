@@ -1,8 +1,7 @@
 use crate::ecs::components::ExpButtonActions;
 use crate::ecs::components::{ButtonActions, ListType, RatioButton, UiExplorerText, UiPlanetText};
 use crate::ecs::markers::{
-    DropdownButton, DropdownLabel, DropdownRoot, ExplorerOnlyButton, GameStateText, LogText,
-    ManualExplorer, PlanetOnlyButton, RatioText,
+    DropdownButton, DropdownLabel, DropdownRoot, ExpModeText, ExplorerOnlyButton, GameStateText, LogText, ManualExplorer, PlanetOnlyButton, RatioText
 };
 use crate::ecs::resources::{GameState, StartupConfig};
 use crate::ui::button_bundle;
@@ -191,6 +190,9 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                 .spawn((
                     Node {
                         display: Display::None,
+                        align_content: AlignContent::Center,
+                        align_items: AlignItems::Center,
+                        justify_content: JustifyContent::Center,
                         ..button_row.clone()
                     },
                     PlanetOnlyButton,
@@ -211,14 +213,18 @@ pub(crate) fn draw_entity_info_menu(mut commands: Commands) {
                 .spawn((
                     Node {
                         display: Display::None,
+                        align_content: AlignContent::Center,
+                        align_items: AlignItems::Center,
+                        justify_content: JustifyContent::Center,
                         ..button_row.clone()
                     },
                     ExplorerOnlyButton,
                 ))
                 .with_children(|parent| {
                     parent.spawn((
-                        button_bundle(Text::new("Explorer mode: TBD"), 50.),
+                        button_bundle(Text::new("Explorer mode: "), 50.),
                         ExpButtonActions::ExpModeChange,
+                        ExpModeText
                     ));
                     // show the following stuff only if the explorer is in manual mode
                     parent

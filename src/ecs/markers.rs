@@ -75,3 +75,7 @@ pub struct CurrentPathText;
 /// Marker for the text for the initial sunray to asteroid ratio
 #[derive(Component)]
 pub struct StartRatioText;
+
+/// Marker for the text of the button that signals the explorer AI mode: auto or manual
+#[derive(Component)]
+pub struct ExpModeText;

@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::{
     ecs::{
         components::{Explorer, Planet},
-        events::MoveExplorerEvent,
+        events::MoveExplorerEvent, markers::ExpModeText, resources::EntityClickRes,
     },
     utils::assets::SFXAssets,
 };
@@ -60,6 +60,25 @@ pub fn move_explorer(
                         "explorer tried to move to planet that doesn't exist ({})",
                         planet_id
                     );
+                }
+            }
+        }
+    }
+}
+
+pub(crate) fn change_explorer_mode_text (
+    parents: Query<&Children, With<ExpModeText>>,
+    mut texts: Query<&mut Text>,
+    selected: Res<EntityClickRes>,
+    explorers: Query<&Explorer>,
+) {
+    for children in &parents {
+        for child in children.iter() {
+            if let Ok(mut text) = texts.get_mut(child) {
+                if let Some(id) = selected.explorer {
+                    if let Some(exp) = explorers.iter().find(|e| e.id == id) {
+                        text.0 = format!("Explorer mode: {:?}", exp.state);
+                    }
                 }
             }
         }
