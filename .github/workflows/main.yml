@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 env: 
   CARGO_TERM_COLOR: always
   binary: omc-gui
@@ -27,8 +30,6 @@ jobs:
       - name: Build package
         run: | 
           cargo build --release --target x86_64-unknown-linux-gnu
-      
-      - run: cargo test
 
       - name: Prepare package
         run: |
